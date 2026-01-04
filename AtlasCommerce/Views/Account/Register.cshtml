@@ -1,0 +1,97 @@
+﻿@model AtlasCommerce.Application.ViewModels.RegisterVM
+@{
+    var logoPath = Model?.Settings?.LogoPath;
+
+    var title = "Kayıt Ol";
+    if (!string.IsNullOrEmpty(Model?.Settings?.BrandName)) title += $" - {Model.Settings.BrandName}";
+    ViewData["Title"] = title;
+
+    Layout = "_RegisterLayout";
+}
+
+<div class="flex flex-col justify-center min-h-screen py-12 bg-gray-50 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="mt-6 flex justify-center">
+            <img src="@logoPath" style="width: 200px;" />
+        </div>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+            <form asp-controller="Account" asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label asp-for="FirstName" class="block text-sm font-medium theme-label">Ad *</label>
+                        <input asp-for="FirstName" placeholder="Adınız"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="FirstName" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="LastName" class="block text-sm font-medium theme-label">Soyad *</label>
+                        <input asp-for="LastName" placeholder="Soyadınız"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="LastName" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="UserName" class="block text-sm font-medium theme-label">Kullanıcı Adı *</label>
+                        <input asp-for="UserName" placeholder="Kullanıcı adı"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="UserName" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Email" class="block text-sm font-medium theme-label">E-Posta Adresi *</label>
+                        <input asp-for="Email" type="email" placeholder="ornek@mail.com"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="PhoneNumber" class="block text-sm font-medium theme-label">Telefon *</label>
+                        <input asp-for="PhoneNumber" placeholder="Telefon Numaranız"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="PhoneNumber" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Password" class="block text-sm font-medium theme-label">Şifre *</label>
+                        <input asp-for="Password" type="password" placeholder="Şifre"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="ConfirmPassword" class="block text-sm font-medium theme-label">Şifre Tekrar *</label>
+                        <input asp-for="ConfirmPassword" type="password" placeholder="Şifrenizi doğrulayın"
+                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        <span asp-validation-for="ConfirmPassword" class="text-red-500 text-sm"></span>
+                    </div>
+                </div>
+
+                <div class="text-center my-3">
+                    <div class="text-danger" asp-validation-summary="All"></div>
+                </div>
+
+                <div class="mt-6">
+                    <span class="block w-full rounded-md shadow-sm">
+                        <button type="submit"
+                                class="primary-btn flex justify-center w-full px-4 py-2 text-sm font-medium border border-transparent rounded-md focus:outline-none transition duration-150 ease-in-out">
+                            Kayıt Ol
+                        </button>
+                    </span>
+                </div>
+
+                <div class="flex items-center justify-center mt-6">
+                    <p class="text-sm text-gray-600">
+                        Zaten hesabınız var mı?
+                        <a asp-action="Login" asp-controller="Account" class="font-medium text-indigo-600 hover:text-indigo-500">Giriş Yap</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

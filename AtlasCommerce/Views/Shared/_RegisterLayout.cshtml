@@ -1,0 +1,27 @@
+﻿@model AtlasCommerce.Application.ViewModels.RegisterVM
+
+@{
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var logoPath = Model?.Settings?.LogoPath;
+    
+    var title = "Kayıt Ol";
+    if (!string.IsNullOrEmpty(Model?.Settings?.BrandName)) title += $" - {Model.Settings.BrandName}";
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <title>@title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="@logoPath" />
+    <link rel="icon" type="image/x-icon" href="@logoPath" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+    @RenderBody()
+
+</body>
+</html>

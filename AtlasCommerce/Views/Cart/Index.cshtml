@@ -1,0 +1,243 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model CartVM
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Sepetim";
+}
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<div class="container">
+    <div class="cart-container floating-animation">
+        <h1 class="cart-title">Sepetim</h1>
+
+        <!-- Empty Cart State -->
+        <div class="empty-cart @(Model == null || !Model.Items.Any() ? "" : "d-none")" id="emptyCart">
+            <i class="fas fa-shopping-cart"></i>
+            <h2 class="mb-3" style="color: #666;">Sepetiniz Boş</h2>
+            <p class="text-muted mb-4">Alışverişe devam etmek için <span class="text-danger">ürünler sayfasını</span> ziyaret edebilirsiniz.</p>
+            <a asp-controller="Products" asp-action="All" class="continue-shopping">
+                Alışverişe Devam Et
+            </a>
+        </div>
+
+        <!-- Cart Table -->
+        <div class="table-responsive @(Model == null || !Model.Items.Any() ? "d-none" : "")" id="cartTable">
+            <table class="table modern-table">
+                <thead>
+                    <tr>
+                        <th>Ürün</th>
+                        <th>Adet</th>
+                        <th>Birim Fiyat</th>
+                        <th>Toplam</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="cartItems">
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr data-id="@item.ProductId">
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="@item.ImageUrl" alt="@item.Title" class="product-image">
+                                    <div class="product-info">
+                                        <p class="product-title">@item.Title</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <button class="qty-btn" onclick="updateQty('@item.ProductId', -1)">−</button>
+                                    <input type="number" class="qty-input" id="qty-@item.ProductId" value="@item.Quantity" min="1" onchange="updateQty('@item.ProductId', 0)">
+                                    <button class="qty-btn" onclick="updateQty('@item.ProductId', 1)">+</button>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="price-display">₺@item.Price.ToString("N2")</span>
+                            </td>
+                            <td>
+                                <span class="price-display" id="rowTotal-@item.ProductId">₺@((item.Price * item.Quantity).ToString("N2"))</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a asp-controller="Products" asp-action="View" asp-route-id="@item.ProductId" class="action-btn btn-view" title="Ürünü Görüntüle">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="action-btn btn-delete remove-item-btn" data-product-id="@item.ProductId" title="Sil">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Cart Summary -->
+        <div class="cart-summary @(Model == null || !Model.Items.Any() ? "d-none" : "")" id="cartSummary">
+            <div class="row align-items-center">
+                <div class="col-md-4">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fs-5">Ara Toplam: </span>
+                                <span class="total-amount fs-5" id="cartSubtotal">
+                                    ₺ @Model.TotalAmount.ToString("N2")
+                                </span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="fs-5">Toplam Kargo Ücreti: </span>
+                                <span class="fs-5" id="cartShipping">₺ 0.00</span>
+                            </div>
+                            <div class="d-flex justify-content-between border-top pt-2 mt-2">
+                                <span class="fs-5">Genel Toplam: </span>
+                                <span class="total-amount fs-5 fw-bold text-success" id="cartGrandTotal">
+                                    ₺@Model.TotalAmount.ToString("N2")
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2"></div>
+
+                <div class="col-md-6 text-end">
+                    <div class="d-flex gap-3 justify-content-end align-items-center">
+                        <a asp-controller="Home" asp-action="Index" class="continue-shopping">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Alışverişe Devam
+                        </a>
+                        <a asp-controller="Checkout" asp-action="Index" class="checkout-btn">
+                            <i class="fas fa-credit-card me-2"></i>
+                            Ödeme Yap
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Ürünü Sil
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bu ürünü sepetten silmek istediğinizden emin misiniz?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+                    <i class="fas fa-trash me-2"></i>
+                    Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        let productToDelete = null;
+
+        // Quantity update
+        function updateQty(productId, change) {
+            let input = document.getElementById(`qty-${productId}`);
+            let value = parseInt(input.value) || 1;
+
+            if (change !== 0) value += change;
+            if (value < 1) value = 1;
+
+            input.value = value;
+
+            $.ajax({
+                url: '/Cart/UpdateQuantity',
+                type: 'POST',
+                data: { productId: productId, quantity: value },
+                success: function (res) {
+                    // Update row total
+                    let $rowTotal = $(`#rowTotal-${productId}`);
+                    $rowTotal.fadeOut(100, function () {
+                        $rowTotal.text(res.rowTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        $rowTotal.fadeIn(200);
+                    });
+
+                    // Update cart total
+                    let $cartTotal = $("#cartSubtotal, #cartGrandTotal");
+                    $cartTotal.fadeOut(100, function () {
+                        $cartTotal.text(res.total.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
+                        $cartTotal.fadeIn(200);
+                    });
+
+                    // Update count
+                    let cartCount = $("#cartCount");
+                    cartCount.fadeOut(100, function () {
+                        cartCount.text(res.count);
+                        cartCount.fadeIn(200);
+                    });
+
+                    updateCartCount();
+                }
+            });
+        }
+
+        function updateCartCount() {
+            $.ajax({
+                url: '/Cart/GetCartCount',
+                type: 'GET',
+                success: function (data) {
+                    let $cartItemCount = $("#cartItemCount");
+                    if ($cartItemCount.text() != data.count) {
+                        $cartItemCount.fadeOut(100, function () {
+                            $cartItemCount.text(data.count);
+                            $cartItemCount.fadeIn(200);
+                        });
+                    }
+                }
+            });
+        }
+
+        // Delete item
+        $(document).ready(function () {
+            $(".remove-item-btn").click(function () {
+                productToDelete = $(this).data("product-id");
+                $("#confirmDeleteModal").modal("show");
+            });
+
+            $("#confirmDeleteBtn").click(function () {
+                $.ajax({
+                    url: '@Url.Action("Remove", "Cart")',
+                    type: 'POST',
+                    data: { productId: productToDelete },
+                    success: function (response) {
+                        if (response.success) {
+                            $(`tr[data-id="${productToDelete}"]`).remove();
+                            $("#cartCount").text(response.totalQuantity);
+                            $("#cartItemCount").text(response.totalQuantity);
+                            $("#cartSubtotal, #cartGrandTotal").text(response.totalPrice.toFixed(2) + " ₺");
+
+                            if (response.totalQuantity === 0) {
+                                $("#emptyCart").removeClass("d-none");
+                                $("#cartTable").addClass("d-none");
+                                $("#cartSummary").addClass("d-none");
+                            }
+                        }
+                        $("#confirmDeleteModal").modal("hide");
+                    }
+                });
+            });
+        });
+    </script>
+}

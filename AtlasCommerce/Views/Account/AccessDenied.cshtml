@@ -1,0 +1,28 @@
+﻿@{
+    Layout = null;
+    ViewData["Title"] = "Erişim Engeli";
+}
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:400,700" rel="stylesheet">
+
+    <link rel="stylesheet" href="~/css/403-style-error.css" />
+</head>
+
+<body>
+    <div id="notfound">
+        <div class="notfound">
+            <div class="notfound-404"></div>
+            <h1>ERİŞİM ENGELİ</h1>
+
+            <h2 style="color: #dc3545;">403 - ACCESS DENIED</h2>
+            <p>Bu sayfaya erişim hakkınız bulunmamaktadır. <br />Lütfen yalnızca yetkili ve geçerli hesaplarla giriş yapmayı deneyiniz.</p>
+            
+            <a asp-controller="Home" asp-action="Index">Anasayfaya dön</a>
+
+        </div>
+    </div>
+</body>

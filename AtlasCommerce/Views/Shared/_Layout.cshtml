@@ -1,49 +1,231 @@
-﻿<!DOCTYPE html>
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    var wpUrl = "https://wa.me/" + Model?.Settings?.PhoneNumber;
+    var mailtoUrl = "mailto:" + Model?.Settings?.EmailAddress;
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AtlasCommerce</title>
+    <title>@ViewData["Title"]</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="icon" type="image/x-icon" href="@Model?.Settings?.LogoPath" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AtlasCommerce.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AtlasCommerce</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    @await Component.InvokeAsync("WebsiteSettings")
+
+    <!--=============== HEADER ===============-->
+    <header class="header">
+        <!-- Üst satır: logo + arama + hamburger + admin -->
+        <div class="nav-top container d-flex justify-content-between align-items-center">
+            <a asp-controller="Home" asp-action="Index" class="nav-logo">
+                <img src="@Model?.Settings?.LogoPath" style="height: 60px; margin-right: 8px;" />
+            </a>
+
+            <div class="nav-search d-none d-md-flex position-relative" style="width: 280px;">
+                <input id="mainSearchInput"
+                       type="text"
+                       placeholder="Ürünlerde Ara..."
+                       class="form-control pe-5"
+                       style="color: gray;" />
+                <i id="mainSearchIcon"
+                   class="ri-search-line position-absolute top-50 end-0 translate-middle-y"></i>
+            </div>
+
+
+            <div class="nav-user d-flex align-items-center">
+                <!-- Hamburger ikon (mobilde görünür) -->
+                <div class="category-burger d-md-none me-3" id="categoryBurger">
+                    <i class="ri-menu-line"></i>
+                </div>
+
+                <!-- Sepet ikonu -->
+                <div class="nav-cart d-flex align-items-center">
+                    <a asp-controller="Cart" asp-action="Index" class="nav-icon position-relative" style="color: black !important;">
+                        <i class="fas fa-shopping-cart" style="color: #606060;"></i>
+                        <span id="cartItemCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @(ViewBag.CartItemCount ?? 0)
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Admin ikon -->
+                @*                 <a class="nav-icon" asp-area="Admin" asp-controller="Account" asp-action="Login">
+                <i class="ri-user-line"></i>
+                </a> *@
+
+                <!-- Kullanıcı / Auth Butonları -->
+                @*                 <div class="nav-auth ms-5 d-flex align-items-center">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                <span class="me-2">Merhaba, @User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-custom">Çıkış</button>
+                </form>
+                }
+                else
+                {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Giriş Yap</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Kayıt Ol</a>
+                }
+                </div> *@
+
+                <!-- Kullanıcı / Auth Butonları -->
+                <div class="nav-auth ms-5 d-flex align-items-center">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-custom dropdown-toggle" type="button" id="accountMenu"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-user-line me-1"></i> @User?.Identity?.Name
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountMenu">
+                                <li>
+                                    <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Profile">
+                                        <i class="ri-user-3-line me-1"></i> Hesabım
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Settings">
+                                        <i class="ri-settings-3-line me-1"></i> Ayarlar
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" style="color: #343a40;" /></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                        <button type="submit" class="dropdown-item text-danger dropdown-item-options">
+                                            <i class="ri-logout-box-line me-1"></i> Çıkış Yap
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Giriş Yap</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Kayıt Ol</a>
+                    }
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+        </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - AtlasCommerce - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        @await Component.InvokeAsync("CategoryMenu")
+
+        @await Component.InvokeAsync("ProductMenu")
+    </header>
+
+    @* <div class="container"> *@
+    <main role="main">
+
+
+        @RenderBody()
+    </main>
+
+
+    @* </div> *@
+
+    <footer class="modern-footer">
+        <div class="footer-top">
+            <div class="footer-about">
+                <h3>@Html.Raw(Model?.Settings?.BrandName)</h3>
+                <p>
+                    @Html.Raw(Model?.Settings?.FooterText)
+                </p>
+                <div class="footer-socials">
+                    <a href="@Model?.Settings?.Instagram"><i class="ri-instagram-fill"></i></a>
+                    <a href="@Model?.Settings?.Twitter"><i class="ri-twitter-fill"></i></a>
+                    <a href="@Model?.Settings?.Youtube"><i class="ri-facebook-fill"></i></a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4>Hızlı Bağlantılar</h4>
+                <ul>
+                    <li><a href="/">Anasayfa</a></li>
+                    <li><a asp-controller="Home" asp-action="About">Hakkımızda</a></li>
+                    <li><a asp-controller="Home" asp-action="Services">Hizmetlerimiz</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a></li>
+                    <li><a asp-controller="Contact" asp-action="Index">İletişim</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h4>Bize Ulaşın</h4>
+                <ul>
+                    <li><i class="ri-map-pin-line"></i> @Model?.Settings?.Address</li>
+                    <li><i class="ri-phone-line"></i> @Model?.Settings?.PhoneNumber</li>
+                    <li class="emailItem"><i class="ri-mail-line"></i> <a href=@mailtoUrl style="text-decoration: none; list-style:none; color: #fff;">@Model.Settings.EmailAddress</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2025 @Model?.Settings?.BrandName</p>
+            <p style="font-size:5px;" class="mb-0 p-0">Developed By FurkanEmreGinyol & EminBay</p>
         </div>
     </footer>
+
+    <div class="fixed bottom-20 right-4 z-50 group">
+        <a asp-controller="Contact" asp-action="Index"
+           target="_blank"
+           id="btnQuickMessage"
+           aria-label="Mesaj Gönder"
+           class="flex items-center justify-center w-12 h-12 rounded-full shadow-md transition relative">
+            <i class="fas fa-envelope text-white text-xl"></i>
+
+            <!-- Tooltip -->
+            <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
+                Bize mesaj gönderin
+            </span>
+        </a>
+    </div>
+    <div class="fixed bottom-4 right-4 z-50 group">
+        <a href=@wpUrl
+           target="_blank"
+           aria-label="WhatsApp"
+           class="flex items-center justify-center w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full shadow-md transition relative">
+            <i class="fab fa-whatsapp text-white text-xl"></i>
+
+            <!-- Tooltip -->
+            <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
+                WhatsApp ile iletişime geç
+            </span>
+        </a>
+    </div>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                toastr.success("@TempData["SuccessMessage"]");
+            </text>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                toastr.error("@TempData["ErrorMessage"]");
+            </text>
+        }
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,28 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model CategoryListVM
+@{
+    ViewData["Title"] = "Tüm Kategoriler";
+}
+<section class="category-index">
+    <h1 class="category-index-title">Tüm Kategoriler</h1>
+
+    @foreach (var category in Model.Categories)
+    {
+        <div class="category-card">
+            @if (!string.IsNullOrEmpty(category.ImageDataUri))
+            {
+                <img src="@Url.Content(category.ImageDataUri)" class="card-img-top" alt="@category.Name" style="height:200px; object-fit:cover;">
+            }
+            else
+            {
+                <img src="~/img/placeholder.jpg" class="card-img-top" alt="@category.Name" style="height:200px; object-fit:cover;">
+            }   
+
+            <div class="category-card-body">
+                <h2>@category.Name</h2>
+                <p>@category.Description</p>
+                <a asp-controller="Categories" asp-action="View" asp-route-id="@category.Id" class="category-card-btn">İncele</a>
+            </div>
+        </div>
+    }
+</section>

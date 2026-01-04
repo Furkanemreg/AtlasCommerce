@@ -1,0 +1,36 @@
+﻿@* @using AtlasCommerce.Application.ViewModels
+@model List<SaleProductVM>
+
+<div class="mega-dropdown">
+    <div class="mega-grid">
+        @foreach (var product in Model)
+        {
+            <div class="product-card">
+                <div>@product.Title</div>
+            </div>
+        }
+    </div>
+</div>
+ *@
+
+@using AtlasCommerce.Application.ViewModels
+@model List<CategoryWithProductsVM>
+
+@foreach (var cat in Model)
+{
+    @if (cat.Products != null && cat.Products.Any())
+    {
+        <div class="mega-dropdown" id="dropdown-@cat.Id" style="display:none;">
+            <div class="mega-grid">
+                @foreach (var product in cat.Products)
+                {
+                    <a asp-controller="Products" asp-action="View" asp-route-id="@product.Id" style="text-decoration: none;">
+                        <div class="product-card">
+                            <div>@product.Title</div>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+    }
+}
