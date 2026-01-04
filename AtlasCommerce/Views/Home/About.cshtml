@@ -1,0 +1,60 @@
+﻿@using AtlasCommerce.Application.Interfaces
+@using AtlasCommerce.Domain.Entities
+@model AtlasCommerce.Application.ViewModels.EmptyVM
+@inject IBaseService<WebsiteFeature> _featureService
+
+@{
+    ViewData["Title"] = "Hakkımızda";
+
+    var _websiteFeatures = await _featureService.GetAllAsync();
+}
+
+
+<section class="py-5 about-us-section bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h1 class="fw-bold text-3xl text-uppercase">Hakkımızda</h1>
+            <p class="text-muted">@Model?.Settings?.BrandName</p>
+        </div>
+
+        <div class="row align-items-center mb-5">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                @* <img src="@Model?.Settings?.LogoPath" class="img-fluid rounded shadow" /> *@
+                <img src="@Model?.Settings?.LogoPath" class="rounded shadow" style="width: 90%; " />
+            </div>
+
+            <div class="col-lg-6">
+                <p>@Html.Raw(Model?.Settings?.AboutParagraph)</p>
+            </div>
+        </div>
+
+        @if (_websiteFeatures != null && _websiteFeatures.Any())
+        {
+            <div class="row justify-content-center text-center mb-5">
+                @foreach (var feature in _websiteFeatures)
+                {
+                    <div class="col-md-4 mb-4">
+                        <i class="@feature.IconHtml" style="font-size: 2.5rem;"></i>
+                        <h5 class="fw-bold mt-3">@feature.Title</h5>
+                        <p class="text-muted">@feature.Text</p>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="bg-white p-4 rounded shadow text-center">
+            @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence1))
+            {
+                <p class="lead mb-2">
+                    @Html.Raw(Model?.Settings?.AboutAltSentence1)
+                </p>
+            }
+            @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence2))
+            {
+                <p class="mb-0">
+                    @Html.Raw(Model?.Settings?.AboutAltSentence2)
+                </p>
+            }
+        </div>
+    </div>
+</section>

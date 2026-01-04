@@ -1,0 +1,1413 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@using AtlasCommerce.Domain.Entities
+@model ProductListPageVM
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Tüm Ürünler";
+
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+    int groupSize = 4;
+    int currentGroup = (currentPage - 1) / groupSize;
+    int startPage = currentGroup * groupSize + 1;
+    int endPage = Math.Min(startPage + groupSize - 1, totalPages);
+}
+<style>
+    #btnAddProductToBag {
+        background-color: #dc3545 !important;
+    }
+
+    #btnAddProductToBag:hover {
+        background-color: #a32632 !important;
+    }
+</style>
+<div class="bg-white">
+    <div>
+        <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900">Tüm Ürünler</h1>
+
+                <div class="flex items-center">
+                    <div class="relative inline-block text-left">
+                        <div>
+                            <button id="menu-button" type="button" aria-expanded="false" aria-haspopup="true" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
+                                Sıralama
+                                <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 ml-1 size-5 shrink-0 text-gray-400 group-hover:text-gray-500">
+                                    <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div role="menu" id="sortingDiv" tabindex="-1" aria-labelledby="menu-button" aria-orientation="vertical" class="absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-2xl ring-1 ring-black/5 focus:outline-hidden">
+                            <div role="none" class="py-1">
+                                <a id="menu-item-0"
+                                   role="menuitem"
+                                   class="block px-4 py-2 text-sm text-gray-500"
+                                   href="@Url.Action("All", new {
+                                            sort = "newest",
+                                            minPrice = Model.Filter?.MinPrice, maxPrice = Model.Filter?.MaxPrice,
+                                            minWidth = Model.Filter?.MinWidth, maxWidth = Model.Filter?.MaxWidth,
+                                            minHeight = Model.Filter?.MinHeight, maxHeight = Model.Filter?.MaxHeight,
+                                            minWeight = Model.Filter?.MinWeight, maxWeight = Model.Filter?.MaxWeight,
+                                            mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
+                                            SelectedColors = Model.Filter?.SelectedColors,
+                                            SelectedCategoryIds = Model.Filter?.SelectedCategories
+                                        })">
+                                    En Yeni
+                                </a>
+                                <a id="menu-item-1"
+                                   role="menuitem"
+                                   class="block px-4 py-2 text-sm text-gray-500"
+                                   href="@Url.Action("All", new {
+                                            sort = "priceasc",
+                                            minPrice = Model.Filter?.MinPrice, maxPrice = Model.Filter?.MaxPrice,
+                                            minWidth = Model.Filter?.MinWidth, maxWidth = Model.Filter?.MaxWidth,
+                                            minHeight = Model.Filter?.MinHeight, maxHeight = Model.Filter?.MaxHeight,
+                                            minWeight = Model.Filter?.MinWeight, maxWeight = Model.Filter?.MaxWeight,
+                                            mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
+                                            SelectedColors = Model.Filter?.SelectedColors,
+                                            SelectedCategoryIds = Model.Filter?.SelectedCategories
+                                        })">Artan Fiyat</a>
+
+                                <a id="menu-item-2"
+                                   role="menuitem"
+                                   class="block px-4 py-2 text-sm text-gray-500"
+                                   href="@Url.Action("All", new {
+                                            sort = "pricedesc",
+                                            minPrice = Model.Filter?.MinPrice, maxPrice = Model.Filter?.MaxPrice,
+                                            minWidth = Model.Filter?.MinWidth, maxWidth = Model.Filter?.MaxWidth,
+                                            minHeight = Model.Filter?.MinHeight, maxHeight = Model.Filter?.MaxHeight,
+                                            minWeight = Model.Filter?.MinWeight, maxWeight = Model.Filter?.MaxWeight,
+                                            mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
+                                            SelectedColors = Model.Filter?.SelectedColors,
+                                            SelectedCategoryIds = Model.Filter?.SelectedCategories
+                                        })">Azalan Fiyat</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section aria-labelledby="products-heading" class="pt-6 pb-24">
+                <h2 id="products-heading" class="sr-only">Products</h2>
+
+                <div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
+                    <form class="block" method="get">
+                        <!-- kategori id’sini de querystring’e eklemek için hidden -->
+                        @* <input type="hidden" name="id" value="@Model?.Category?.Id" /> *@
+
+                        <h3 class="sr-only">Categories</h3>
+
+                        <!-- SIDE FILTERS -->
+                        <!-- PRICE -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <!-- Expand/collapse section button -->
+                                <button id="price-filter-toggle" type="button"
+                                        aria-controls="price-filter-section-price"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Fiyat Aralığı (₺)</span>
+                                    <span class="ml-6 flex items-center">
+                                        <!-- Expand icon (+) başta gizli -->
+                                        <svg id="price-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <!-- Collapse icon (−) başta görünüyor -->
+                                        <svg id="price-icon-collapse" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <div id="price-filter-section-price" class="pt-6 space-y-4">
+
+                                <!-- Min / Max input alanları -->
+                                <div class="flex items-center gap-4">
+                                    <div class="flex flex-col">
+                                        <input id="min-price" name="minPrice" value="@Model?.Filter?.MinPrice" type="number" value="" min="0" max="999999" placeholder="0 ₺"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                    <span class="text-gray-500">–</span>
+                                    <div class="flex flex-col">
+                                        <input id="max-price" type="number" value="@Model?.Filter?.MaxPrice" name="maxPrice" value="" min="0" max="999999" placeholder="999.999 ₺"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <!-- Tek bar, iki handle -->
+                                <div class="relative h-8 flex items-center">
+                                    <!-- arka bar -->
+                                    <div class="absolute h-1 w-full bg-gray-200 rounded"></div>
+                                    <!-- seçili aralık -->
+                                    <div id="range-track" class="absolute h-1 rounded" style="background-color: #dc3545;"></div>
+
+                                    <!-- Min handle -->
+                                    <input id="range-min" type="range" min="0" max="999999" step="1" value="0" class="slider-thumb">
+                                    <input id="range-max" type="range" min="0" max="999999" step="1" value="999999" class="slider-thumb">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WIDTH -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <!-- Expand/collapse section button -->
+                                <button id="width-filter-toggle" type="button"
+                                        aria-controls="width-filter-section-width"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Genişlik (cm)</span>
+                                    <span class="ml-6 flex items-center">
+                                        <!-- Expand icon (+) başta gizli -->
+                                        <svg id="width-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <!-- Collapse icon (−) başta görünüyor -->
+                                        <svg id="width-icon-collapse" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <div id="width-filter-section-width" class="pt-6 space-y-4">
+
+                                <!-- Min / Max input alanları -->
+                                <div class="flex items-center gap-4">
+                                    <div class="flex flex-col">
+                                        <input id="min-width" name="minWidth" value="@Model?.Filter?.MinWidth" type="number" value="" min="0" max="10000" placeholder="0 cm"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                    <span class="text-gray-500">–</span>
+                                    <div class="flex flex-col">
+                                        <input id="max-width" name="maxWidth" value="@Model?.Filter?.MaxWidth" type="number" value="" min="0" max="10000" placeholder="10000 cm"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <!-- Tek bar, iki handle -->
+                                <div class="relative h-8 flex items-center">
+                                    <!-- arka bar -->
+                                    <div class="absolute h-1 w-full bg-gray-200 rounded"></div>
+                                    <!-- seçili aralık -->
+                                    <div id="range-track-width" class="absolute h-1 rounded" style="background-color: #dc3545;"></div>
+
+                                    <!-- Min handle -->
+                                    <input id="range-min-width" type="range" min="0" max="10000" step="1" value="0" class="slider-thumb">
+                                    <input id="range-max-width" type="range" min="0" max="10000" step="1" value="10000" class="slider-thumb">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HEIGHT -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <!-- Expand/collapse section button -->
+                                <button id="height-filter-toggle" type="button"
+                                        aria-controls="height-filter-section-height"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Yükseklik (cm)</span>
+                                    <span class="ml-6 flex items-center">
+                                        <!-- Expand icon (+) başta gizli -->
+                                        <svg id="height-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <!-- Collapse icon (−) başta görünüyor -->
+                                        <svg id="height-icon-collapse" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <div id="height-filter-section-height" class="pt-6 space-y-4">
+
+                                <!-- Min / Max input alanları -->
+                                <div class="flex items-center gap-4">
+                                    <div class="flex flex-col">
+                                        <input id="min-height" name="minHeight" value="@Model?.Filter?.MinHeight" type="number" value="" min="0" max="10000" placeholder="0 cm"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                    <span class="text-gray-500">–</span>
+                                    <div class="flex flex-col">
+                                        <input id="max-height" name="maxHeight" value="@Model?.Filter?.MaxHeight" type="number" value="" min="0" max="10000" placeholder="10000 cm"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <!-- Tek bar, iki handle -->
+                                <div class="relative h-8 flex items-center">
+                                    <!-- arka bar -->
+                                    <div class="absolute h-1 w-full bg-gray-200 rounded"></div>
+                                    <!-- seçili aralık -->
+                                    <div id="range-track-height" class="absolute h-1 rounded" style="background-color: #dc3545;"></div>
+
+                                    <!-- Min handle -->
+                                    <input id="range-min-height" type="range" min="0" max="10000" step="1" value="0" class="slider-thumb">
+                                    <input id="range-max-height" type="range" min="0" max="10000" step="1" value="10000" class="slider-thumb">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- WEIGHT -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <!-- Expand/collapse section button -->
+                                <button id="weight-filter-toggle" type="button"
+                                        aria-controls="weight-filter-section-weight"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Ağırlık (kg)</span>
+                                    <span class="ml-6 flex items-center">
+                                        <!-- Expand icon (+) başta gizli -->
+                                        <svg id="weight-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <!-- Collapse icon (−) başta görünüyor -->
+                                        <svg id="weight-icon-collapse" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <div id="weight-filter-section-weight" class="pt-6 space-y-4">
+
+                                <!-- Min / Max input alanları -->
+                                <div class="flex items-center gap-4">
+                                    <div class="flex flex-col">
+                                        <input id="min-weight" name="minWeight" value="@Model?.Filter?.MinWeight" type="number" value="" min="0" max="10000" placeholder="0 kg"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                    <span class="text-gray-500">–</span>
+                                    <div class="flex flex-col">
+                                        <input id="max-weight" name="maxWeight" value="@Model?.Filter?.MaxWeight" type="number" value="" min="0" max="10000" placeholder="10000 kg"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <!-- Tek bar, iki handle -->
+                                <div class="relative h-8 flex items-center">
+                                    <!-- arka bar -->
+                                    <div class="absolute h-1 w-full bg-gray-200 rounded"></div>
+                                    <!-- seçili aralık -->
+                                    <div id="range-track-weight" class="absolute h-1 rounded" style="background-color: #dc3545;"></div>
+
+                                    <!-- Min handle -->
+                                    <input id="range-min-weight" type="range" min="0" max="10000" step="1" value="0" class="slider-thumb">
+                                    <input id="range-max-weight" type="range" min="0" max="10000" step="1" value="10000" class="slider-thumb">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LENGTH -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <!-- Expand/collapse section button -->
+                                <button id="length-filter-toggle" type="button"
+                                        aria-controls="length-filter-section-length"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Derinlik (cm)</span>
+                                    <span class="ml-6 flex items-center">
+                                        <!-- Expand icon (+) başta gizli -->
+                                        <svg id="length-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <!-- Collapse icon (−) başta görünüyor -->
+                                        <svg id="length-icon-collapse" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <div id="length-filter-section-length" class="pt-6 space-y-4">
+
+                                <!-- Min / Max input alanları -->
+                                <div class="flex items-center gap-4">
+                                    <div class="flex flex-col">
+                                        <input id="min-length" name="minLength" value="@Model?.Filter?.MinLength" type="number" value="" min="0" max="10000" placeholder="0 cm"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                    <span class="text-gray-500">–</span>
+                                    <div class="flex flex-col">
+                                        <input id="max-length" name="maxLength" value="@Model?.Filter?.MaxLength" type="number" value="" min="0" max="10000" placeholder="10000 cm"
+                                               class="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                                    </div>
+                                </div>
+
+                                <!-- Tek bar, iki handle -->
+                                <div class="relative h-8 flex items-center">
+                                    <!-- arka bar -->
+                                    <div class="absolute h-1 w-full bg-gray-200 rounded"></div>
+                                    <!-- seçili aralık -->
+                                    <div id="range-track-length" class="absolute h-1 rounded" style="background-color: #dc3545;"></div>
+
+                                    <!-- Min handle -->
+                                    <input id="range-min-length" type="range" min="0" max="10000" step="1" value="0" class="slider-thumb">
+                                    <input id="range-max-length" type="range" min="0" max="10000" step="1" value="10000" class="slider-thumb">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CATEGORY FILTER -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <button id="category-filter-toggle" type="button"
+                                        aria-controls="category-filter-section"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Kategori</span>
+                                    <span class="ml-6 flex items-center">
+                                        <svg id="category-icon-expand" class="size-5 hidden" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <svg id="category-icon-collapse" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <div id="category-filter-section" class="pt-6 space-y-4">
+                                @if (ViewBag.AllCategories is List<Category> categories)
+                                {
+                                    foreach (var cat in categories)
+                                    {
+                                        <div class="flex gap-3">
+                                            <div class="flex h-5 shrink-0 items-center">
+                                                <div class="group grid size-4 grid-cols-1">
+                                                    <input type="checkbox"
+                                                           name="SelectedCategoryIds"
+                                                           value="@cat.Id"
+                                                           class="col-start-1 row-start-1"
+                                                    @(Model?.Filter?.SelectedCategories?.Contains(cat.Id) == true ? "checked" : "") />
+                                                </div>
+                                            </div>
+                                            <label class="min-w-0 flex-1 text-gray-500">@cat.Name</label>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <!-- COLOR -->
+                        <div class="border-b border-gray-200 py-6">
+                            <h3 class="-my-3 flow-root">
+                                <!-- Expand/collapse section button -->
+                                <button id="color-filter-toggle" type="button"
+                                        aria-controls="color-filter-section-color"
+                                        aria-expanded="true"
+                                        class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
+                                    <span class="font-medium text-gray-900">Renk</span>
+                                    <span class="ml-6 flex items-center">
+                                        <!-- Expand icon (+) başta gizli -->
+                                        <svg id="color-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
+                                            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
+                                        </svg>
+                                        <!-- Collapse icon (−) başta görünüyor -->
+                                        <svg id="color-icon-collapse" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5">
+                                            <path d="M4 10a.75.75 0 0 1 .75-.75h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 10Z" clip-rule="evenodd" fill-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </button>
+                            </h3>
+
+                            <!-- Filter section, show/hide based on section state. -->
+                            <div id="color-filter-section-color" class="pt-6">
+                                <div class="space-y-6">
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-white" type="checkbox" name="SelectedColors" value="White" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("White") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-mobile-color-white" class="min-w-0 flex-1 text-gray-500">Beyaz</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-red" type="checkbox" name="SelectedColors" value="Red" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Red") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-mobile-color-red" class="min-w-0 flex-1 text-gray-500">Kırmızı</label>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-blue" type="checkbox" name="SelectedColors" value="Blue" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Blue") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-mobile-blue" class="min-w-0 flex-1 text-gray-500">Mavi</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-green" type="checkbox" name="SelectedColors" value="Green" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Green") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Yeşil</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-green" type="checkbox" name="SelectedColors" value="Yellow" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Yellow") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Sarı</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-green" type="checkbox" name="SelectedColors" value="Orange" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Orange") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Turuncu</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-purple" type="checkbox" name="SelectedColors" value="Purple" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Purple") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-purple" class="min-w-0 flex-1 text-gray-500">Mor</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-purple" type="checkbox" name="SelectedColors" value="Pink" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Pink") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-purple" class="min-w-0 flex-1 text-gray-500">Pembe</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-brown" type="checkbox" name="SelectedColors" value="Brown" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Brown") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-brown" class="min-w-0 flex-1 text-gray-500">Kahverengi</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-brown" type="checkbox" name="SelectedColors" value="Bronze" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Bronze") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-brown" class="min-w-0 flex-1 text-gray-500">Bronz</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-black" type="checkbox" name="SelectedColors" value="Gray" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Gray") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Gri</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-black" type="checkbox" name="SelectedColors" value="Silver" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Silver") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Gümüş</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-black" type="checkbox" name="SelectedColors" value="Black" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Black") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Siyah</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-black" type="checkbox" name="SelectedColors" value="Transparent" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("Transparent") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Şeffaf</label>
+                                    </div>
+
+                                    <div class="flex gap-3">
+                                        <div class="flex h-5 shrink-0 items-center">
+                                            <div class="group grid size-4 grid-cols-1">
+                                                <input id="filter-color-black" type="checkbox" name="SelectedColors" value="MultiColor" class="col-start-1 row-start-1"
+                                                @(Model?.Filter?.SelectedColors != null && Model.Filter.SelectedColors.Contains("MultiColor") ? "checked" : "") />
+                                                <svg viewBox="0 0 14 14" fill="none" class="pointer-events-none col-start-1 row-start-1 size-3.5 self-center justify-self-center stroke-white group-has-disabled:stroke-gray-950/25">
+                                                    <path d="M3 8L6 11L11 3.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-checked:opacity-100" />
+                                                    <path d="M3 7H11" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="opacity-0 group-has-indeterminate:opacity-100" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Birden Fazla Renk</label>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ARA BUTONU -->
+                        <div class="mt-6 flex gap-4">
+                            <button id="btnSearch"
+                                    type="submit"
+                                    class="w-1/2 rounded-md px-4 py-2 text-white font-medium"
+                                    style="background-color: #dc3545;">
+                                Ara
+                            </button>
+                            <a id="btnReset"
+                               href="@Url.Action("All")"
+                               class="w-1/2 text-center rounded-md px-4 py-2 text-white font-medium"
+                               style="background-color: #6c757d;">
+                                Sıfırla
+                            </a>
+
+                        </div>
+
+
+                    </form>
+
+                    <!-- Product grid -->
+                    <div class="lg:col-span-3">
+                        <div class="bg-white">
+                            <div class="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+                                <h2 class="sr-only">Products</h2>
+
+                                <div class="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
+                                    @if (Model != null && Model.Products.Any())
+                                    {
+                                        foreach (var product in Model.Products)
+                                        {
+                                            <div class="group block" style="background: whitesmoke; border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                                                <a asp-controller="Products" asp-action="View" asp-route-id="@product.Id" style="text-decoration: none;">
+                                                    <div class="aspect-[4/4] w-full overflow-hidden rounded-lg bg-gray-100 flex items-center justify-center">
+                                                        @{
+                                                            var image = product.Images?.FirstOrDefault();
+                                                            if (image != null)
+                                                            {
+                                                                <img src="@image.DataUri"
+                                                                     alt="@product.Title"
+                                                                     class="max-h-full max-w-full object-contain object-center group-hover:opacity-75" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <img src="/img/placeholder.jpg"
+                                                                     alt="@product.Title"
+                                                                     class="w-full object-cover object-center group-hover:opacity-75" />
+                                                            }
+                                                        }
+                                                    </div>
+                                                    <h3 class="mt-4 font-bold text-center text-gray-800 mb-2">@product.Title</h3>
+
+                                                    <div class="text-gray-800 font-medium min-h-[3.5rem] text-center">
+                                                        @if (product.DiscountRate > 0
+                                                       && product.DiscountStartAt.HasValue
+                                                       && product.DiscountEndAt.HasValue
+                                                       && DateTime.Now.Date >= product.DiscountStartAt.Value.Date
+                                                       && DateTime.Now.Date <= product.DiscountEndAt.Value.Date)
+                                                        {
+                                                            @(product.SalePriceWithDiscount.ToString("N2") + " ₺") <br />
+                                                            <span class="line-through text-gray-400 text-sm ml-1">@product.SalePrice.ToString("N2") ₺</span>
+                                                        }
+                                                        else if (product.SalePrice > 0)
+                                                        {
+                                                            @(product.SalePrice.ToString("N2") + " ₺")
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>&nbsp;</span>
+                                                        }
+                                                    </div>
+                                                </a>
+
+                                                <div class="flex justify-center mt-2 mb-2">
+                                                    <a href="https://wa.me/905397193054?text=@Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {product.Title} ürünü hakkında bilgi almak istiyorum.")"
+                                                       target="_blank" rel="noopener"
+                                                       class="w-full max-w-[160px] px-4 py-2 text-sm font-semibold text-white text-center rounded-md transition bg-green-600 hover:bg-green-700">
+                                                        <i class="fab fa-whatsapp"></i> Bilgi Al
+                                                    </a>
+                                                </div>
+                                                <div class="flex justify-center mt-2 mb-2">
+                                                    <button class="btnAddToCart w-full max-w-[160px] px-4 py-2 text-sm font-semibold text-white text-center rounded-md transition"
+                                                            data-product-id="@product.Id"
+                                                            style="background-color: #7b1fa2;">
+                                                        <i class="fas fa-shopping-cart me-1"></i> Sepete Ekle
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+
+                                @if (Model?.Products != null)
+                                {
+                                    <div class="text-sm text-gray-600 mb-2 mt-4 ml-4">
+                                        @Model.TotalRecords kayıt arasından @Model.Products.Count kayıt gösteriliyor
+                                    </div>
+                                }
+
+                                <div class="pagination-wrapper mt-3">
+                                    <div class="pagination-left">
+                                        <span>Sayfa başına kayıt sayısı:</span>
+                                        <select class="theme-input" onchange="changePageSize(this)">
+                                            @foreach (var size in new[] { 16, 32, 48, 64, 80, 96 })
+                                            {
+                                                <option value="@size"
+                                                        selected="@(size == Model.PageSize ? "selected" : null)">
+                                                    @size
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+
+                                    <div class="pagination-center product-pagination-center">
+                                        <ul class="pagination justify-content-center mt-3">
+                                            @if (startPage > 1)
+                                            {
+                                                <li class="page-item product-page-item">
+                                                    <a class="page-link product-page-item"
+                                                       href='@Url.Action("All", new { pageNumber = startPage - 1, pageSize = pageSize,
+                                                            sort = Model.Filter?.Sort,
+                                                            minPrice = Model.Filter?.MinPrice, maxPrice = Model.Filter?.MaxPrice,
+                                                            minWidth = Model.Filter?.MinWidth, maxWidth = Model.Filter?.MaxWidth,
+                                                            minHeight = Model.Filter?.MinHeight, maxHeight = Model.Filter?.MaxHeight,
+                                                            minWeight = Model.Filter?.MinWeight, maxWeight = Model.Filter?.MaxWeight,
+                                                            mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
+                                                            SelectedColors = Model.Filter?.SelectedColors,
+                                                            SelectedCategoryIds = Model.Filter?.SelectedCategories })'>
+                                                        «
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            @for (int p = startPage; p <= endPage; p++)
+                                            {
+                                                <li class="page-item @(p == currentPage ? "active" : "")">
+                                                    <a class="page-link"
+                                                       href='@Url.Action("All", new { pageNumber = p, pageSize = pageSize,
+                                                            sort = Model.Filter?.Sort,
+                                                            minPrice = Model.Filter?.MinPrice, maxPrice = Model.Filter?.MaxPrice,
+                                                            minWidth = Model.Filter?.MinWidth, maxWidth = Model.Filter?.MaxWidth,
+                                                            minHeight = Model.Filter?.MinHeight, maxHeight = Model.Filter?.MaxHeight,
+                                                            minWeight = Model.Filter?.MinWeight, maxWeight = Model.Filter?.MaxWeight,
+                                                            mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
+                                                            SelectedColors = Model.Filter?.SelectedColors,
+                                                            SelectedCategoryIds = Model.Filter?.SelectedCategories })'>
+                                                        @p
+                                                    </a>
+                                                </li>
+                                            }
+
+                                            @if (endPage < totalPages)
+                                            {
+                                                <li class="page-item">
+                                                    <a class="page-link"
+                                                       href='@Url.Action("All", new { pageNumber = endPage + 1, pageSize = pageSize,
+                                                            sort = Model.Filter?.Sort,
+                                                            minPrice = Model.Filter?.MinPrice, maxPrice = Model.Filter?.MaxPrice,
+                                                            minWidth = Model.Filter?.MinWidth, maxWidth = Model.Filter?.MaxWidth,
+                                                            minHeight = Model.Filter?.MinHeight, maxHeight = Model.Filter?.MaxHeight,
+                                                            minWeight = Model.Filter?.MinWeight, maxWeight = Model.Filter?.MaxWeight,
+                                                            mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
+                                                            SelectedColors = Model.Filter?.SelectedColors,
+                                                            SelectedCategoryIds = Model.Filter?.SelectedCategories })'>
+                                                        »
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div class="card" style="border-top-left-radius:0">
+    <div class="card-body">
+        <!-- Modal -->
+        <div class="modal fade" id="comingSoonModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Pek Yakında! 🚀</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                        <p>E-Ticaret modülümüz çok yakında hizmetinizde olacaktır.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    function changePageSize(select) {
+        const pageSize = select.value;
+        const url = new URL(window.location.href);
+        url.searchParams.set('pageNumber', '1');
+        url.searchParams.set('pageSize', pageSize);
+        window.location.href = url.toString();
+    }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function ()
+    {
+        //////////////////
+        // SLIDER HAREKETİ (PRICE)
+        const rangeMin = document.getElementById('range-min');
+        const rangeMax = document.getElementById('range-max');
+        const minInput = document.getElementById('min-price');
+        const maxInput = document.getElementById('max-price');
+        const track = document.getElementById('range-track');
+
+        const maxValue = 999999;
+
+        function updateTrack() {
+            const minVal = parseInt(rangeMin.value);
+            const maxVal = parseInt(rangeMax.value);
+
+            const left = (minVal / maxValue) * 100;
+            const right = 100 - (maxVal / maxValue) * 100;
+
+            track.style.left = left + '%';
+            track.style.right = right + '%';
+        }
+
+        rangeMin.addEventListener('input', () => {
+            if (parseInt(rangeMin.value) > parseInt(rangeMax.value)) {
+                rangeMin.value = rangeMax.value;
+            }
+            minInput.value = rangeMin.value;
+            updateTrack();
+        });
+
+        rangeMax.addEventListener('input', () => {
+            if (parseInt(rangeMax.value) < parseInt(rangeMin.value)) {
+                rangeMax.value = rangeMin.value;
+            }
+            maxInput.value = rangeMax.value;
+            updateTrack();
+        });
+
+        // input değişimi
+        minInput.addEventListener('change', () => {
+            if (parseInt(minInput.value) < 0) minInput.value = 0;
+            if (parseInt(minInput.value) > parseInt(rangeMax.value)) {
+                minInput.value = rangeMax.value;
+            }
+            rangeMin.value = minInput.value;
+            updateTrack();
+        });
+
+        maxInput.addEventListener('change', () => {
+            if (parseInt(maxInput.value) > maxValue) maxInput.value = maxValue;
+            if (parseInt(maxInput.value) < parseInt(rangeMin.value)) {
+                maxInput.value = rangeMin.value;
+            }
+            rangeMax.value = maxInput.value;
+            updateTrack();
+        });
+
+        //////////////////
+        // SLIDER HAREKETİ (WIDTH)
+        const rangeMinWidth = document.getElementById('range-min-width');
+        const rangeMaxWidth = document.getElementById('range-max-width');
+        const minInputWidth = document.getElementById('min-width');
+        const maxInputWidth = document.getElementById('max-width');
+        const trackWidth = document.getElementById('range-track-width');
+
+        const maxValueWidth = 10000;
+        function updateTrackWidth() {
+            const minVal = parseInt(rangeMinWidth.value);
+            const maxVal = parseInt(rangeMaxWidth.value);
+
+            const left = (minVal / maxValueWidth) * 100;
+            const right = 100 - (maxVal / maxValueWidth) * 100;
+
+            trackWidth.style.left = left + '%';
+            trackWidth.style.right = right + '%';
+        }
+
+        rangeMinWidth.addEventListener('input', () => {
+            if (parseInt(rangeMinWidth.value) > parseInt(rangeMaxWidth.value)) {
+                rangeMinWidth.value = rangeMaxWidth.value;
+            }
+            minInputWidth.value = rangeMinWidth.value;
+            updateTrackWidth();
+        });
+
+        rangeMaxWidth.addEventListener('input', () => {
+            if (parseInt(rangeMaxWidth.value) < parseInt(rangeMinWidth.value)) {
+                rangeMaxWidth.value = rangeMinWidth.value;
+            }
+            maxInputWidth.value = rangeMaxWidth.value;
+            updateTrackWidth();
+        });
+
+        // input değişimi
+        minInputWidth.addEventListener('change', () => {
+            if (parseInt(minInputWidth.value) < 0) minInputWidth.value = 0;
+            if (parseInt(minInputWidth.value) > parseInt(rangeMaxWidth.value)) {
+                minInputWidth.value = rangeMaxWidth.value;
+            }
+            rangeMinWidth.value = minInputWidth.value;
+            updateTrackWidth();
+        });
+        maxInputWidth.addEventListener('change', () => {
+            if (parseInt(maxInputWidth.value) > maxValueWidth) maxInputWidth.value = maxValueWidth;
+            if (parseInt(maxInputWidth.value) < parseInt(rangeMinWidth.value)) {
+                maxInputWidth.value = rangeMinWidth.value;
+            }
+            rangeMaxWidth.value = maxInputWidth.value;
+            updateTrackWidth();
+        });
+
+
+        //////////////////
+        // SLIDER HAREKETİ (HEIGHT)
+        const rangeMinHeight = document.getElementById('range-min-height');
+        const rangeMaxHeight = document.getElementById('range-max-height');
+        const minInputHeight = document.getElementById('min-height');
+        const maxInputHeight = document.getElementById('max-height');
+        const trackHeight = document.getElementById('range-track-height');
+
+        const maxValueHeight = 10000;
+
+        function updateTrackHeight() {
+            const minVal = parseInt(rangeMinHeight.value);
+            const maxVal = parseInt(rangeMaxHeight.value);
+
+            const left = (minVal / maxValueHeight) * 100;
+            const right = 100 - (maxVal / maxValueHeight) * 100;
+
+            trackHeight.style.left = left + '%';
+            trackHeight.style.right = right + '%';
+        }
+
+        rangeMinHeight.addEventListener('input', () => {
+            if (parseInt(rangeMinHeight.value) > parseInt(rangeMaxHeight.value)) {
+                rangeMinHeight.value = rangeMaxHeight.value;
+            }
+            minInputHeight.value = rangeMinHeight.value;
+            updateTrackHeight();
+        });
+
+        rangeMaxHeight.addEventListener('input', () => {
+            if (parseInt(rangeMaxHeight.value) < parseInt(rangeMinHeight.value)) {
+                rangeMaxHeight.value = rangeMinHeight.value;
+            }
+            maxInputHeight.value = rangeMaxHeight.value;
+            updateTrackHeight();
+        });
+
+        // input değişimi
+        minInputHeight.addEventListener('change', () => {
+            if (parseInt(minInputHeight.value) < 0) minInputHeight.value = 0;
+            if (parseInt(minInputHeight.value) > parseInt(rangeMaxHeight.value)) {
+                minInputHeight.value = rangeMaxHeight.value;
+            }
+            rangeMinHeight.value = minInputHeight.value;
+            updateTrackHeight();
+        });
+
+        maxInputHeight.addEventListener('change', () => {
+            if (parseInt(maxInputHeight.value) > maxValue) maxInputHeight.value = maxValueHeight;
+            if (parseInt(maxInputHeight.value) < parseInt(rangeMinHeight.value)) {
+                maxInputHeight.value = rangeMinHeight.value;
+            }
+            rangeMaxHeight.value = maxInputHeight.value;
+            updateTrackHeight();
+        });
+
+
+        //////////////////
+        // SLIDER HAREKETİ (WEIGHT)
+        const rangeMinWeight = document.getElementById('range-min-weight');
+        const rangeMaxWeight = document.getElementById('range-max-weight');
+        const minInputWeight = document.getElementById('min-weight');
+        const maxInputWeight = document.getElementById('max-weight');
+        const trackWeight = document.getElementById('range-track-weight');
+
+        const maxValueWeight = 10000;
+
+        function updateTrackWeight() {
+            const minVal = parseInt(rangeMinWeight.value);
+            const maxVal = parseInt(rangeMaxWeight.value);
+
+            const left = (minVal / maxValueWeight) * 100;
+            const right = 100 - (maxVal / maxValueWeight) * 100;
+
+            trackWeight.style.left = left + '%';
+            trackWeight.style.right = right + '%';
+        }
+
+        rangeMinWeight.addEventListener('input', () => {
+            if (parseInt(rangeMinWeight.value) > parseInt(rangeMaxWeight.value)) {
+                rangeMinWeight.value = rangeMaxWeight.value;
+            }
+            minInputWeight.value = rangeMinWeight.value;
+            updateTrackWeight();
+        });
+
+        rangeMaxWeight.addEventListener('input', () => {
+            if (parseInt(rangeMaxWeight.value) < parseInt(rangeMinWeight.value)) {
+                rangeMaxWeight.value = rangeMinWeight.value;
+            }
+            maxInputWeight.value = rangeMaxWeight.value;
+            updateTrackWeight();
+        });
+
+        // input değişimi
+        minInputWeight.addEventListener('change', () => {
+            if (parseInt(minInputWeight.value) < 0) minInputWeight.value = 0;
+            if (parseInt(minInputWeight.value) > parseInt(rangeMaxWeight.value)) {
+                minInputWeight.value = rangeMaxWeight.value;
+            }
+            rangeMinWeight.value = minInputWeight.value;
+            updateTrackWeight();
+        });
+
+        maxInputWeight.addEventListener('change', () => {
+            if (parseInt(maxInputWeight.value) > maxValue) maxInputWeight.value = maxValueWeight;
+            if (parseInt(maxInputWeight.value) < parseInt(rangeMinWeight.value)) {
+                maxInputWeight.value = rangeMinWeight.value;
+            }
+            rangeMaxWeight.value = maxInputWeight.value;
+            updateTrackWeight();
+        });
+
+        //////////////////
+        // SLIDER HAREKETİ (LENGTH)
+        const rangeMinLength = document.getElementById('range-min-length');
+        const rangeMaxLength = document.getElementById('range-max-length');
+        const minInputLength = document.getElementById('min-length');
+        const maxInputLength = document.getElementById('max-length');
+        const trackLength = document.getElementById('range-track-length');
+
+        const maxValueLength = 10000;
+        function updateTrackLength() {
+            const minVal = parseInt(rangeMinLength.value);
+            const maxVal = parseInt(rangeMaxLength.value);
+
+            const left = (minVal / maxValueLength) * 100;
+            const right = 100 - (maxVal / maxValueLength) * 100;
+
+            trackLength.style.left = left + '%';
+            trackLength.style.right = right + '%';
+        }
+
+        rangeMinLength.addEventListener('input', () => {
+            if (parseInt(rangeMinLength.value) > parseInt(rangeMaxLength.value)) {
+                rangeMinLength.value = rangeMaxLength.value;
+            }
+            minInputLength.value = rangeMinLength.value;
+            updateTrackLength();
+        });
+
+        rangeMaxLength.addEventListener('input', () => {
+            if (parseInt(rangeMaxLength.value) < parseInt(rangeMinLength.value)) {
+                rangeMaxLength.value = rangeMinLength.value;
+            }
+            maxInputLength.value = rangeMaxLength.value;
+            updateTrackLength();
+        });
+
+        // input değişimi
+        minInputLength.addEventListener('change', () => {
+            if (parseInt(minInputLength.value) < 0) minInputLength.value = 0;
+            if (parseInt(minInputLength.value) > parseInt(rangeMaxLength.value)) {
+                minInputLength.value = rangeMaxLength.value;
+            }
+            rangeMinLength.value = minInputLength.value;
+            updateTrackLength();
+        });
+
+        maxInputLength.addEventListener('change', () => {
+            if (parseInt(maxInputLength.value) > maxValue) maxInputLength.value = maxValueLength;
+            if (parseInt(maxInputLength.value) < parseInt(rangeMinLength.value)) {
+                maxInputLength.value = rangeMinLength.value;
+            }
+            rangeMaxLength.value = maxInputLength.value;
+            updateTrackLength();
+        });
+
+        ////////////////////////////*******////////////////////////////
+        ///////////// EXPAND - COLLAPSE SIDE FILTER PARTS //////////////
+
+        // ==> PRICE
+        const priceToggleBtn = document.getElementById('price-filter-toggle');
+        const priceSection = document.getElementById('price-filter-section-price');
+        const priceIconExpand = document.getElementById('price-icon-expand');
+        const priceIconCollapse = document.getElementById('price-icon-collapse');
+
+        priceToggleBtn.addEventListener('click', () => {
+            const isOpen = priceSection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                priceIconExpand.classList.remove('hidden');
+                priceIconCollapse.classList.add('hidden');
+                priceToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                priceIconExpand.classList.add('hidden');
+                priceIconCollapse.classList.remove('hidden');
+                priceToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // => WIDTH
+        const widthToggleBtn = document.getElementById('width-filter-toggle');
+        const widthSection = document.getElementById('width-filter-section-width');
+        const widthIconExpand = document.getElementById('width-icon-expand');
+        const widthIconCollapse = document.getElementById('width-icon-collapse');
+
+        widthToggleBtn.addEventListener('click', () => {
+            const isOpen = widthSection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                widthIconExpand.classList.remove('hidden');
+                widthIconCollapse.classList.add('hidden');
+                widthToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                widthIconExpand.classList.add('hidden');
+                widthIconCollapse.classList.remove('hidden');
+                widthToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // => HEIGHT
+        const heightToggleBtn = document.getElementById('height-filter-toggle');
+        const heightSection = document.getElementById('height-filter-section-height');
+        const heightIconExpand = document.getElementById('height-icon-expand');
+        const heightIconCollapse = document.getElementById('height-icon-collapse');
+
+        heightToggleBtn.addEventListener('click', () => {
+            const isOpen = heightSection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                heightIconExpand.classList.remove('hidden');
+                heightIconCollapse.classList.add('hidden');
+                heightToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                heightIconExpand.classList.add('hidden');
+                heightIconCollapse.classList.remove('hidden');
+                heightToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+
+        // => WEIGHT
+        const weightToggleBtn = document.getElementById('weight-filter-toggle');
+        const weightSection = document.getElementById('weight-filter-section-weight');
+        const weightIconExpand = document.getElementById('weight-icon-expand');
+        const weightIconCollapse = document.getElementById('weight-icon-collapse');
+
+        weightToggleBtn.addEventListener('click', () => {
+            const isOpen = weightSection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                weightIconExpand.classList.remove('hidden');
+                weightIconCollapse.classList.add('hidden');
+                weightToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                weightIconExpand.classList.add('hidden');
+                weightIconCollapse.classList.remove('hidden');
+                weightToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // => LENGTH
+        const lengthToggleBtn = document.getElementById('length-filter-toggle');
+        const lengthSection = document.getElementById('length-filter-section-length');
+        const lengthIconExpand = document.getElementById('length-icon-expand');
+        const lengthIconCollapse = document.getElementById('length-icon-collapse');
+
+        lengthToggleBtn.addEventListener('click', () => {
+            const isOpen = lengthSection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                lengthIconExpand.classList.remove('hidden');
+                lengthIconCollapse.classList.add('hidden');
+                lengthToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                lengthIconExpand.classList.add('hidden');
+                lengthIconCollapse.classList.remove('hidden');
+                lengthToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // => CATEGORY
+        const categoryToggleBtn = document.getElementById('category-filter-toggle');
+        const categorySection = document.getElementById('category-filter-section');
+        const categoryIconExpand = document.getElementById('category-icon-expand');
+        const categoryIconCollapse = document.getElementById('category-icon-collapse');
+
+        categoryToggleBtn.addEventListener('click', () => {
+            const isOpen = categorySection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                categoryIconExpand.classList.remove('hidden');
+                categoryIconCollapse.classList.add('hidden');
+                categoryToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                categoryIconExpand.classList.add('hidden');
+                categoryIconCollapse.classList.remove('hidden');
+                categoryToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        // => COLOR
+        const colorToggleBtn = document.getElementById('color-filter-toggle');
+        const colorSection = document.getElementById('color-filter-section-color');
+        const colorIconExpand = document.getElementById('color-icon-expand');
+        const colorIconCollapse = document.getElementById('color-icon-collapse');
+
+        colorToggleBtn.addEventListener('click', () => {
+            const isOpen = colorSection.classList.toggle('hidden'); // varsa kaldırır, yoksa ekler
+            if (isOpen) {
+                // kapalı durum
+                colorIconExpand.classList.remove('hidden');
+                colorIconCollapse.classList.add('hidden');
+                colorToggleBtn.setAttribute('aria-expanded', 'false');
+            } else {
+                // açık durum
+                colorIconExpand.classList.add('hidden');
+                colorIconCollapse.classList.remove('hidden');
+                colorToggleBtn.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        const filters =
+        [
+            {
+                sectionId: 'price-filter-section-price',
+                expandIconId: 'price-icon-expand',
+                collapseIconId: 'price-icon-collapse',
+                toggleButtonId: 'price-filter-toggle',
+                inputIds: ['min-price', 'max-price']
+            },
+            {
+                sectionId: 'width-filter-section-width',
+                expandIconId: 'width-icon-expand',
+                collapseIconId: 'width-icon-collapse',
+                toggleButtonId: 'width-filter-toggle',
+                inputIds: ['min-width', 'max-width']
+            },
+            {
+                sectionId: 'height-filter-section-height',
+                expandIconId: 'height-icon-expand',
+                collapseIconId: 'height-icon-collapse',
+                toggleButtonId: 'height-filter-toggle',
+                inputIds: ['min-height', 'max-height']
+            },
+            {
+                sectionId: 'weight-filter-section-weight',
+                expandIconId: 'weight-icon-expand',
+                collapseIconId: 'weight-icon-collapse',
+                toggleButtonId: 'weight-filter-toggle',
+                inputIds: ['min-weight', 'max-weight']
+            },
+            {
+                sectionId: 'length-filter-section-length',
+                expandIconId: 'length-icon-expand',
+                collapseIconId: 'length-icon-collapse',
+                toggleButtonId: 'length-filter-toggle',
+                inputIds: ['min-length', 'max-length']
+            },
+            {
+                sectionId: 'category-filter-section',
+                expandIconId: 'category-icon-expand',
+                collapseIconId: 'category-icon-collapse',
+                toggleButtonId: 'category-filter-toggle',
+                isCategoryFilter: true
+            },
+            {
+                sectionId: 'color-filter-section-color',
+                expandIconId: 'color-icon-expand',
+                collapseIconId: 'color-icon-collapse',
+                toggleButtonId: 'color-filter-toggle',
+                isColorFilter: true // özel kontrol
+            }
+        ];
+
+        filters.forEach(filter => {
+            let shouldBeOpen = false;
+
+            // 1. Eğer renk filtreleri ise checkboxlardan kontrol et
+            if (filter.isColorFilter || filter.isCategoryFilter) {
+                const checkboxes = document.querySelectorAll(`#${filter.sectionId} input[type="checkbox"]`);
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        shouldBeOpen = true;
+                    }
+                });
+            }
+            // 2. Diğer tüm numeric filtrelerde min/max input değerlerini kontrol et
+            else {
+                filter.inputIds.forEach(id => {
+                    const input = document.getElementById(id);
+                    if (input && input.value && input.value.trim() !== '' && parseInt(input.value) > 0) {
+                        shouldBeOpen = true;
+                    }
+                });
+            }
+
+            const section = document.getElementById(filter.sectionId);
+            const expandIcon = document.getElementById(filter.expandIconId);
+            const collapseIcon = document.getElementById(filter.collapseIconId);
+            const toggleButton = document.getElementById(filter.toggleButtonId);
+
+            if (shouldBeOpen) {
+                section.classList.remove('hidden');
+                expandIcon.classList.add('hidden');
+                collapseIcon.classList.remove('hidden');
+                toggleButton.setAttribute('aria-expanded', 'true');
+            } else {
+                section.classList.add('hidden');
+                expandIcon.classList.remove('hidden');
+                collapseIcon.classList.add('hidden');
+                toggleButton.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // ilk yüklemede
+        updateTrack();
+        updateTrackWidth();
+        updateTrackHeight();
+        updateTrackWeight();
+        updateTrackLength();
+
+
+        document.querySelectorAll(".btnAddToCart").forEach(function (btn) {
+            btn.addEventListener("click", function (e) {
+                e.preventDefault();
+
+                var productId = this.getAttribute("data-product-id");
+
+                fetch('/Cart/AddToCart', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'productId=' + encodeURIComponent(productId) + '&quantity=1'
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            toastr.success("Ürün sepete eklendi.");
+                            if (data.cartCount !== undefined) {
+                                document.getElementById("cartItemCount").textContent = data.cartCount;
+                            }
+                        } else {
+                            toastr.error("Sepete eklenirken hata oluştu.");
+                        }
+                    })
+                    .catch(() => toastr.error("Sunucu hatası oluştu."));
+            });
+        });
+
+    });
+</script>

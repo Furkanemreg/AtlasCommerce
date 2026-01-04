@@ -1,0 +1,337 @@
+﻿@using AtlasCommerce.Application.Interfaces
+@using AtlasCommerce.Application.ViewModels
+@using AtlasCommerce.Domain.Entities
+@using AtlasCommerce.UI.Helpers
+@model SaleProductVM
+@inject IBaseService<Category> _categoryService
+@{
+    Layout = "_Layout";
+    
+    var categoryName = Model?.Category?.Name;
+    if (string.IsNullOrEmpty(categoryName))
+    {
+        categoryName = (await _categoryService.GetByIdAsync(Model.CategoryId)).Name;
+    }
+
+    ViewData["Title"] = Model?.Title;
+}
+
+<style>
+    #btnAddProductToBag {
+        background-color: #dc3545 !important;
+    }
+
+    #btnAddProductToBag:hover {
+        background-color: #a32632 !important;
+    }
+
+    .swiper-button-next,
+    .swiper-button-prev {
+        color: #6b7280; /* text-gray-500 */
+    }
+
+    .swiper-button-next:hover,
+    .swiper-button-prev:hover {
+        color: #dc2626;
+    }
+
+    .swiper-pagination-bullet-active {
+        background-color: #dc2626 !important; /* Tailwind: red-600 */
+    }
+
+    .quantity-selector {
+        border-radius: 0.375rem;
+        background-color: #7b1fa2;
+        padding: 4px 10px;
+    }
+
+    .qty-btn {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        width: 32px;
+        height: 32px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .qty-input {
+        border: none;
+        height: 32px;
+    }
+
+    .qty-input:focus {
+        outline: none;
+    }
+
+    .swiper-slide {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 400px;
+        background-color: #f9fafb; /* soft background */
+    }
+
+    .swiper-wrapper {
+        align-items: center;
+    }
+</style>
+
+<div class="bg-white">
+    <div class="pt-6">
+
+        <!-- Breadcrumb -->
+        <nav aria-label="Breadcrumb" class="mt-2 mb-4">
+            <ol class="mx-auto flex max-w-2xl items-center space-x-2 px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+                <li>
+                    <div class="flex items-center">
+                        <a asp-controller="Categories" asp-action="View" asp-route-id="@Model?.CategoryId" class="mr-2 text-sm font-medium text-gray-900">@categoryName</a>
+                        <svg viewBox="0 0 16 20" width="16" height="20" fill="currentColor" aria-hidden="true" class="h-5 w-4 text-gray-300">
+                            <path d="M5.697 4.34L8.98 16.532h1.327L7.025 4.341H5.697z" />
+                        </svg>
+                    </div>
+                </li>
+                <li class="text-sm">
+                    <a href="#" aria-current="page" class="font-medium text-gray-500 hover:text-gray-600">@Model?.Title</a>
+                </li>
+            </ol>
+        </nav>
+
+        @if (Model?.Images != null && Model.Images.Any())
+        {
+            <div class="swiper mySwiper rounded-lg overflow-hidden mx-auto w-full max-w-4xl">
+                <div class="swiper-wrapper">
+                    @foreach (var image in Model.Images)
+                    {
+                        <div class="swiper-slide">
+                            <img src="@image.DataUri"
+                                 alt="@Model?.Title"
+                                 class="h-full max-h-[400px] w-auto object-contain object-center mx-auto" />
+                        </div>
+                    }
+                </div>
+
+                <div class="swiper-button-next"></div>
+
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div>
+            </div>
+        }
+        else
+        {
+            <div class="swiper-slide">
+                <img src="/img/placeholder.jpg"
+                     alt="Görsel bulunamadı"
+                     class="h-full max-h-[400px] w-auto object-contain object-center mx-auto" />
+            </div>
+        }
+        <!-- İki sütun: Açıklama ve Sağ taraf -->
+        <div class="mx-auto max-w-7xl px-4 pt-10 pb-16 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-x-8 lg:px-8 lg:pt-12 lg:pb-24">
+
+            <!-- Sol: Başlık ve açıklamalar -->
+            <div>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">@Model?.Title</h1>
+                <p class="mt-2 text-sm text-gray-600">@Model?.ShortDescription</p>
+
+                <div class="mt-6">
+                    <h2 class="text-sm font-bold text-gray-900">Açıklama</h2>
+                    <p class="mt-2 text-base text-gray-600">@Model?.Description</p>
+                </div>
+            </div>
+
+            <!-- Sağ: Fiyat, özellikler, butonlar -->
+            <div class="flex flex-col mt-10 lg:mt-0">
+
+                <!-- Fiyat -->
+                <div>
+                    @if (Model?.DiscountRate > 0 && Model.DiscountStartAt <= DateTime.Now && Model.DiscountEndAt >= DateTime.Now)
+                    {
+                        <p class="text-3xl tracking-tight text-green-600">
+                            @Model?.SalePriceWithDiscount.ToString("N2") ₺
+                            <span class="line-through text-gray-400 text-sm ml-2">@Model?.SalePrice.ToString("N2") ₺</span>
+                        </p>
+                    }
+                    else
+                    {
+                        @if (Model?.SalePrice > 0)
+                        {
+                            <p class="text-3xl tracking-tight text-gray-900">@Model?.SalePrice.ToString("N2") ₺</p>
+                        }
+                        else
+                        {
+                            <p class="text-3xl tracking-tight text-gray-900">&nbsp;</p>
+                        }
+                    }
+                </div>
+
+                <!-- Özellikler -->
+                <div class="mt-4 space-y-3">
+
+                    <!-- Renk -->
+                    <fieldset>
+                        <label class="group relative flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-4 py-3">
+                            <span class="text-sm font-medium text-gray-900">Renk</span>
+                            <input type="radio" disabled class="absolute inset-0 appearance-none focus:outline-none disabled:cursor-not-allowed" />
+                            <span class="text-sm font-medium text-gray-700 group-has-checked:text-white">
+                                <div class="flex items-center gap-x-3">
+                                    @{
+                                        var colorValue = (enmColors)Model?.Color;
+                                        var colorClass = colorValue switch
+                                        {
+                                            enmColors.White => "bg-white border",
+                                            enmColors.Red => "bg-red-600",
+                                            enmColors.Blue => "bg-blue-600",
+                                            enmColors.Green => "bg-green-600",
+                                            enmColors.Yellow => "bg-yellow-400",
+                                            enmColors.Orange => "bg-orange-500",
+                                            enmColors.Purple => "bg-purple-600",
+                                            enmColors.Pink => "bg-pink-400",
+                                            enmColors.Brown => "bg-amber-800",
+                                            enmColors.Black => "bg-black",
+                                            enmColors.Gray => "bg-gray-400",
+                                            enmColors.Silver => "bg-slate-300",
+                                            enmColors.Bronze => "bg-yellow-800",
+                                            enmColors.Transparent => "bg-transparent border border-gray-300",
+                                            enmColors.MultiColor => "bg-gradient-to-r from-blue-500 via-yellow-500 to-green-500",
+                                            _ => "bg-gray-200"
+                                        };
+                                    }
+                                    <div class="flex rounded-full outline outline-1 outline-gray-300">
+                                        <div class="size-8 rounded-full @colorClass border border-gray-400"></div>
+                                    </div>
+                                    <span class="text-sm text-gray-700">@EnumHelper.GetEnumDescription(colorValue)</span>
+                                </div>
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    <!-- Diğer Özellikler -->
+                    @foreach (var item in new[] {
+                        new {
+                            Label = "Ağırlık",
+                            Value = Model.Weight < 1
+                                ? $"{(Model.Weight * 1000):N0} gr"
+                                : $"{Model.Weight:N2} kg"
+                        },
+                        new { Label = "Yükseklik", Value = $"{Model.Height:N2} cm" },
+                        new { Label = "Genişlik", Value = $"{Model.Width:N2} cm" },
+                        new { Label = "Derinlik", Value = $"{Model.Lenght:N2} cm" },
+                        })
+                    {
+                        <fieldset>
+                            <label class="group relative flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-4 py-3">
+                                <span class="text-sm font-medium text-gray-900">@item.Label</span>
+                                <input type="radio" disabled class="absolute inset-0 appearance-none focus:outline-none disabled:cursor-not-allowed" />
+                                <span class="text-sm font-medium text-gray-700 group-has-checked:text-white">@item.Value</span>
+                            </label>
+                        </fieldset>
+                    }
+                </div>
+
+                <div class="mt-6 space-y-4">
+                    <!-- Bilgi Al -->
+                    <a href="https://wa.me/905397193054?text=@Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {Model.Title} ürünü hakkında bilgi almak istiyorum.")"
+                       target="_blank" rel="noopener"
+                       class="flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-hidden bg-green-600 hover:bg-green-700">
+                        <i class="fab fa-whatsapp me-2"></i> Bilgi Al
+                    </a>
+
+                    <div class="flex w-full gap-4">
+                        <!-- Quantity Selector -->
+                        <div class="quantity-selector flex items-center justify-center gap-2 bg-purple-700 rounded-full px-3 py-1" style="width: 210px;">
+                            <button type="button" class="qty-btn text-white" onclick="decrementQty('@Model.Id')">−</button>
+                            <input type="number" id="qty-@Model.Id" value="1" min="1"
+                                   class="qty-input w-12 text-center rounded text-purple-700" style="background: #7b1fa2; color: #fff;" />
+                            <button type="button" class="qty-btn text-white" onclick="incrementQty('@Model.Id')">+</button>
+                        </div>
+
+                        <!-- Add To Bag -->
+                        <button id="btnAddProductToBag" type="button"
+                                class="flex-1 flex items-center justify-center rounded-md border border-transparent px-6 py-3 text-sm font-medium text-white bg-red-600 hover:bg-red-700"
+                                onclick="addToCart('@Model.Id')">
+                            <i class="fas fa-shopping-cart me-2"></i> Sepete Ekle
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="border-top-left-radius:0">
+    <div class="card-body">
+        <!-- Modal -->
+        <div class="modal fade" id="comingSoonModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Pek Yakında! 🚀</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                        <p>E-Ticaret modülümüz çok yakında hizmetinizde olacaktır.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        const swiper = new Swiper('.mySwiper', {
+            loop: true,
+            spaceBetween: 10,
+            centeredSlides: true,
+            speed: 800,
+            autoplay: {
+                delay: 4000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+        });
+    </script>
+    <script>
+        function incrementQty(id) {
+            const input = document.getElementById(`qty-${id}`);
+            let value = parseInt(input.value) || 1;
+            input.value = value + 1;
+        }
+
+        function decrementQty(id) {
+            const input = document.getElementById(`qty-${id}`);
+            let value = parseInt(input.value) || 1;
+            if (value > 1) {
+                input.value = value - 1;
+            }
+        }
+    </script>
+
+    <script>
+        function addToCart(productId) {
+            const qtyInput = document.getElementById(`qty-${productId}`);
+            const quantity = parseInt(qtyInput.value) || 1;
+
+            $.ajax({
+                url: '/Cart/AddToCart',
+                type: 'POST',
+                data: { productId: productId, quantity: quantity },
+                success: function (res) {
+                    if (res.success) {
+                        $('#cartItemCount').text(res.cartCount);
+                        toastr.success('Ürünler sepete eklendi.');
+                    }
+                }
+            });
+        }
+    </script>
+}

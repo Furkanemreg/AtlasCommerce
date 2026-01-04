@@ -1,0 +1,107 @@
+﻿@using AtlasCommerce.Application.ViewModels
+
+@model LoginVM
+
+@{
+    ViewData["Title"] = "Yönetici Girişi - " + Model?.Settings?.BrandName;
+    Layout = "_LoginLayout";
+}
+
+<div class="flex flex-col justify-center min-h-screen py-12 bg-gray-50 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="mt-6 flex justify-center">
+            <img src="@Model?.Settings?.LogoPath" style="width: 200px;" />
+        </div>
+    </div>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+            <form asp-controller="Account" asp-action="Login" method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div>
+                    <label asp-for="UserName" class="block text-sm font-medium theme-label">
+                        Kullanıcı Adı
+                    </label>
+
+                    <div class="mt-2 relative">
+                        <input asp-for="UserName" name="Username" placeholder="Kullanıcı Adı" autofocus="" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base pr-10 sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <label asp-for="Password" class="block text-sm font-medium theme-label">
+                        Şifre
+                    </label>
+
+                    @* <div class="mt-1 rounded-md shadow-sm">
+                        <input asp-for="Password" type="password" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 primary-outline transition duration-150 ease-in-out sm:text-sm sm:leading-5 ">
+                    </div> *@
+
+                    <div class="mt-2 relative">
+                        <input id="passwordInput" asp-for="Password" type="password" placeholder="Şifre" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base pr-10 sm:text-sm" />
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500" tabindex="-1">
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+
+                    <div class="text-sm leading-5">
+                        <a href="#" class="forget-password font-medium focus:outline-none focus:underline transition ease-in-out duration-150">
+                            Şifremi Unuttum
+                        </a>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between mt-6">
+                    <div class="flex items-center">
+                        <label for="rememberMe" class="flex items-center cursor-pointer">
+                            <!-- Küçük Toggle -->
+                            <div class="relative">
+                                <input id="rememberMe" asp-for="RememberMe" type="checkbox" class="sr-only peer">
+                                <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-indigo-500 rounded-full peer peer-checked:bg-indigo-600 transition"></div>
+                                <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white border rounded-full shadow-md peer-checked:translate-x-4 transform transition"></div>
+                            </div>
+                            <!-- Label -->
+                            <span class="ml-2 text-sm text-gray-900">Beni Hatırla</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="text-center my-3">
+                    <div class="text-danger" asp-validation-summary="All"></div>
+                </div>
+
+                <div class="mt-6">
+                    <span class="block w-full rounded-md shadow-sm">
+                        <button type="submit" class="primary-btn flex justify-center w-full px-4 py-2 text-sm font-medium border border-transparent rounded-md focus:outline-none transition duration-150 ease-in-out">
+                            Giriş Yap
+                        </button>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleButton = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        toggleButton.addEventListener('click', function () {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+
+            // İsteğe bağlı: ikon rengi değiştir
+            eyeIcon.classList.toggle('text-gray-500', !isPassword);
+            eyeIcon.classList.toggle('text-gray-800', isPassword);
+        });
+    });
+</script>

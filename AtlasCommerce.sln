@@ -3,7 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCommerce", "AtlasCommerce\AtlasCommerce.csproj", "{11A9CDAC-25D0-47A8-9B85-50E4F91D85E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AtlasCommerce", "AtlasCommerce\AtlasCommerce.csproj", "{11A9CDAC-25D0-47A8-9B85-50E4F91D85E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F3184E9B-354B-4F78-9D9B-4A4D472DF4E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{11E90CEA-D3DA-473A-AA7F-17B50F872C9B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{95306D21-1D48-41D0-B616-2490A20B12FD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{8C531533-F6C7-4CAF-BCAD-CC8F50EB6AC5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCommerce.Application", "AtlasCommerce.Application\AtlasCommerce.Application.csproj", "{CE06E8FE-8432-4E3F-A7CC-6D220833D01C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCommerce.Domain", "AtlasCommerce.Domain\AtlasCommerce.Domain.csproj", "{1DEA62AB-B57F-4E76-9526-D30ED13070F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasCommerce.Persistance", "AtlasCommerce.Persistance\AtlasCommerce.Persistance.csproj", "{02B39621-B1C0-4829-AF42-81DC298356E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +29,30 @@ Global
 		{11A9CDAC-25D0-47A8-9B85-50E4F91D85E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{11A9CDAC-25D0-47A8-9B85-50E4F91D85E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{11A9CDAC-25D0-47A8-9B85-50E4F91D85E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE06E8FE-8432-4E3F-A7CC-6D220833D01C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE06E8FE-8432-4E3F-A7CC-6D220833D01C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE06E8FE-8432-4E3F-A7CC-6D220833D01C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE06E8FE-8432-4E3F-A7CC-6D220833D01C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DEA62AB-B57F-4E76-9526-D30ED13070F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DEA62AB-B57F-4E76-9526-D30ED13070F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DEA62AB-B57F-4E76-9526-D30ED13070F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DEA62AB-B57F-4E76-9526-D30ED13070F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02B39621-B1C0-4829-AF42-81DC298356E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02B39621-B1C0-4829-AF42-81DC298356E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02B39621-B1C0-4829-AF42-81DC298356E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02B39621-B1C0-4829-AF42-81DC298356E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{11A9CDAC-25D0-47A8-9B85-50E4F91D85E8} = {8C531533-F6C7-4CAF-BCAD-CC8F50EB6AC5}
+		{11E90CEA-D3DA-473A-AA7F-17B50F872C9B} = {F3184E9B-354B-4F78-9D9B-4A4D472DF4E3}
+		{95306D21-1D48-41D0-B616-2490A20B12FD} = {F3184E9B-354B-4F78-9D9B-4A4D472DF4E3}
+		{8C531533-F6C7-4CAF-BCAD-CC8F50EB6AC5} = {F3184E9B-354B-4F78-9D9B-4A4D472DF4E3}
+		{CE06E8FE-8432-4E3F-A7CC-6D220833D01C} = {11E90CEA-D3DA-473A-AA7F-17B50F872C9B}
+		{1DEA62AB-B57F-4E76-9526-D30ED13070F8} = {11E90CEA-D3DA-473A-AA7F-17B50F872C9B}
+		{02B39621-B1C0-4829-AF42-81DC298356E1} = {95306D21-1D48-41D0-B616-2490A20B12FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {761752C3-C72C-4475-9D8B-52DFD3DD9D8F}

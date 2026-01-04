@@ -1,0 +1,220 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    ViewData["Title"] = $"Yönetim Paneli - {Model?.Settings?.BrandName}";
+    Layout = "_Layout";
+}
+
+@model DashboardVM
+
+<!-- MAIN -->
+<main>
+    <div class="head-title">
+        <div class="left">
+            <h1>Yönetim Paneli</h1>
+            <ul class="breadcrumb">
+                @* <li>
+					<a href="#">Dashboard</a>
+				</li>
+				<li><i class='bx bx-chevron-right'></i></li>
+				<li>
+					<a class="active" href="#">Home</a>
+				</li> *@
+            </ul>
+        </div>
+        @* <a href="#" class="btn-download">
+			<i class='bx bxs-cloud-download'></i>
+			<span class="text">Download PDF</span>
+		</a> *@
+    </div>
+
+    <ul class="box-info">
+        <li>
+            <i class='bx bxs-calendar-check'></i>
+            <span class="text">
+                <h3>0</h3> @* Modelden Gelecek *@
+                <p>Toplam Sipariş</p>
+            </span>
+        </li>
+        <li>
+            <i class='bx  bx-basket'></i>
+            <span class="text">
+                <h3>@Model.TotalProductCount</h3> @* Modelden Gelecek *@
+                <p>Toplam Ürün</p>
+            </span>
+        </li>
+        <li>
+            <i class='bx bxs-dollar-circle'></i>
+            <span class="text">
+                <h3>0.00 ₺</h3> @* Modelden Gelecek *@
+                <p>Toplam Satış</p>
+            </span>
+        </li>
+    </ul>
+
+
+    <div class="table-data">
+        <div class="order">
+            <div class="head">
+                <h3>Son Siparişler</h3>
+                <i class='bx bx-search'></i>
+                <i class='bx bx-filter'></i>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kullanıcı</th>
+                        <th>Sipariş Tarihi</th>
+                        <th>Durum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @* <tr>
+						<td>
+							<img src="img/people.png">
+							<p>John Doe</p>
+						</td>
+						<td>01-10-2021</td>
+						<td><span class="status completed">Completed</span></td>
+					</tr>
+					<tr>
+						<td>
+							<img src="img/people.png">
+							<p>John Doe</p>
+						</td>
+						<td>01-10-2021</td>
+						<td><span class="status pending">Pending</span></td>
+					</tr>
+					<tr>
+						<td>
+							<img src="img/people.png">
+							<p>John Doe</p>
+						</td>
+						<td>01-10-2021</td>
+						<td><span class="status process">Process</span></td>
+					</tr>
+					<tr>
+						<td>
+							<img src="img/people.png">
+							<p>John Doe</p>
+						</td>
+						<td>01-10-2021</td>
+						<td><span class="status canceled">Canceled</span></td>
+					</tr>
+					<tr>
+						<td>
+							<img src="img/people.png">
+							<p>John Doe</p>
+						</td>
+						<td>01-10-2021</td>
+						<td><span class="status completed">Completed</span></td>
+					</tr> *@
+                </tbody>
+            </table>
+        </div>
+        <div class="todo">
+            <div class="head">
+                <h3>Mesajlar</h3>
+                @* <i class='bx bx-search'></i> *@
+            </div>
+            <ul class="todo-list">
+                @if (Model.DashboardMessages != null && Model.DashboardMessages.Count > 0)
+                {
+                    @foreach (var message in Model.DashboardMessages)
+                    {
+                        @if (message.IsRead != true)
+                        {
+                            <li class="not-completed">
+                                <p>@message.FirstName @message.LastName - @message.Topic</p>
+                                <a href="#" class="btnViewMessage" data-id="@message.MessageId">
+                                    <i class='bx bx-show' style="cursor: pointer;color: var(--dark);"></i>
+                                </a>
+                                @* <a asp-controller="Message" asp-action="View" asp-route-id="@message.MessageId">
+									<i class='bx bx-show' style="cursor: pointer;color: var(--dark);"></i>
+								</a> *@
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="completed">
+                                <p>@message.FirstName @message.LastName - @message.Topic</p>
+                                <a href="#" class="btnViewMessage" data-id="@message.MessageId">
+                                    <i class='bx bx-show'></i>
+                                </a>
+                            </li>
+                        }
+                    }
+                }
+                else
+                {
+                    <li class="empty-message">
+                        <div style="text-align: center; padding: 20px; color: #888;">
+                            <i class='bx bx-message-square-x' style="font-size: 2rem;"></i>
+                            <p style="margin-top: 10px;">Hiç mesaj bulunamadı.</p>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <div class="view-all-messages" style="margin-top: 15px; text-align: center;">
+                <a asp-area="Admin" asp-controller="Message" asp-action="Index" class=" btn primary-btn">
+                    Tümünü Görüntüle
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #337ab7; color: white;">
+                <h5 class="modal-title" id="messageModalLabel">Mesaj Detayı</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Ad Soyad:</strong> <span id="modalFullName" style="word-break: break-word;"></span></p>
+                <p><strong>Email Adresi:</strong> <span id="modalEmailAddress" style="word-break: break-word;"></span></p>
+                <p><strong>Mesaj Tarihi:</strong> <span id="modalMessageDate" style="word-break: break-word;"></span></p>
+                <p><strong>Konu:</strong> <span id="modalTopic" style="word-break: break-word;"></span></p>
+                <p style="margin-bottom: 0;"><strong>Mesaj:</strong> <span id="modalContent" style="white-space: pre-wrap; word-break: break-word;"></span></p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const messageModalEl = document.getElementById("messageModal");
+        const messageModal = new bootstrap.Modal(messageModalEl);
+
+        document.querySelectorAll(".btnViewMessage").forEach(el => {
+            el.addEventListener("click", async function (e) {
+                e.preventDefault();
+                const id = this.getAttribute("data-id");
+
+				try {
+					const response = await fetch(`/Message/ViewMessage?id=${id}`);
+					if (!response.ok) throw new Error("Mesaj yüklenemedi.");
+
+                    const data = await response.json();
+
+                    document.getElementById("modalFullName").textContent = `${data.name} ${data.surname}`;
+                    document.getElementById("modalEmailAddress").textContent = data.emailaddress;
+                    document.getElementById("modalMessageDate").textContent = data.messagedate;
+                    document.getElementById("modalTopic").textContent = data.topic;
+                    document.getElementById("modalContent").textContent = data.message;
+
+                    messageModal.show();
+
+                } catch (error) {
+                    alert("Hata: " + error.message);
+                }
+            });
+        });
+    });
+</script>
