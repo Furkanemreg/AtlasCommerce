@@ -1,0 +1,353 @@
+﻿@using AtlasCommerce.Application.ViewModels
+
+@{
+    ViewData["Title"] = Model?.Settings?.BrandName;
+}
+@model PageVM
+
+<!-- Kampanya Slayt Gösterisi -->
+@* <div class="container-campaign">
+    <div id="campaignCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#campaignCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
+            <button type="button" data-bs-target="#campaignCarousel" data-bs-slide-to="1"></button>
+            <button type="button" data-bs-target="#campaignCarousel" data-bs-slide-to="2"></button>
+        </div>
+
+
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="carousel-card">
+                    <a asp-controller="Home" asp-action="Services">
+                        <img src="~/img/banner-1.jpeg" class="carousel-img">
+
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5></h5>
+                            <p></p>
+                        </div>
+
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="carousel-card">
+                    <a asp-controller="Home" asp-action="Services">
+                        <img src="~/img/banner-2.jpeg" class="carousel-img">
+
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5></h5>
+                            <p></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="d-flex justify-content-center align-items-center h-100">
+                <div class="carousel-card">
+                    <a asp-controller="Home" asp-action="Services">
+                        <img src="~/img/banner-4.jpeg" class="carousel-img">
+                        <div class="carousel-caption d-none d-md-block">
+                            <h5></h5>
+                            <p></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#campaignCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon icon-white-prev"></span>
+            <span class="visually-hidden">Önceki</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#campaignCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon icon-white-next"></span>
+            <span class="visually-hidden">Sonraki</span>
+        </button>
+    </div>
+</div>
+</div> *@
+
+@if (Model?.Banners != null && Model.Banners.Any())
+{
+    <div class="container-campaign">
+        <div id="campaignCarousel" class="carousel slide" data-bs-ride="carousel">
+
+            <!-- Göstergeler (indikatorler) -->
+            <div class="carousel-indicators">
+                @for (int i = 0; i < Model.Banners.Count; i++)
+                {
+                    <button type="button"
+                            data-bs-target="#campaignCarousel"
+                            data-bs-slide-to="@i"
+                            class="@(i == 0 ? "active" : "")"
+                            aria-current="@(i == 0 ? "true" : "false")"></button>
+                }
+            </div>
+
+            <!-- Slaytlar -->
+            <div class="carousel-inner">
+                @{
+                    var index = 0;
+                }
+                @foreach (var banner in Model.Banners)
+                {
+                    <div class="carousel-item @(index == 0 ? "active" : "")">
+                        <div class="d-flex justify-content-center align-items-center h-100">
+                            <div class="carousel-card">
+                                <a asp-controller="Home" asp-action="Services">
+                                    <img src="@Url.Content(string.IsNullOrEmpty(banner.ImagePath) ? "~/img/placeholder.jpg" : banner.ImagePath)"
+                                         class="carousel-img"
+                                         alt="@banner.Title" />
+                                    <div class="carousel-caption">
+                                        <h5>@banner.Title</h5>
+                                        <p>@banner.Text</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    index++;
+                }
+            </div>
+
+            <!-- Kontroller -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#campaignCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon icon-white-prev"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#campaignCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon icon-white-next"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+}
+
+
+<!-- Seçili Ürünler bölümü -->
+@if (Model?.SelectedProducts != null && Model.SelectedProducts.Any())
+{
+        <section class="home-products">
+            <h2 class="products-title">FEATURED PRODUCTS</h2>
+
+        @{
+            var groupedSelected = Model.SelectedProducts
+                .Select((p, i) => new { p, i })
+                .GroupBy(x => x.i / 4)
+                .ToList();
+
+            var selectedCarouselId = "selectedProductsCarousel";
+            var selectedSlideIndex = 0;
+        }
+
+            <div id="@selectedCarouselId" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                @foreach (var slide in groupedSelected)
+                {
+                            <div class="carousel-item @(selectedSlideIndex == 0 ? "active" : "")">
+                                <div class="products-wrapper">
+                            @foreach (var item in slide)
+                            {
+                                            <a asp-controller="Products" asp-action="View" asp-route-id="@item.p.Id" style="text-decoration: none;">
+                                                <div class="product-box">
+                                                @if (item.p.Images != null && item.p.Images.Any())
+                                                {
+                                                    <img src="@item.p.Images.First().DataUri" alt="@item.p.Title" />
+                                                }
+                                                else
+                                                {
+                                                    <img src="/img/placeholder.jpg" alt="@item.p.Title" />
+                                                }
+
+                                          <h4>@item.p.Title</h4>
+
+                                          <div class="text-blue-400 font-semibold min-h-[3.5rem] text-center">
+                                          @if (item.p.DiscountRate > 0
+                                                && item.p.DiscountStartAt.HasValue
+                                                && item.p.DiscountEndAt.HasValue
+                                                && DateTime.Now.Date >= item.p.DiscountStartAt.Value.Date
+                                                && DateTime.Now.Date <= item.p.DiscountEndAt.Value.Date)
+                                            {
+                                                @(item.p.SalePriceWithDiscount.ToString("N2") + "₺") <br />
+                                                                <span class="line-through text-gray-400 text-sm ml-1">@item.p.SalePrice.ToString("N2") ₺</span>
+                                            }
+                                            else if (item.p.SalePrice > 0)
+                                            {
+                                                @(item.p.SalePrice.ToString("N2") + "₺")
+                                            }
+                                            else
+                                            {
+                                                                <span>&nbsp;</span>
+                                            }
+                                                    </div>
+                                                </div>
+                                            </a>
+                            }
+                                </div>
+                            </div>
+                    selectedSlideIndex++;
+                }
+                </div>
+
+                <button class="carousel-control-prev" type="button" data-bs-target="#@selectedCarouselId" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                    <span class="visually-hidden">Önceki</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#@selectedCarouselId" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                    <span class="visually-hidden">Sonraki</span>
+                </button>
+            </div>
+
+            <div class="products-footer mt-4">
+                <a asp-controller="Products" asp-action="All" class="view-all-btn">View All</a>
+            </div>
+        </section>
+}
+
+
+<!-- Body => Kategoriler Alanı -->
+<section class="home-categories">
+    <h2 class="categories-title">TOP CATEGORIES</h2>
+
+    <div class="categories-wrapper">
+        @foreach (var category in Model.DropdownCategories ?? Enumerable.Empty<DropdownCategoryVM>())
+        {
+                <a style="text-decoration: none;" class="a-category-box"
+                   asp-controller="Categories" asp-action="View" asp-route-id="@category.Id">
+                    <div class="category-box">
+                    @if (!string.IsNullOrEmpty(category.ImageDataUri))
+                    {
+                                <img src="@category.ImageDataUri" class="card-img-top" alt="@category.Name" style="height:200px; object-fit:cover;">
+                    }
+                    else
+                    {
+                                <img src="~/img/placeholder.jpg" class="card-img-top" alt="@category.Name" style="height:200px; object-fit:cover;">
+                    }
+                        <h3>@category.Name</h3>
+                    </div>
+                </a>
+        }
+    </div>
+
+    <div class="categories-footer">
+        <a asp-controller="Categories" asp-action="Index" class="view-all-btn">View All</a>
+    </div>
+</section>
+
+<section class="showcase-section">
+    @if (Model.CategoryWithProducts != null && Model.CategoryWithProducts.Any())
+    {
+        var catIndex = 0;
+        foreach (var category in Model.CategoryWithProducts)
+        {
+            var carouselId = $"carouselCategory{catIndex}";
+                    <div class="showcase-block">
+                        <!-- Başlık ve Tümünü Görüntüle -->
+                        <div class="showcase-header">
+                            <h3 class="showcase-category-title">@category.Name</h3>
+                    <a asp-controller="Categories" asp-action="View" asp-route-id="@category.Id" class="view-all-btn-topright">View All</a>
+                        </div>
+
+                        <div id="@carouselId" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                        @{
+                            var grouped = category.Products
+                            .Select((p, i) => new { p, i })
+                            .GroupBy(x => x.i / 4) // her slaytta 4 ürün
+                            .ToList();
+
+                            var slideIndex = 0;
+                        }
+                        @foreach (var slide in grouped)
+                        {
+                                        <div class="carousel-item @(slideIndex == 0 ? "active" : "")">
+                                            <div class="products-wrapper">
+                                    @foreach (var item in slide)
+                                    {                     
+                                                        <a asp-controller="Products" asp-action="View" asp-route-id="@item.p.Id" style="text-decoration: none;">
+                                                            <div class="product-box">
+                                                @if (item.p.Images != null && item.p.Images.Any())
+                                                {
+                                                                        <img src="@item.p.Images.First().DataUri" alt="@item.p.Title" />
+                                                }
+                                                else if (!string.IsNullOrEmpty(category.ImageDataUri))
+                                                {
+                                                                        <img src="@category.ImageDataUri" alt="@item.p.Title" />
+                                                }
+                                                else
+                                                {
+                                                                        <img src="~/img/placeholder.jpg" alt="@item.p.Title" />
+                                                }
+                                                                <h4>@item.p.Title</h4>
+
+                                                @* @if (item.p.DiscountRate > 0
+                                                   && item.p.DiscountStartAt.HasValue
+                                                   && item.p.DiscountEndAt.HasValue
+                                                   && DateTime.Now.Date >= item.p.DiscountStartAt.Value.Date
+                                                   && DateTime.Now.Date <= item.p.DiscountEndAt.Value.Date)
+                                                {
+                                                    <div class="text-red-600 font-semibold">
+                                                        @item.p.SalePriceWithDiscount.ToString("N2") ₺ <br />
+                                                        <span class="line-through text-gray-400 text-sm ml-1">@item.p.SalePrice.ToString("N2") ₺</span>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    @if (item.p.SalePrice > 0)
+                                                    {
+                                                        <div class="text-red-600 font-semibold">@item.p.SalePrice.ToString("N2") ₺</div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="text-red-600 font-semibold">&nbsp;</div>
+                                                    }
+                                                } *@
+
+                                                <div class="text-blue-400 font-semibold min-h-[3.5rem] text-center">
+                                                    @if (item.p.DiscountRate > 0
+                                                      && item.p.DiscountStartAt.HasValue
+                                                      && item.p.DiscountEndAt.HasValue
+                                                      && DateTime.Now.Date >= item.p.DiscountStartAt.Value.Date
+                                                      && DateTime.Now.Date <= item.p.DiscountEndAt.Value.Date)
+                                                    {
+                                                        @(item.p.SalePriceWithDiscount.ToString("N2") + "₺") <br />
+                                                                            <span class="line-through text-gray-400 text-sm ml-1">@item.p.SalePrice.ToString("N2") ₺</span>
+                                                    }
+                                                    else if (item.p.SalePrice > 0)
+                                                    {
+                                                        @(item.p.SalePrice.ToString("N2") + "₺")
+                                                    }
+                                                    else
+                                                    {
+                                                                            <span>&nbsp;</span>
+                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </a>
+                                    }
+                                            </div>
+                                        </div>
+                            slideIndex++;
+                        }
+                            </div>
+
+                            <button class="carousel-control-prev" type="button" data-bs-target="#@carouselId" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon"></span>
+                                <span class="visually-hidden">Önceki</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#@carouselId" data-bs-slide="next">
+                                <span class="carousel-control-next-icon"></span>
+                                <span class="visually-hidden">Sonraki</span>
+                            </button>
+                        </div>
+                    </div>
+
+            catIndex++;
+        }
+    }
+</section>

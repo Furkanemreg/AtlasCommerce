@@ -1,0 +1,256 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    var settings = Model.Settings as WebsiteSettingsVM;
+
+    var wpUrl = settings?.PhoneNumber != null
+        ? "https://wa.me/" + settings.PhoneNumber
+        : "#";
+
+    var mailtoUrl = settings?.EmailAddress != null
+        ? "mailto:" + settings.EmailAddress
+        : "#";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="icon" type="image/x-icon" href="@settings?.LogoPath" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.2.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/BaseArchitecture.UI.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet" />
+</head>
+<body>
+    @await Component.InvokeAsync("WebsiteSettings")
+
+    <!--=============== HEADER ===============-->
+    <header class="header">
+        <!-- Üst satır: logo + arama + hamburger + admin -->
+        <div class="nav-top container d-flex justify-content-between align-items-center">
+            <a asp-controller="Home" asp-action="Index" class="nav-logo">
+                @if (!string.IsNullOrEmpty(settings?.LogoPath))
+                {
+                    <img src="@settings.LogoPath" style="height: 60px; margin-right: 8px;" />
+                }
+            </a>
+
+            <div class="nav-search d-none d-md-flex position-relative" style="width: 280px;">
+                <input id="mainSearchInput"
+                       type="text"
+                       placeholder="Search in Products..."
+                       class="form-control pe-5"
+                       style="color: gray;" />
+                <i id="mainSearchIcon"
+                   class="ri-search-line position-absolute top-50 end-0 translate-middle-y"></i>
+            </div>
+
+
+            <div class="nav-user d-flex align-items-center">
+                <!-- Hamburger ikon (mobilde görünür) -->
+                <div class="category-burger d-md-none me-3" id="categoryBurger">
+                    <i class="ri-menu-line"></i>
+                </div>
+
+                <!-- Sepet ikonu -->
+                <div class="nav-cart d-flex align-items-center">
+                    <a asp-controller="Cart" asp-action="Index" class="nav-icon position-relative" style="color: black !important;">
+                        <i class="fas fa-shopping-cart" style="color: #606060;"></i>
+                        <span id="cartItemCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            @(ViewBag.CartItemCount ?? 0)
+                        </span>
+                    </a>
+                </div>
+
+                <!-- Admin ikon -->
+                @*                 <a class="nav-icon" asp-area="Admin" asp-controller="Account" asp-action="Login">
+                <i class="ri-user-line"></i>
+                </a> *@
+
+                <!-- Kullanıcı / Auth Butonları -->
+                @*                 <div class="nav-auth ms-5 d-flex align-items-center">
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                <span class="me-2">Merhaba, @User.Identity.Name</span>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-custom">Çıkış</button>
+                </form>
+                }
+                else
+                {
+                <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Giriş Yap</a>
+                <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Kayıt Ol</a>
+                }
+                </div> *@
+
+                <!-- Kullanıcı / Auth Butonları -->
+                <div class="nav-auth ms-5 d-flex align-items-center">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-outline-custom dropdown-toggle" type="button" id="accountMenu"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="ri-user-line me-1"></i> @User?.Identity?.Name
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountMenu">
+                                <li>
+                                    <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Profile">
+                                        <i class="ri-user-3-line me-1"></i> My Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Settings">
+                                        <i class="ri-settings-3-line me-1"></i> Settings
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider" style="color: #343a40;" /></li>
+                                <li>
+                                    <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
+                                        <button type="submit" class="dropdown-item text-danger dropdown-item-options">
+                                            <i class="ri-logout-box-line me-1"></i> Log Out
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Log In</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Register</a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        @await Component.InvokeAsync("CategoryMenu")
+
+        @await Component.InvokeAsync("ProductMenu")
+    </header>
+
+    @* <div class="container"> *@
+    <main role="main">
+
+
+        @RenderBody()
+    </main>
+
+
+    @* </div> *@
+
+    <footer class="modern-footer">
+        <div class="footer-top">
+            <div class="footer-about">
+                <h3 style="color: #CFE8FF !important;">@settings?.BrandName</h3>
+                <p>@Html.Raw(settings?.FooterText)</p>
+
+                <div class="footer-socials">
+                    @if (!string.IsNullOrEmpty(settings?.Instagram))
+                    {
+                        <a href="@settings.Instagram"><i class="ri-instagram-fill"></i></a>
+                    }
+                    @if (!string.IsNullOrEmpty(settings?.Twitter))
+                    {
+                        <a href="@settings.Twitter"><i class="ri-twitter-fill"></i></a>
+                    }
+                    @if (!string.IsNullOrEmpty(settings?.Youtube))
+                    {
+                        <a href="@settings.Youtube"><i class="ri-facebook-fill"></i></a>
+                    }
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <h4 style="color: #CFE8FF;">Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a asp-controller="Home" asp-action="About">About Us</a></li>
+                    <li><a asp-controller="Home" asp-action="Services">Our Services</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                    <li><a asp-controller="Contact" asp-action="Index">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-contact">
+                <h4 style="color: #CFE8FF;">Contact Us</h4>
+                <ul>
+                    <li><i class="ri-map-pin-line"></i> @settings?.Address</li>
+                    <li><i class="ri-phone-line"></i> @settings?.PhoneNumber</li>
+                    <li>
+                        <i class="ri-mail-line"></i>
+                        <a href="@mailtoUrl" style="color:#fff;text-decoration:none;">
+                            @settings?.EmailAddress
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; 2026 @settings?.BrandName</p>
+            <p style="font-size:5px;" class="mb-0 p-0">
+                Developed By FurkanEmreGinyol & Abdul Qadeer Osmani
+            </p>
+        </div>
+    </footer>
+
+    <div class="fixed bottom-20 right-4 z-50 group">
+        <a asp-controller="Contact" asp-action="Index"
+           target="_blank"
+           id="btnQuickMessage"
+           aria-label="Mesaj Gönder"
+           class="flex items-center justify-center w-12 h-12 rounded-full shadow-md transition relative">
+            <i class="fas fa-envelope text-white text-xl"></i>
+
+            <!-- Tooltip -->
+            <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
+                Contact Us
+            </span>
+        </a>
+    </div>
+    <div class="fixed bottom-4 right-4 z-50 group">
+        <a href=@wpUrl
+           target="_blank"
+           aria-label="WhatsApp"
+           class="flex items-center justify-center w-12 h-12 bg-green-500 hover:bg-green-600 rounded-full shadow-md transition relative">
+            <i class="fab fa-whatsapp text-white text-xl"></i>
+
+            <!-- Tooltip -->
+            <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
+                Contact via WhatsApp
+            </span>
+        </a>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script>
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <text>
+                    toastr.success("@TempData["SuccessMessage"]");
+            </text>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <text>
+                    toastr.error("@TempData["ErrorMessage"]");
+            </text>
+        }
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

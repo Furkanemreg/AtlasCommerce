@@ -1,0 +1,84 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model List<DropdownCategoryVM>
+
+<!-- Masaüstü kategoriler -->
+<div class="nav-categories" id="desktopCategoryMenu">
+    <div class="category-wrapper container">
+        @foreach (var category in Model)
+        {
+            <a asp-controller="Categories"
+               asp-action="View"
+               asp-route-id="@category.Id"
+               class="category-link"
+               data-target="dropdown-@category.Id">
+                @category.Name
+            </a>
+        }
+
+    </div>
+</div>
+
+<!-- Mobil kategori dropdown -->
+@* <div class="category-dropdown d-md-none" id="categoryDropdown">
+    <ul class="category-menu">
+        @foreach (var category in Model)
+        {
+            <li class="category-menu-item-wrapper">
+                <div class="category-menu-item">
+                    <span>@category.Name</span>
+                    <span class="submenu-toggle"><i class="ri-arrow-right-s-line"></i></span>
+                </div>
+                <ul class="submenu">
+                    <li>Ürün 1</li>
+                    <li>Ürün 2</li>
+                    <li>Ürün 3</li>
+                    <li>Ürün 4</li>
+                    <li>Ürün 5</li>
+                    <li>Ürün 6</li>
+                    <li>Ürün 7</li>
+                    <li>Ürün 8</li>
+                </ul>
+            </li>
+        }
+    </ul>
+</div> *@
+
+<!-- Mobil kategoriler -->
+<div class="category-dropdown d-none" id="categoryDropdown">
+    <ul class="category-menu">
+        @foreach (var category in (List<CategoryWithProductsVM>)ViewBag.CategoryWithProducts)
+        {
+            <li class="category-menu-item-wrapper">
+                <div class="category-menu-item">
+                    <a class="mobile-category-link-text" asp-controller="Categories"
+                       asp-action="View"
+                       asp-route-id="@category.Id">
+                        <span>@category.Name</span>
+                    </a>
+                    @if (category.Products != null && category.Products.Any())
+                    {
+                        <span class="submenu-toggle">
+                            <i class="ri-arrow-right-s-line"></i>
+                        </span>
+                    }
+                </div>
+                <ul class="submenu">
+                    @if (category.Products != null && category.Products.Any())
+                    {
+                        foreach (var product in category.Products)
+                        {
+                            <li>
+                                <a asp-controller="Products" asp-action="View" asp-route-id="@product.Id" style="text-decoration: none;">
+                                    @product.Title
+                                </a>
+                            </li>
+                        }
+                    }
+                </ul>
+            </li>
+        }
+
+    </ul>
+</div>
+
+

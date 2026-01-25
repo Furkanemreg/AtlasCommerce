@@ -1,0 +1,289 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Kategori Düzenle";
+}
+
+@model CategoryVM
+
+<div class="max-w-4xl mx-auto rounded-md my-5">
+    <form asp-area="Admin" asp-controller="Category" asp-action="Edit" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="space-y-12">
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Kategori Tanımlama</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-4">
+                        <label asp-for="Name" class="block text-sm/6 font-medium theme-label">Kategori</label>
+                        <div class="mt-2">
+                            <input asp-for="Name" type="text" placeholder="Kategori" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="Name" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="Description" class="block text-sm/6 font-medium theme-label">Açıklama</label>
+                        <div class="mt-2">
+                            <input asp-for="Description" type="text" placeholder="Açıklama" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="Description" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <label asp-for="IsActive" class="block text-sm/6 font-medium theme-label">
+                                Durum
+                            </label>
+                            <input type="hidden" name="IsActive" id="IsActiveHidden" value="@Model.IsActive.ToString().ToLower()" />
+                            <a href="javascript:void(0);"
+                               id="statusToggleBtn"
+                               class="status-input space-x-5 @(Model.IsActive ? "status-active" : "status-inactive")"
+                               onclick="toggleStatus()">
+                                @(Model.IsActive ? "Aktif" : "Pasif")
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <label asp-for="ShowInDropDown" class="block text-sm/6 font-medium theme-label">
+                                Menüde Göster
+                            </label>
+                            <input type="hidden" name="ShowInDropDown" id="showInDropDownHidden" value="@Model.ShowInDropDown.ToString().ToLower()" />
+                            <a href="javascript:void(0);"
+                               id="showInDropDownToggleBtn"
+                               class="status-input space-x-5 @(Model.ShowInDropDown ? "status-active" : "status-inactive")"
+                               onclick="toggleShowInDropDown()">
+                                @(Model.ShowInDropDown ? "Evet" : "Hayır")
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <small class="info-text">
+                                <i class='bx bx-info-circle'></i>
+                                Seçili kategoriler kullanıcı ekranında ana menüde listelir. <br />
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Kategori Görseli</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-4 w-full">
+                            <input type="hidden" asp-for="ImageId" />
+                            <label for="dropzone-file" class="custom-upload-box relative flex w-full h-64">
+
+                                <!-- Tam kaplayan preview --> <!-- object-contain object-cover  -->
+                                <img id="imagePreview" src="@(Model.ImageDataUri ?? null)" class="absolute inset-0 w-full h-full object-cover rounded-lg @(string.IsNullOrEmpty(Model.ImageDataUri) ? "hidden" : "")" alt="" />
+
+                                <!-- Önizleme yoksa görünen placeholder içeriği -->
+                                @if (string.IsNullOrEmpty(Model.ImageDataUri))
+                                {
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 z-10">
+                                        <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" …>…</svg>
+                                        <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                                            <span class="font-semibold">Kategori Görseli Eklemek İçin Tıkla</span> Ya da Sürükle ve Bırak
+                                        </p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                                            Kategori Görseli (SVG, PNG, JPG)
+                                        </p>
+                                    </div>
+                                }
+                                <input id="dropzone-file" type="file" asp-for="ImageFile" accept="image/*" class="hidden" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Kayıt Bilgileri</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+                <input type="hidden" asp-for="CreatedBy" />
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <label asp-for="CreatedUser.UserName" class="block text-sm/6 font-medium theme-label">Oluşturan Kullanıcı</label>
+                        <div class="mt-2">
+                            <input asp-for="CreatedUser.UserName" type="text" disabled placeholder="Oluşturan Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="CreatedUser.UserName" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Oluşturulma Tarihi</label>
+                        <div class="mt-2">
+                            <input type="text" name="CreatedAt" disabled value="@(Model.CreatedAt.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="CreatedAt" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    @if (Model.UpdatedUser != null && !string.IsNullOrEmpty(Model.UpdatedUser.UserName))
+                    {
+                        <div class="sm:col-span-3">
+                            <label asp-for="UpdatedUser.UserName" class="block text-sm/6 font-medium theme-label">Son Güncelleyen Kullanıcı</label>
+                            <div class="mt-2">
+                                <input asp-for="UpdatedUser.UserName" type="text" disabled placeholder="Son Güncelleyen Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span asp-validation-for="UpdatedUser.UserName" class="text-red-600"></span>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label asp-for="UpdatedAt" class="block text-sm/6 font-medium theme-label">Son Güncelleme Tarihi</label>
+                            <div class="mt-2">
+                                <input type="text" name="UpdatedAt" disabled value="@(Model.UpdatedAt?.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span asp-validation-for="UpdatedAt" class="text-red-600"></span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-x-6">
+                <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="text-sm/6 font-semibold theme-label">İptal</a>
+                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Kaydet</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.querySelector('.custom-upload-box');
+            const fileInput = document.getElementById('dropzone-file');
+            const imagePreview = document.getElementById('imagePreview');
+            const placeholder = document.getElementById('imagePlaceholder');
+
+            if (!dropZone || !fileInput || !imagePreview) return;
+
+            function previewFile(file) {
+                if (!file || !file.type.startsWith('image/')) {
+                  imagePreview.src = '';
+                  imagePreview.classList.add('hidden');
+                  if (placeholder) placeholder.classList.remove('hidden');
+                  return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = e => {
+                  imagePreview.src = e.target.result;
+                  imagePreview.classList.remove('hidden');
+                  if (placeholder) placeholder.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+
+            fileInput.addEventListener('change', e => {
+                const file = e.target.files[0];
+                previewFile(file);
+            });
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
+            });
+
+            dropZone.addEventListener('dragover', () => {
+                dropZone.classList.add('ring-2', 'ring-blue-500');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('ring-2', 'ring-blue-500');
+            });
+
+            dropZone.addEventListener('drop', e => {
+                dropZone.classList.remove('ring-2', 'ring-blue-500');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    previewFile(files[0]);
+                }
+            });
+        });
+
+        function toggleStatus() {
+            var btn = document.getElementById('statusToggleBtn');
+            var hiddenInput = document.getElementById('IsActiveHidden');
+            var isActive = hiddenInput.value === 'true';
+
+            if (isActive) {
+                btn.classList.remove('status-active');
+                btn.classList.add('status-inactive');
+                btn.textContent = 'Pasif';
+                hiddenInput.value = 'false';
+            } else {
+                btn.classList.remove('status-inactive');
+                btn.classList.add('status-active');
+                btn.textContent = 'Aktif';
+                hiddenInput.value = 'true';
+            }
+        }
+
+        function toggleShowInDropDown() {
+            var showInDropDownBtn = document.getElementById('showInDropDownToggleBtn');
+            var showInDropDownHiddenInput = document.getElementById('showInDropDownHidden');
+            var ShowInDropDown = showInDropDownHiddenInput.value === 'true';
+
+            if (ShowInDropDown) {
+                showInDropDownBtn.classList.remove('status-active');
+                showInDropDownBtn.classList.add('status-inactive');
+                showInDropDownBtn.textContent = 'Hayır';
+                showInDropDownHiddenInput.value = 'false';
+            } else {
+                showInDropDownBtn.classList.remove('status-inactive');
+                showInDropDownBtn.classList.add('status-active');
+                showInDropDownBtn.textContent = 'Evet';
+                showInDropDownHiddenInput.value = 'true';
+            }
+        }
+
+        $(document).ready(function () {
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                var formEl = this;
+                var formData = new FormData(formEl);
+                var token = $('input[name="__RequestVerificationToken"]', formEl).val();
+                formData.set("__RequestVerificationToken", token);
+
+                showConfirmationModal('Kategoriyi kaydetmek istediğinizden emin misiniz?', function () {
+                    $.ajax({
+                        url: formEl.action,
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        headers: {
+                          'RequestVerificationToken': token
+                        },
+                        success: function (response) {
+                          if (response.success) {
+                            toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                            setTimeout(function () {
+                              window.location.href = '/Admin/Category/Index';
+                            }, 3000);
+                          } else {
+                            toastr.error(response.message || 'Bir hata oluştu');
+                          }
+                        },
+                        error: function (xhr) {
+                          console.error('Hata kodu:', xhr.status, 'Gönderilen token:', token);
+                          toastr.error('Bir hata oluştu (kod ' + xhr.status + ')');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

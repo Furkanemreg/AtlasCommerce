@@ -1,0 +1,265 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    ViewData["Title"] = "Kategoriler";
+    Layout = "_Layout";
+
+    var searchTerm = Model.SearchTerm ?? "";
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+    int groupSize = 5;
+    int currentGroup = (currentPage - 1) / groupSize;
+    int startPage = currentGroup * groupSize + 1;
+    int endPage = Math.Min(startPage + groupSize - 1, totalPages);
+}
+
+@model PagedResult<CategoryVM>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="table-title text-xl font-semibold">@ViewData["Title"]</div>
+
+            <form method="get" class="custom-search inline-flex">
+                <div class="custom-search">
+                    <input name="searchTerm"
+                           type="text"
+                           placeholder="Arama Yap"
+                           class="table-searchbox"
+                           value="@Model.SearchTerm" />
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+
+            </form>
+
+            <div class="dashboard-actions">
+                <a class="btn primary-btn" asp-area="Admin" asp-controller="Category" asp-action="Edit">
+                    <i class='bx  bx-plus'></i>     Yeni Kategori
+                </a>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="generic-table">
+                <thead>
+                    <tr>
+                        <th>Fotoğraf</th>
+                        <th>Kategori</th>
+                        <th>Açıklama</th>
+                        <th>Oluşturan Kullanıcı</th>
+                        <th>Oluşturulma Tarihi</th>
+                        <th>Menüde Göster</th>
+                        <th>Durum</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items.Any())
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageDataUri))
+                                    {
+                                        <img src="@item.ImageDataUri" class="rounded-lg" style="width:50px; height:40px;" alt="Kategori Görseli" />
+                                    }
+                                </td>
+                                <td>@(item.Name)</td>
+                                <td>@(item.Description ?? "-")</td>
+                                <td>
+                                    <div>
+                                        <div class="user-name">@(item?.CreatedUser?.UserName ?? "-")</div>
+                                        <div class="user-email" style="color:var(--dimgray-color);font-size:0.8rem;">~ @(item?.CreatedUser?.Roles.FirstOrDefault())</div>
+                                    </div>
+                                </td>
+                                <td>@item?.CreatedAt</td>
+                                <td>
+                                    @if (item.ShowInDropDown)
+                                    {
+                                        <span class="status-label status-active">Evet</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-label status-inactive">Hayır</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="status-label status-active">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-label status-inactive">Pasif</span>
+                                    }
+                                </td>
+                                <td class="action-cell">
+                                    <a href="#" class="action-toggle">
+                                        <i class="bx bx-dots-horizontal-rounded"></i>
+                                    </a>
+                                    <ul class="action-menu">
+                                        <li>
+                                            <a asp-area="Admin" asp-controller="Category" asp-action="Edit" asp-route-id="@item.Id" class="action-item">
+                                                <i class='bx  bx-pencil'></i> Düzenle
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <button type="button"
+                                                    class="action-item btn-delete"
+                                                    data-id="@item.Id"
+                                                    data-category="@item.Name"
+                                                    data-url="@Url.Action("Delete", "Category", new { area = "Admin", id = item.Id })">
+                                                <i class='bx bx-trash'></i> Sil
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">Veri bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-wrapper">
+            <div class="pagination-left">
+                <span>Sayfa başına kayıt sayısı:</span>
+                <select class="theme-input" onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@Model.SearchTerm'">
+                    @foreach (var size in new[] { 10, 25, 50, 100 })
+                    {
+                        <option value="@size"
+                                selected="@(size == Model.PageSize ? "selected" : null)">
+                            @size
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="pagination-center">
+                <ul class="pagination justify-content-center mt-3">
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = startPage - 1, pageSize = pageSize, searchTerm = searchTerm })'>
+                                «
+                            </a>
+                        </li>
+                    }
+
+                    @for (int p = startPage; p <= endPage; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = p, pageSize = pageSize, searchTerm = searchTerm })'>
+                                @p
+                            </a>
+                        </li>
+                    }
+
+                    @if (endPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = endPage + 1, pageSize = pageSize, searchTerm = searchTerm })'>
+                                »
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menus = Array.from(document.querySelectorAll('.action-menu'));
+            menus.forEach(menu => {
+                menu._origParent = menu.parentElement;
+            });
+
+            function closeAll() {
+                menus.forEach(menu => {
+                    menu.classList.remove('open');
+                    menu.style.position = '';
+                    menu.style.top = '';
+                    menu.style.left = '';
+                    menu.style.zIndex = '';
+                    if (menu.parentElement !== menu._origParent) {
+                      menu._origParent.appendChild(menu);
+                    }
+                });
+            }
+
+            closeAll();
+            document.querySelectorAll('.action-toggle').forEach(toggle => {
+                const menu = toggle.parentElement.querySelector('.action-menu');
+
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (menu.classList.contains('open')) {
+                        return closeAll();
+                    }
+
+                    closeAll();
+
+                    document.body.appendChild(menu);
+
+                    const rect = toggle.getBoundingClientRect();
+                    menu.style.position = 'fixed';
+                    menu.style.top      = (rect.top   - menu.offsetHeight - 6) + 'px';
+                    menu.style.left = rect.left + 'px';
+                    menu.style.zIndex   = 10000;
+
+                    menu.classList.add('open');
+                });
+            });
+
+            document.addEventListener('click', closeAll);
+        });
+
+        $(document).ready(function() {
+            $('.btn-delete').on('click', function () {
+                var id = $(this).data('id');
+                var category = $(this).data('category');
+
+                showConfirmationModal(`'${category}' kategorisini silmek istediğinizden emin misiniz?`,
+                    function () { $.ajax({
+                            url: '/Admin/Category/Delete',
+                            type: 'POST',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                                id: id
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu');
+                                }
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                location.reload();
+                            }
+                        });
+                    }
+                );
+            });
+        });
+    </script>
+}

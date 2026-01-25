@@ -1,0 +1,286 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model PagedResult<AtlasCommerce.Application.ViewModels.AppUserVM>
+
+@{
+    ViewData["Title"] = "Kullanıcılar";
+    Layout = "_Layout";
+
+    var searchTerm = Model.SearchTerm ?? "";
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+    int groupSize = 5;
+    int currentGroup = (currentPage - 1) / groupSize;
+    int startPage = currentGroup * groupSize + 1;
+    int endPage = Math.Min(startPage + groupSize - 1, totalPages);
+}
+
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="table-title text-xl font-semibold">Kullanıcılar</div>
+
+            <form method="get" class="custom-search inline-flex">
+                <div class="custom-search">
+                    <input name="searchTerm"
+                           type="text"
+                           placeholder="Arama Yap"
+                           class="table-searchbox"
+                           value="@Model.SearchTerm" />
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <table class="generic-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Kullanıcı Adı</th>
+                        <th>Adı Soyadı</th>
+                        <th>Telefon</th>
+                        <th>Oluşturan Kullanıcı</th>
+                        <th>Oluşturulma Tarihi</th>
+                        <th>Durum</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items.Count > 0)
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td></td>
+                                <td class="user-cell">
+                                    <div>
+                                        <div class="user-name">@item.UserName</div>
+                                        <div class="user-email" style="color:var(--dimgray-color);font-size:0.8rem;">@item.Email</div>
+                                    </div>
+                                </td>
+                                <td>@(item?.FullName ?? "-")</td>
+                                <td>@(item?.PhoneNumber ?? "-")</td>
+                                <td>
+                                    <div>
+                                        <div class="user-name">@(item?.CreatedUser?.UserName ?? "-")</div>
+                                        <div class="user-email" style="color:var(--dimgray-color);font-size:0.8rem;">~ @(item?.Roles?.First() ?? "-")</div>
+                                    </div>
+                                </td>
+                                <td>@item?.CreatedAt</td>
+                                <td>
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="status-label status-active">Aktif</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-label status-inactive">Pasif</span>
+                                    }
+                                </td>
+                                <td class="action-cell">
+                                    <a href="#" class="action-toggle">
+                                        <i class="bx bx-dots-horizontal-rounded"></i>
+                                    </a>
+                                    <ul class="action-menu">
+                                        <li>
+                                            @if (item.IsActive)
+                                            {
+                                                <button type="button" class="action-item btn-deactivate" data-id="@item.Id" data-username="@item.UserName"
+                                                        data-url="@Url.Action("DeactivateUserAsync", "Users", new { area = "Admin", id = item.Id })">
+                                                    <i class='bx bx-lock'></i> Erişimi Durdur
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <button type="button" class="action-item btn-activate" data-id="@item.Id" data-username="@item.UserName"
+                                                        data-url="@Url.Action("ActivateUserAsync", "Users", new { area = "Admin", id = item.Id })">
+                                                    <i class='bx bx-key'></i> Erişim Ver
+                                                </button>
+                                            }
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">Veri bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-wrapper">
+            <div class="pagination-left">
+                <span>Sayfa başına kayıt sayısı:</span>
+                <select class="theme-input" onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@Model.SearchTerm'">
+                    @foreach (var size in new[] { 10, 25, 50, 100 })
+                    {
+                        <option value="@size"
+                                selected="@(size == Model.PageSize ? "selected" : null)">
+                            @size
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="pagination-center">
+                <ul class="pagination justify-content-center mt-3">
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = startPage - 1, pageSize = pageSize, searchTerm = searchTerm })'>
+                                «
+                            </a>
+                        </li>
+                    }
+
+                    @for (int p = startPage; p <= endPage; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = p, pageSize = pageSize, searchTerm = searchTerm })'>
+                                @p
+                            </a>
+                        </li>
+                    }
+
+                    @if (endPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = endPage + 1, pageSize = pageSize, searchTerm = searchTerm })'>
+                                »
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menus = Array.from(document.querySelectorAll('.action-menu'));
+            menus.forEach(menu => {
+                menu._origParent = menu.parentElement;
+            });
+
+            function closeAll() {
+                menus.forEach(menu => {
+                    menu.classList.remove('open');
+                    menu.style.position = '';
+                    menu.style.top = '';
+                    menu.style.left = '';
+                    menu.style.zIndex = '';
+                    if (menu.parentElement !== menu._origParent) {
+                        menu._origParent.appendChild(menu);
+                    }
+                });
+            }
+
+            closeAll();
+            document.querySelectorAll('.action-toggle').forEach(toggle => {
+                const menu = toggle.parentElement.querySelector('.action-menu');
+
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (menu.classList.contains('open')) {
+                        return closeAll();
+                    }
+
+                    closeAll();
+
+                    document.body.appendChild(menu);
+
+                    const rect = toggle.getBoundingClientRect();
+                    menu.style.position = 'fixed';
+                    menu.style.top = (rect.top - menu.offsetHeight - 6) + 'px';
+                    menu.style.left = rect.left + 'px';
+                    menu.style.zIndex = 10000;
+
+                    menu.classList.add('open');
+                });
+            });
+
+            document.addEventListener('click', closeAll);
+        });
+
+        $(document).ready(function() {
+            $('.btn-deactivate').on('click', function () {
+                var id = $(this).data('id');
+                var username = $(this).data('username');
+                var url = $(this).data('url');
+
+                showConfirmationModal(`'${username}' kullanıcısının erişimini durdurmak istediğinizden emin misiniz?`,
+                    function () { 
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                                id: id
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Kullanıcı erişimi durduruldu.');
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 3000);
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+
+            $('.btn-activate').on('click', function () {
+                var id = $(this).data('id');
+                var username = $(this).data('username');
+                var url = $(this).data('url');
+
+                showConfirmationModal(`'${username}' kullanıcısına erişim vermek istediğinizden emin misiniz?`,
+                    function () {
+                        $.ajax({
+                            url: url,
+                            type: 'POST',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                                id: id
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                                    setTimeout(function () {
+                                        location.reload();
+                                    }, 3000);
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu');
+                                }
+                            },
+                            error: function (xhr, status, error) {
+                                console.error(error);
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+        });
+    </script>
+}

@@ -1,0 +1,79 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Mesaj Görüntüle";
+}
+
+@model MessageVM
+
+<div class="max-w-4xl mx-auto rounded-md my-5">
+    <div class="space-y-12">
+        <div class="border-b border-gray-900/10 pb-12">
+            <h2 class="text-base/7 font-semibold theme-label">Mesaj</h2>
+            <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div class="sm:col-span-4">
+                    <label asp-for="Topic" class="block text-sm/6 font-medium theme-label">Konu</label>
+                    <div class="mt-2">
+                        <textarea asp-for="Topic" rows="3" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6"></textarea>
+                    </div>
+                </div>
+
+                <div class="sm:col-span-4">
+                    <label asp-for="Message" class="block text-sm/6 font-medium theme-label">Mesaj</label>
+                    <div class="mt-2">
+                        <textarea asp-for="Message" rows="4" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="border-b border-gray-900/10 pb-12">
+            <h2 class="text-base/7 font-semibold theme-label">Gönderici Bilgileri</h2>
+            <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+            <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div class="sm:col-span-3">
+                    <label asp-for="FirstName" class="block text-sm/6 font-medium theme-label">Adı</label>
+                    <div class="mt-2">
+                        <input asp-for="FirstName" type="text" disabled class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                    </div>
+                </div>
+
+                <div class="sm:col-span-3">
+                    <label asp-for="LastName" class="block text-sm/6 font-medium theme-label">Soyadı</label>
+                    <div class="mt-2">
+                        <input asp-for="LastName" type="text" disabled class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                    </div>
+                </div>
+
+                <div class="sm:col-span-4">
+                    <label asp-for="PhoneNumber" class="block text-sm/6 font-medium theme-label">Telefon Numarası</label>
+                    <div class="mt-2">
+                        <input asp-for="PhoneNumber" type="text" disabled class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                    </div>
+                </div>
+
+                <div class="sm:col-span-4">
+                    <label asp-for="EmailAddress" class="block text-sm/6 font-medium theme-label">E-Posta Adresi</label>
+                    <div class="mt-2">
+                        <input asp-for="EmailAddress" type="text" disabled class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                    </div>
+                </div>
+
+                <div class="sm:col-span-4">
+                    <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Oluşturulma Tarihi</label>
+                    <div class="mt-2">
+                        <input type="text" name="CreatedAt" disabled value="@(Model.CreatedAt.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+            <div class="mt-6 flex items-center justify-center gap-x-6">
+                <a asp-area="Admin" asp-controller="Message" asp-action="Index" class="text-sm/6 font-semibold theme-label">Geri</a>
+            </div>
+    </div>
+</div>
