@@ -1,0 +1,797 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Ürün Ekle/Düzenle";
+}
+
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model ProductVM
+
+<div class="max-w-4xl mx-auto rounded-md my-5">
+    <form asp-area="Admin" asp-controller="Product" asp-action="Edit" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+
+        <div class="space-y-12">
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Ürün Tanımlama</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-4">
+                        <label asp-for="Barcode" class="block text-sm/6 font-medium theme-label">Barkod</label>
+                        <div class="mt-2">
+                            <input asp-for="Barcode" type="text" placeholder="Barkod" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="Barcode" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-4">
+                            <small class="info-text">
+                                <i class='bx bx-info-circle'></i>
+                                Barkod, kullanıcıların sayfada görecekleri ürün benzersiz id değerini temsil eder. <br />
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="Name" class="block text-sm/6 font-medium theme-label">Ürün Başlığı</label>
+                        <div class="mt-2">
+                            <input asp-for="Name" type="text" placeholder="Ürün Başlığı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="Name" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="Description" class="block text-sm/6 font-medium theme-label">Açıklama</label>
+                        <div class="mt-2">
+                            <textarea asp-for="Description" rows="4" type="text" placeholder="Açıklama" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6"></textarea>
+                            <span asp-validation-for="Description" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="ShortDescription" class="block text-sm/6 font-medium theme-label">Kısa Açıklama</label>
+                        <div class="mt-2">
+                            <input asp-for="ShortDescription" type="text" placeholder="Kısa Açıklama" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="ShortDescription" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <small class="info-text">
+                                <i class='bx bx-info-circle'></i>
+                                Kısa açıklama ürün kartları içerisinde görüntülenir. <br />
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="CategoryId" class="block text-sm/6 font-medium theme-label">Kategori</label>
+                        <select asp-for="CategoryId" asp-items="Model.CategoryOptions" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6">
+                            <option value="">-- Kategori Seçiniz --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-red-600"></span>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <label asp-for="IsActive" class="block text-sm/6 font-medium theme-label">
+                                Durum
+                            </label>
+                            <input type="hidden" name="IsActive" id="IsActiveHidden" value="@Model.IsActive.ToString().ToLower()" />
+                            <a href="javascript:void(0);"
+                               id="statusToggleBtn"
+                               class="status-input space-x-5 @(Model.IsActive ? "status-active" : "status-inactive")"
+                               onclick="toggleStatus()">
+                                @(Model.IsActive ? "Aktif" : "Pasif")
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Satış</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <label asp-for="TaxRate" class="block text-sm/6 font-medium theme-label">Vergi Oranı (KDV)</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="TaxRate" type="text" id="taxRate" placeholder="Vergi Oranı (KDV)" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">%</span>
+                            </div>
+                            <span asp-validation-for="TaxRate" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="OTV" class="block text-sm/6 font-medium theme-label">ÖTV</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="OTV" type="text" id="otv" placeholder="ÖTV" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">%</span>
+                            </div>
+                            <span asp-validation-for="OTV" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="PurchasePriceExcludingTaxes" class="block text-sm/6 font-medium theme-label">Vergiler Hariç Alış Fiyatı</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="PurchasePriceExcludingTaxes" type="text" id="purchaseExcl" placeholder="Vergiler Hariç Alış Fiyatı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">₺</span>
+                            </div>
+                            <span asp-validation-for="PurchasePriceExcludingTaxes" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="SalePriceExcludingTaxes" class="block text-sm/6 font-medium theme-label">Vergiler Hariç Satış Fiyatı</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="SalePriceExcludingTaxes" type="text" id="saleExcl" placeholder="Vergiler Hariç Satış Fiyatı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">₺</span>
+                            </div>
+                            <span asp-validation-for="SalePriceExcludingTaxes" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="PurchasePriceIncludingTaxes" class="block text-sm/6 font-medium theme-label">Vergiler Dahil Alış Fiyatı</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="PurchasePriceIncludingTaxes" type="text" id="purchaseIncl" placeholder="Vergiler Dahil Alış Fiyatı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">₺</span>
+                            </div>
+                            <span asp-validation-for="PurchasePriceIncludingTaxes" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="SalePriceIncludingTaxes" class="block text-sm/6 font-medium theme-label">Vergiler Dahil Satış Fiyatı</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="SalePriceIncludingTaxes" type="text" id="saleIncl" placeholder="Vergiler Dahil Satış Fiyatı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">₺</span>
+                            </div>
+                            <span asp-validation-for="SalePriceIncludingTaxes" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                        <label asp-for="SalePrice" class="block text-sm/6 font-medium theme-label">Satış Fiyatı</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="SalePrice" type="text" id="salePrice" disabled placeholder="Satış Fiyatı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">₺</span>
+                            </div>
+                            <span asp-validation-for="SalePrice" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">İndirim</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <div class="flex items-center space-x-6">
+                            <label asp-for="IsDiscountActive" class="block text-sm/6 font-medium theme-label">
+                                İndirim Uygulasın mı?
+                            </label>
+                            <input type="hidden" name="IsDiscountActive" id="IsDiscountActiveHidden" value="@Model.IsDiscountActive.ToString().ToLower()" />
+                            <a href="javascript:void(0);"
+                               id="IsDiscountActiveBtn"
+                               class="status-input space-x-5 @(Model.IsDiscountActive ? "status-active" : "status-inactive")"
+                               onclick="toggleIsDiscountActive()">
+                                @(Model.IsDiscountActive ? "Evet" : "Hayır")
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3" id="discountField1" style="display: @(Model.IsDiscountActive ? "block" : "none");">
+                        <label asp-for="DiscountRate" class="block text-sm/6 font-medium theme-label">İndirim Oranı</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="DiscountRate" type="text" id="DiscountRate" placeholder="İndirim Oranı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">%</span>
+                            </div>
+                            <span asp-validation-for="DiscountRate" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3" id="discountField2" style="display: @(Model.IsDiscountActive ? "block" : "none");">
+                        <label asp-for="DiscountStartAt" class="block text-sm/6 font-medium theme-label">İndirim Başlangıç Tarihi</label>
+                        <div class="mt-2">
+                            <input asp-for="DiscountStartAt" type="date" id="DiscountStartAt" placeholder="İndirim Başlangıç Tarihi" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="DiscountStartAt" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3" id="discountField3" style="display: @(Model.IsDiscountActive ? "block" : "none");">
+                        <label asp-for="DiscountEndAt" class="block text-sm/6 font-medium theme-label">İndirim Bitiş Tarihi</label>
+                        <div class="mt-2">
+                            <input asp-for="DiscountEndAt" type="date" id="DiscountEndAt" placeholder="İndirim Bitiş Tarihi" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="DiscountEndAt" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Stok Takibi</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <div class="flex items-center space-x-6">
+                            <label asp-for="StockTracking" class="block text-sm/6 font-medium theme-label">
+                                Stock Takibi Yapılsın mı?
+                            </label>
+                            <input type="hidden" name="StockTracking" id="StockTrackingHidden" value="@Model.StockTracking.ToString().ToLower()" />
+                            <a href="javascript:void(0);"
+                               id="StockTrackingBtn"
+                               class="status-input space-x-5 @(Model.StockTracking ? "status-active" : "status-inactive")"
+                               onclick="toggleStockTracking()">
+                                @(Model.StockTracking ? "Evet" : "Hayır")
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3" id="criticalStockField" style="display: @(Model.StockTracking ? "block" : "none");">
+                        <label asp-for="CriticalStockLevel" class="block text-sm/6 font-medium theme-label">Kritik Stok Adedi</label>
+                        <div class="mt-2">
+                            <input asp-for="CriticalStockLevel" type="text" placeholder="Kritik Stok Adedi" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="CriticalStockLevel" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <label asp-for="StockQuantity" class="block text-sm/6 font-medium theme-label">Stok Adedi</label>
+                        <div class="mt-2">
+                            <input asp-for="StockQuantity" type="text" placeholder="Stok Adedi" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="StockQuantity" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Ürün Özellikleri</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <label asp-for="Weight" class="block text-sm/6 font-medium theme-label">Ağırlık</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="Weight" type="text" placeholder="Ağırlık" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">kg</span>
+                            </div>
+                            <span asp-validation-for="Weight" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Lenght" class="block text-sm/6 font-medium theme-label">Uzunluk</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="Lenght" type="text" placeholder="Uzunluk" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">cm</span>
+                            </div>
+                            <span asp-validation-for="Lenght" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Width" class="block text-sm/6 font-medium theme-label">Genişlik</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="Width" type="text" placeholder="Genişlik" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">cm</span>
+                            </div>
+                            <span asp-validation-for="Width" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Height" class="block text-sm/6 font-medium theme-label">Yükseklik</label>
+                        <div class="mt-2">
+                            <div class="flex">
+                                <input asp-for="Height" type="text" placeholder="Yükseklik" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span class="input-helper">cm</span>
+                            </div>
+                            <span asp-validation-for="Height" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Attribute" class="block text-sm/6 font-medium theme-label">Malzeme</label>
+                        <div class="mt-2">
+                            <input asp-for="Attribute" type="text" placeholder="Malzeme" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="Attribute" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Color" class="block text-sm/6 font-medium theme-label">Renk</label>
+                        <div class="mt-2">
+                            <select asp-for="Color" asp-items="Model.Colors"
+                                    class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6">
+                                <option value="">-- Renk Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="Color" class="text-red-600 p-2"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <label asp-for="ShowInSelected" class="block text-sm/6 font-medium theme-label">
+                                Seçili Ürünlerde Gösterilsin mi?
+                            </label>
+                            <input type="hidden" name="ShowInSelected" id="ShowInSelectedHidden" value="@Model.ShowInSelected.ToString().ToLower()" />
+                            <a href="javascript:void(0);"
+                               id="ShowInSelectedBtn"
+                               class="status-input space-x-5 @(Model.ShowInSelected ? "status-active" : "status-inactive")"
+                               onclick="toggleShowInSelected()">
+                                @(Model.ShowInSelected ? "Evet" : "Hayır")
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Ürün Fotoğrafları</h2>
+                <p class="mt-1 text-sm/6 text-gray-600">En fazla 12 fotoğraf yükleyebilirsiniz.</p>
+
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-4">
+                        <div id="photoGrid" class="grid grid-cols-4 gap-4 mb-6">
+                            @if (Model.Images != null)
+                            {
+                                foreach (var img in Model.Images)
+                                {
+                                    <div class="photo-card relative" data-id="@img.Id">
+                                        <button type="button" class="delete-photo absolute top-1 right-1 bg-white text-red-500 rounded-full w-6 h-6 text-sm flex items-center justify-center shadow">✕</button>
+                                        <img src="@img.DataUri" class="w-full object-cover rounded" />
+                                        <button type="button" class="main-tag @(Model.MainPhotoId == img.Id ? "selected" : "")" data-id="@img.Id">
+                                            Ana
+                                        </button>
+                                    </div>
+                                    <input type="hidden" name="ExistingImageIds" value="@img.Id" class="existing-id-input" />
+                                }
+                            }
+                            <!-- JS ile eklenecek -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center">
+                    <input type="file" id="uploadFiles" name="UploadFiles" multiple accept="image/*" class="hidden" />
+
+                    <label for="uploadFiles" class="inline-flex items-center px-4 py-2 primary-input text-sm font-medium rounded-lg cursor-pointer transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M12 12v6m0-6l-3 3m3-3l3 3M12 6v6" />
+                        </svg>
+                        Fotoğraf Seç veya Sürükle
+                    </label>
+
+                    <div id="dropZone" class="mt-4 flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg text-gray-500 primary-border transition">
+                        <p class="text-sm">Dosyaları buraya sürükleyin veya butona tıklayın</p>
+                    </div>
+
+                    <ul id="fileList" class="mt-3 space-y-1 text-sm text-gray-700"></ul>
+                </div>
+
+                <div class="sm:col-span-4">
+                    <div class="flex items-center space-x-4">
+                        <small class="info-text">
+                            <i class='bx bx-info-circle'></i>
+                            Kullanıcıların göreceği Ana fotoğraf seçimi zorunludur. <br />
+                        </small>
+                    </div>
+                </div>
+
+                <input type="hidden" id="MainPhotoId" name="MainPhotoId" value="@Model.MainPhotoId" />
+                <input type="hidden" id="MainPhotoIndex" name="MainPhotoIndex" value="@Model.MainPhotoIndex" />
+            </div>
+
+            <div class="border-b border-gray-900/10 pb-12">
+                <h2 class="text-base/7 font-semibold theme-label">Kayıt Bilgileri</h2>
+                <p class="mt-1 text-sm/6 text-gray-600"></p>
+
+                <input type="hidden" asp-for="CreatedBy" />
+                <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div class="sm:col-span-3">
+                        <label asp-for="CreatedUser.UserName" class="block text-sm/6 font-medium theme-label">Oluşturan Kullanıcı</label>
+                        <div class="mt-2">
+                            <input asp-for="CreatedUser.UserName" type="text" disabled placeholder="Oluşturan Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="CreatedUser.UserName" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Oluşturulma Tarihi</label>
+                        <div class="mt-2">
+                            <input type="text" name="CreatedAt" disabled value="@(Model.CreatedAt.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <span asp-validation-for="CreatedAt" class="text-red-600"></span>
+                        </div>
+                    </div>
+
+                    @if (Model.UpdatedUser != null && !string.IsNullOrEmpty(Model.UpdatedUser.UserName))
+                    {
+                        <div class="sm:col-span-3">
+                            <label asp-for="UpdatedUser.UserName" class="block text-sm/6 font-medium theme-label">Son Güncelleyen Kullanıcı</label>
+                            <div class="mt-2">
+                                <input asp-for="UpdatedUser.UserName" type="text" disabled placeholder="Son Güncelleyen Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span asp-validation-for="UpdatedUser.UserName" class="text-red-600"></span>
+                            </div>
+                        </div>
+
+                        <div class="sm:col-span-3">
+                            <label asp-for="UpdatedAt" class="block text-sm/6 font-medium theme-label">Son Güncelleme Tarihi</label>
+                            <div class="mt-2">
+                                <input type="text" name="UpdatedAt" disabled value="@(Model.UpdatedAt?.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <span asp-validation-for="UpdatedAt" class="text-red-600"></span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="mt-6 flex items-center justify-end gap-x-6">
+                <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="text-sm/6 font-semibold theme-label">İptal</a>
+                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Kaydet</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+@section Scripts {
+    <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            // ——— Element referansları ———
+            const purchaseExcl  = document.getElementById('purchaseExcl');
+            const purchaseIncl  = document.getElementById('purchaseIncl');
+            const saleExcl      = document.getElementById('saleExcl');
+            const saleIncl      = document.getElementById('saleIncl');
+            const taxRate       = document.getElementById('taxRate');
+            const otv           = document.getElementById('otv');
+            const discountRate  = document.getElementById('DiscountRate');
+            const discountEnd   = document.getElementById('DiscountEndAt');
+            const isDiscHidden  = document.getElementById('IsDiscountActiveHidden');
+            const isDiscBtn  = document.getElementById('IsDiscountActiveBtn');
+            const salePrice     = document.getElementById('salePrice');
+
+            const upload        = document.getElementById('uploadFiles');
+            const grid          = document.getElementById('photoGrid');
+            const dropZone      = document.getElementById('dropZone');
+            const mainIndexEl   = document.getElementById('MainPhotoIndex');
+            const mainIdEl      = document.getElementById('MainPhotoId');
+
+            // Son değiştirilen satış/alış alanını tutar
+            let lastEdited = null; // 'pExcl','pIncl','sExcl','sIncl'
+
+            // Helper: grid'deki kartları al
+            const existingEls = () => Array.from(grid.querySelectorAll('.photo-card'));
+
+            function parseDecimal(value) {
+                if (!value) return 0;
+
+                // 1.000,50 → 1000.50
+                const normalized = value.replace(/\./g, '').replace(',', '.');
+                const parsed = parseFloat(normalized);
+
+                return isNaN(parsed) ? 0 : parsed;
+            }
+
+            function formatDecimal(value, fractionDigits = 2) {
+                return value?.toLocaleString('tr-TR', {
+                    minimumFractionDigits: fractionDigits,
+                    maximumFractionDigits: fractionDigits
+                }) ?? "0,00";
+            }
+
+            function recalcAll() {
+                // Kullanıcının girdiği değerleri parseDecimal fonksiyonu ile sayıya çeviriyoruz.
+                // Bu sayede 1.000,50 gibi değerler 1000.50 olarak işleniyor.
+                const pEx = parseDecimal(purchaseExcl.value)    || 0;
+                const sEx = parseDecimal(saleExcl.value)        || 0;
+                const t   = parseDecimal(taxRate.value)         || 0;
+                const o   = parseDecimal(otv.value)             || 0;
+                const d   = parseDecimal(discountRate.value)    || 0;
+                const factor = 1 + (t + o) / 100;
+
+                // Alış: çift yönlü
+                if (lastEdited === 'pExcl') {
+                    // Hesaplama sonrası değeri formatDecimal ile UI için biçimlendiriyoruz.
+                    purchaseIncl.value = formatDecimal(pEx * factor);
+                } else if (lastEdited === 'pIncl') {
+                    const pIn = parseDecimal(purchaseIncl.value) || 0;
+                    purchaseExcl.value = formatDecimal(pIn / factor);
+                } else {
+                    purchaseIncl.value = formatDecimal(pEx * factor);
+                }
+
+                // Satış: çift yönlü
+                if (lastEdited === 'sExcl') {
+                    saleIncl.value = formatDecimal(sEx * factor);
+                } else if (lastEdited === 'sIncl') {
+                    const sIn = parseDecimal(saleIncl.value) || 0;
+                    saleExcl.value = formatDecimal(sIn / factor);
+                } else {
+                    saleIncl.value = formatDecimal(sEx * factor);
+                }
+
+                // İndirimli son fiyat
+                const now     = new Date();
+                const endDate = discountEnd.value ? new Date(discountEnd.value) : null;
+                let final     = parseDecimal(saleIncl.value) || 0;
+                if (isDiscHidden.value === 'true' && d > 0 && endDate && now <= endDate) {
+                  final = final * (1 - d / 100);
+                }
+
+                // Back-end'e gönderilecek olan değeri,
+                // standart bir formatta (nokta ile) tutuyoruz.
+                // Bu sayede back-end'e 103.00 değeri gönderilecek.
+                salePrice.value = final.toFixed(2);
+            }
+
+            // Fiyat event’leri
+            purchaseExcl.addEventListener('input', () => { lastEdited = 'pExcl'; recalcAll(); });
+            purchaseIncl.addEventListener('input', () => { lastEdited = 'pIncl'; recalcAll(); });
+            saleExcl.addEventListener('input',     () => { lastEdited = 'sExcl'; recalcAll(); });
+            saleIncl.addEventListener('input',     () => { lastEdited = 'sIncl'; recalcAll(); });
+            isDiscBtn.addEventListener('click',     () => { recalcAll(); });
+
+            [taxRate, otv, discountRate, discountEnd].forEach(el =>
+              el.addEventListener('input', () => recalcAll())
+            );
+
+            recalcAll();
+
+            // ——— Fotoğraf işlemleri ———
+
+            // Ortak preview + sil + ana fonksiyonu
+            function handleFiles(files) {
+                const existingCount = existingEls().length;
+                if (existingCount + files.length > 12) {
+                    alert('En fazla 12 fotoğraf yükleyebilirsiniz.');
+                    return;
+                }
+
+                files.forEach(file => {
+                    if (!file.type.startsWith('image/')) return;
+                    const reader = new FileReader();
+                    reader.onload = ev => {
+                        const card = document.createElement('div');
+                        card.className = 'photo-card relative';
+                        card.dataset.fileName = file.name;
+                        // Eğer sunucudan gelmiş bir model image ise, dataset.id’yi setleyin
+                         card.dataset.id = file.id || '';
+
+                        card.innerHTML = `
+                          <button type="button" class="delete-photo absolute top-1 right-1 bg-white text-red-500 rounded-full w-6 h-6 text-sm flex items-center justify-center shadow">✕</button>
+                          <img src="${ev.target.result}" class="w-full object-cover rounded" />
+                          <button type="button" class="main-tag ${(file.id && mainIdEl.value === file.id) ? 'selected' : ''}">Ana</button>
+                        `;
+                        grid.appendChild(card);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            // Dosya input ve drag&drop
+            upload.addEventListener('change', e => handleFiles(Array.from(e.target.files)));
+            ['dragenter','dragover'].forEach(evt =>
+                dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.add('border-indigo-500','bg-indigo-50'); })
+            );
+            ['dragleave','drop'].forEach(evt =>
+                dropZone.addEventListener(evt, e => { e.preventDefault(); dropZone.classList.remove('border-indigo-500','bg-indigo-50'); })
+            );
+            dropZone.addEventListener('drop', e => {
+                const dtFiles = Array.from(e.dataTransfer.files);
+                const dt = new DataTransfer();
+                Array.from(upload.files).forEach(f => dt.items.add(f));
+                dtFiles.forEach(f => dt.items.add(f));
+                upload.files = dt.files;
+                handleFiles(dtFiles);
+            });
+
+            // Delegasyon: Ana seçim & silme
+            grid.addEventListener('click', e => {
+                // Silme
+                const del = e.target.closest('.delete-photo');
+                if (del) {
+                    const card = del.closest('.photo-card');
+                    const imageId = card.dataset.id; // Silinecek görselin GUID'sini data-id'den al
+
+                    // 1. input.files'ı güncelle (yeni yüklemeler için - mevcut mantık, koru)
+                    // Bu kısım, yeni yüklenen ancak henüz kalıcı hale getirilmemiş dosyaları işler.
+                    // 'UploadFiles'ın dosya giriş elementinizin ID'si olduğunu varsayalım.
+                    const upload = document.getElementById('UploadFiles');
+                    if (upload && upload.files) {
+                        const name = card.dataset.fileName; // Yeni yüklemeler için data-fileName'ın var olduğunu varsayalım
+                        const dt = new DataTransfer();
+                        Array.from(upload.files).forEach(f => { if (f.name!== name) dt.items.add(f); });
+                        upload.files = dt.files;
+                    }
+
+                    // 2. Mevcut görseller için karşılık gelen gizli girişi kaldır
+                    // Bu, mevcut görsel silmelerini senkronize etmek için kritik yeni mantıktır.
+                    if (imageId) { // Bir ID'si olan mevcut bir görsel olduğundan emin ol
+                        // Belirli adı ve değeri olan gizli girişi seç
+                        const existingIdInput = document.querySelector(`input.existing-id-input[value="${imageId}"]`);
+                        if (existingIdInput) {
+                            existingIdInput.remove(); // Gizli girişi DOM'dan kaldır
+                        }
+                    }
+
+                    // 3. Kartı DOM'dan kaldır (mevcut mantık, koru)
+                    // Bu, kullanıcıya anında görsel geri bildirim sağlar.
+                    card.remove();
+
+                    // 4. Seçili ana fotoğraf kaldırıldıysa, seçimini temizle (mevcut mantık, koru)
+                    // mainIndexEl ve mainIdEl'in global olarak erişilebilir DOM öğeleri olduğunu varsayalım
+                    if (card.querySelector('.main-tag.selected')) {
+                        mainIndexEl.value = '';
+                        mainIdEl.value = '';
+                    }
+                    return;
+                }
+
+                // Ana fotoğraf seçme
+                const btn = e.target.closest('button.main-tag');
+                if (!btn) return;
+                grid.querySelectorAll('button.main-tag').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+
+                const cards = existingEls();
+                const card  = btn.closest('.photo-card');
+                const idx   = cards.indexOf(card);
+                mainIndexEl.value = idx;
+                mainIndexEl.setAttribute('value', idx);
+
+                const id = card.dataset.id || '';
+                mainIdEl.value = id;
+                mainIdEl.setAttribute('value', id);
+            });
+        });
+
+        // IsActive Toggle
+        function toggleStatus() {
+            var btn = document.getElementById('statusToggleBtn');
+            var hiddenInput = document.getElementById('IsActiveHidden');
+            var isActive = hiddenInput.value === 'true';
+
+            if (isActive) {
+                btn.classList.remove('status-active');
+                btn.classList.add('status-inactive');
+                btn.textContent = 'Pasif';
+                hiddenInput.value = 'false';
+            } else {
+                btn.classList.remove('status-inactive');
+                btn.classList.add('status-active');
+                btn.textContent = 'Aktif';
+                hiddenInput.value = 'true';
+            }
+        }
+
+        // Is Discount Active Toggle
+        function toggleIsDiscountActive() {
+            const btn = document.getElementById('IsDiscountActiveBtn');
+            const hidden = document.getElementById('IsDiscountActiveHidden');
+            const fields = [
+                document.getElementById('discountField1'),
+                document.getElementById('discountField2'),
+                document.getElementById('discountField3')
+            ];
+
+            const isActive = hidden.value.toLowerCase() === 'true';
+
+            if (!isActive) {
+                btn.classList.remove('status-inactive');
+                btn.classList.add('status-active');
+                btn.textContent = 'Evet';
+                fields.forEach(f => f.style.display = 'block');
+            } else {
+                btn.classList.remove('status-active');
+                btn.classList.add('status-inactive');
+                btn.textContent = 'Hayır';
+                fields.forEach(f => f.style.display = 'none');
+            }
+
+            hidden.value = (!isActive).toString();
+        }
+
+        // Stock Tracking Toggle
+        function toggleStockTracking() {
+            const btn = document.getElementById('StockTrackingBtn');
+            const hidden = document.getElementById('StockTrackingHidden');
+            const fields = [document.getElementById('criticalStockField')];
+
+            const isActive = hidden.value.toLowerCase() === 'true';
+
+            if (!isActive) {
+                btn.classList.remove('status-inactive');
+                btn.classList.add('status-active');
+                btn.textContent = 'Evet';
+                fields.forEach(f => f.style.display = 'block');
+            } else {
+                btn.classList.remove('status-active');
+                btn.classList.add('status-inactive');
+                btn.textContent = 'Hayır';
+                fields.forEach(f => f.style.display = 'none');
+            }
+
+            hidden.value = (!isActive).toString();
+        }
+
+        // Show In Selected Toggle
+        function toggleShowInSelected() {
+            var btn = document.getElementById('ShowInSelectedBtn');
+            var hiddenInput = document.getElementById('ShowInSelectedHidden');
+            var isActive = hiddenInput.value === 'true';
+
+            if (isActive) {
+                btn.classList.remove('status-active');
+                btn.classList.add('status-inactive');
+                btn.textContent = 'Hayır';
+                hiddenInput.value = 'false';
+            } else {
+                btn.classList.remove('status-inactive');
+                btn.classList.add('status-active');
+                btn.textContent = 'Evet';
+                hiddenInput.value = 'true';
+            }
+        }
+
+        $(document).ready(function () {
+            $('form').on('submit', function (e) {
+                e.preventDefault();
+                var formEl = this;
+                var formData = new FormData(formEl);
+                var token = $('input[name="__RequestVerificationToken"]', formEl).val();
+                formData.set("__RequestVerificationToken", token);
+
+                showConfirmationModal('Ürünü kaydetmek istediğinizden emin misiniz?', function () {
+                    $.ajax({
+                        url: formEl.action,
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        headers: {
+                          'RequestVerificationToken': token
+                        },
+                        success: function (response) {
+                          if (response.success) {
+                            toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                            setTimeout(function () {
+                              window.location.href = '/Admin/Product/Index';
+                            }, 3000);
+                          } else {
+                            toastr.error(response.message || 'Bir hata oluştu');
+                          }
+                        },
+                        error: function (xhr) {
+                          console.error('Hata kodu:', xhr.status, 'Gönderilen token:', token);
+                          toastr.error('Bir hata oluştu (kod ' + xhr.status + ')');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+}

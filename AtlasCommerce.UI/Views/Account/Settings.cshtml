@@ -1,0 +1,138 @@
+﻿<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+@using AtlasCommerce.Application.Interfaces
+@inject ICurrentUserService _currentUserService
+@model AtlasCommerce.Application.ViewModels.EmptyVM
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Hesap Ayarları";
+
+
+    var firstName = _currentUserService.FirstName();
+    var lastName = _currentUserService.LastName();
+    var userName = _currentUserService.UserName();
+    var emailAddress = _currentUserService.EmailAddress();
+    var phoneNumber = _currentUserService.PhoneNumber();
+}
+
+<div class="flex flex-col justify-center py-12 bg-gray-50 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="px-6 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center profile-title">
+                <i class='bx bx-cog'></i> 
+                Hesap Ayarları
+            </h2>
+            <form id="settingsForm" method="post" asp-controller="Account" asp-action="UpdateUserSettings">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Ad</label>
+                    <input type="text" name="Name" value="@firstName"
+                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm" style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-900 px-1 py-1">Soyad</label>
+                    <input type="text" name="LastName" value="@lastName"
+                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm" style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Kullanıcı Adı</label>
+                    <input type="text" name="UserName" value="@userName"
+                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm" style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">E-Posta Adresi</label>
+                    <input type="email" name="Email" value="@emailAddress"
+                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm" style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Telefon Numarası</label>
+                    <input type="text" name="PhoneNumber" value="@phoneNumber"
+                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm" style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Yeni Şifre</label>
+                    <input type="password" name="Password"
+                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm" style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                </div>
+
+                <button type="submit" class="w-full px-4 py-2 rounded-md btn-custom" id="btnSaveProfileSettings">
+                    Kaydet
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id="passwordConfirmModal" class="fixed inset-0 hidden bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">Şifre Doğrulama</h3>
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Mevcut Şifre</label>
+            <input type="password" id="currentPassword"
+                   class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
+        </div>
+        <div class="mb-4">
+            <label class="block text-sm font-semibold text-gray-700 mb-1">Şifre Tekrarı</label>
+            <input type="password" id="confirmPassword"
+                   class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
+        </div>
+        <div class="flex justify-end space-x-2">
+            <button type="button" id="cancelModal"
+                    class="px-4 py-2 rounded-md bg-gray-200">
+                İptal
+            </button>
+            <button type="button" id="confirmSave"
+                    class="px-4 py-2 rounded-md bg-blue-600 text-white">
+                Onayla
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById("settingsForm");
+    const saveBtn = document.getElementById("btnSaveProfileSettings");
+    const modal = document.getElementById("passwordConfirmModal");
+    const cancelModal = document.getElementById("cancelModal");
+    const confirmSave = document.getElementById("confirmSave");
+
+    saveBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+    });
+
+    cancelModal.addEventListener("click", function () {
+        modal.classList.remove("flex");
+        modal.classList.add("hidden");
+    });
+
+    confirmSave.addEventListener("click", function () {
+        const currentPass = document.getElementById("currentPassword").value;
+        const confirmPass = document.getElementById("confirmPassword").value;
+
+        if (!currentPass || !confirmPass) {
+            toastr.error("Lütfen tüm alanları doldurun.");
+            return;
+        }
+        if (currentPass !== confirmPass) {
+            toastr.error("Şifreler eşleşmiyor.");
+            return;
+        }
+
+        // Şifreleri gizli inputlara ekleyip formu submit edelim
+        const hiddenCurrent = document.createElement("input");
+        hiddenCurrent.type = "hidden";
+        hiddenCurrent.name = "CurrentPassword";
+        hiddenCurrent.value = currentPass;
+        form.appendChild(hiddenCurrent);
+
+        form.submit();
+    });
+</script>

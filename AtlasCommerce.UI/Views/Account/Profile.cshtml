@@ -1,0 +1,70 @@
+﻿<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+@using AtlasCommerce.Application.Interfaces
+@inject ICurrentUserService _currentUserService
+@model AtlasCommerce.Application.ViewModels.EmptyVM
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Hesabım";
+
+    var firstName = _currentUserService.FirstName();
+    var lastName = _currentUserService.LastName();
+    var userName = _currentUserService.UserName();
+    var emailAddress = _currentUserService.EmailAddress();
+    var phoneNumber = _currentUserService.PhoneNumber();
+}
+
+<div class="flex flex-col justify-center py-12 bg-gray-50 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="px-6 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center profile-title">
+                <i class='bx bx-user'></i>
+                Hesabım
+            </h2>
+
+            <p class="mb-2"><strong>Ad:</strong> @firstName</p>
+            <p class="mb-2"><strong>Soyad:</strong> @lastName</p>
+            <p class="mb-2"><strong>Kullanıcı Adı:</strong> @userName</p>
+            <p class="mb-2"><strong>E-Posta Adresi:</strong> @emailAddress</p>
+            <p class="mb-2"><strong>Telefon Numarası:</strong> @phoneNumber</p>
+            <div class="row mt-8">
+                <div class="col-12 mb-2 profile-options">
+                    <a href="#" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
+                        <i class='bx bx-shopping-bag'></i>
+                        <span class="mx-auto">Siparişlerim</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-12 mb-2 profile-options">
+                    <a href="#" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
+                        <i class='bx bx-credit-card'></i>
+                        <span class="mx-auto">Ödemelerim</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-12 mb-2 profile-options">
+                    <a asp-action="Messages" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
+                        <i class='bx bx-message-dots'></i>
+                        <span class="mx-auto">Mesajlarım</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mt-2">
+                <div class="col-12 mb-2 profile-options profile-options-settings">
+                    <a asp-action="Settings" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
+                        <i class='bx bx-cog'></i>
+                        <span class="mx-auto">Hesap Ayarları</span>
+                    </a>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>

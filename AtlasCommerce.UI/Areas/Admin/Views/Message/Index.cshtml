@@ -1,0 +1,404 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model FilteredResult<AtlasCommerce.Application.ViewModels.MessageVM>
+
+@{
+    ViewData["Title"] = "Mesajlar";
+    Layout = "_Layout";
+
+    var searchTerm = Model.SearchTerm ?? "";
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+    int groupSize = 5;
+    int currentGroup = (currentPage - 1) / groupSize;
+    int startPage = currentGroup * groupSize + 1;
+    int endPage = Math.Min(startPage + groupSize - 1, totalPages);
+    int messageType = Model.MessageType;
+}
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="table-title text-xl font-semibold">Mesajlar</div>
+
+            <form method="get" class="custom-search inline-flex">
+                <div class="custom-search">
+                    <input name="searchTerm"
+                           type="text"
+                           placeholder="Arama Yap"
+                           class="table-searchbox"
+                           value="@Model.SearchTerm" />
+                    <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
+                </div>
+            </form>
+
+            <div class="dashboard-actions">
+                <div class="flex flex-wrap gap-2 p-2 dark rounded-2xl shadow">
+                    <a class="flex items-center justify-center px-3 py-2 text-white rounded-xl transition filter-btn btn-show-readed-messages" style="border: 1px solid var(--dark);" title="Tüm Mesajlar" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
+                        <i class='bx bx-list-ul' style="color: var(--dark);"></i>
+                    </a>
+                    <a class="flex items-center justify-center px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition filter-btn btn-show-deleted-messages"
+                       title="Silinmiş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
+                        <i class="bx bx-trash"></i>
+                    </a>
+                    <a class="flex items-center justify-center px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition filter-btn btn-show-unreaded-messages" title="Sadece okunmamış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
+                        <i class="bx bx-envelope"></i>
+                    </a>
+                    <a class="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition filter-btn btn-show-readed-messages" title="Sadece okunmuş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
+                        <i class="bx bx-envelope-open"></i>
+                    </a>
+                    <button type="button" class="flex items-center justify-center px-3 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition filter-btn btn-mark-all-as-unread" title="Tümünü okunmadı olarak işaretle">
+                        <i class="bx bx-envelope"></i>
+                    </button>
+                    <button type="button" class="flex items-center justify-center px-3 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition filter-btn btn-mark-all-as-read" title="Tümünü okundu olarak işaretle">
+                        <i class="bx bx-envelope-open"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table class="generic-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Gönderen</th>
+                        <th>Telefon Numarası</th>
+                        <th>E-Posta Adresi</th>
+                        <th>Konu</th>
+                        <th>Oluşturulma Tarihi</th>
+                        <th>Durum</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Items.Count > 0)
+                    {
+                        @foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <td></td>
+                                <td class="user-cell">
+                                    <div>
+                                        <div class="user-name">@string.Format("{0} {1}", item?.FirstName, item?.LastName)</div>
+                                    </div>
+                                </td>
+                                <td>@(item?.PhoneNumber ?? "-")</td>
+                                <td>@(item?.EmailAddress ?? "-")</td>
+                                <td>@(item?.ShortTopic ?? "-")</td>
+                                <td>@item?.CreatedAt</td>
+                                <td>
+                                    @if (item.IsRead)
+                                    {
+                                        <span class="status-label status-active">Okundu</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-label status-inactive">Okunmadı</span>
+                                    }
+                                </td>
+                                <td class="action-cell">
+                                    <a href="#" class="action-toggle">
+                                        <i class="bx bx-dots-horizontal-rounded"></i>
+                                    </a>
+                                    <ul class="action-menu">
+                                        <li>
+                                            <a asp-area="Admin" asp-controller="Message" asp-action="View" asp-route-id="@item.Id" class="action-item">
+                                                <i class='bx  bx-pencil'></i> Görüntüle
+                                            </a>
+                                        </li>
+                                        <li>
+                                            @if (item.IsRead)
+                                            {
+                                                <a class="action-item btn-mark-as-unread" data-id="@item.Id" data-topic="@item.Topic">
+                                                    <i class="bx bx-envelope-open"></i> Okunmadı olarak işaretle
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <a class="action-item btn-mark-as-read" data-id="@item.Id" data-topic="@item.Topic">
+                                                    <i class="bx bx-envelope"></i> Okundu olarak işaretle
+                                                </a>
+                                            }
+                                        </li>
+                                        <li>
+                                            <a class="action-item btn-delete-message" data-id="@item.Id" data-topic="@item.Topic">
+                                                <i class='bx bx-trash'></i> Sil
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">Veri bulunamadı.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-wrapper">
+            <div class="pagination-left">
+                <span>Sayfa başına kayıt sayısı:</span>
+                <select class="theme-input" onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@Model.SearchTerm'">
+                    @foreach (var size in new[] { 10, 25, 50, 100 })
+                    {
+                        <option value="@size"
+                                selected="@(size == Model.PageSize ? "selected" : null)">
+                            @size
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="pagination-center">
+                <ul class="pagination justify-content-center mt-3">
+                    @if (startPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = startPage - 1, pageSize = pageSize, searchTerm = searchTerm, messageType = messageType })'>
+                                «
+                            </a>
+                        </li>
+                    }
+
+                    @for (int p = startPage; p <= endPage; p++)
+                    {
+                        <li class="page-item @(p == currentPage ? "active" : "")">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = p, pageSize = pageSize, searchTerm = searchTerm, messageType = messageType })'>
+                                @p
+                            </a>
+                        </li>
+                    }
+
+                    @if (endPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link"
+                               href='@Url.Action("Index", new { pageNumber = endPage + 1, pageSize = pageSize, searchTerm = searchTerm, messageType = messageType })'>
+                                »
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menus = Array.from(document.querySelectorAll('.action-menu'));
+            menus.forEach(menu => {
+                menu._origParent = menu.parentElement;
+            });
+
+            function closeAll() {
+                menus.forEach(menu => {
+                    menu.classList.remove('open');
+                    menu.style.position = '';
+                    menu.style.top = '';
+                    menu.style.left = '';
+                    menu.style.zIndex = '';
+                    if (menu.parentElement !== menu._origParent) {
+                        menu._origParent.appendChild(menu);
+                    }
+                });
+            }
+
+            closeAll();
+            document.querySelectorAll('.action-toggle').forEach(toggle => {
+                const menu = toggle.parentElement.querySelector('.action-menu');
+
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (menu.classList.contains('open')) {
+                        return closeAll();
+                    }
+
+                    closeAll();
+
+                    document.body.appendChild(menu);
+
+                    const rect = toggle.getBoundingClientRect();
+                    menu.style.position = 'fixed';
+                    menu.style.top = (rect.top - menu.offsetHeight - 6) + 'px';
+                    menu.style.left = rect.left + 'px';
+                    menu.style.zIndex = 10000;
+
+                    menu.classList.add('open');
+                });
+            });
+
+            document.addEventListener('click', closeAll);
+        });
+
+        $(document).ready(function() {
+            // Tümünü okundu olarak işaretle
+            $('.btn-mark-all-as-read').on('click', function () {
+                showConfirmationModal("Tüm mesajları okundu olarak işaretlemek istediğinizden emin misiniz?",
+                    function () {
+                        $.ajax({
+                            url: "/Admin/Message/MarkAllAsRead",
+                            type: 'GET',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Tüm mesajlar okundu olarak işaretlendi.');
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                }
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function () {
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+
+            // Tümünü okunmadı olarak işaretle
+            $('.btn-mark-all-as-unread').on('click', function () {
+                showConfirmationModal("Tüm mesajları okunmadı olarak işaretlemek istediğinizden emin misiniz?",
+                    function () {
+                        $.ajax({
+                            url: "/Admin/Message/MarkAllAsUnread",
+                            type: 'GET',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Tüm mesajlar okunmadı olarak işaretlendi.');
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                }
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function () {
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+
+            // Seçilen mesajı okunmadı olarak işaretle.
+            $('.btn-mark-as-unread').on('click', function () {
+                var id = $(this).data('id');
+                var topic = $(this).data('topic');
+
+                var confirmationMessage = `'${topic}' konulu mesajı okunmadı olarak işaretlemek istediğinizden emin misiniz?`;
+
+                showConfirmationModal(confirmationMessage,
+                    function () {
+                        $.ajax({
+                            url: '/Admin/Message/UnreadMessage',
+                            type: 'POST',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                                id: id
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Mesaj okunmadı olarak işaretlendi.');
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                }
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function () {
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+
+            // Seçilen mesajı okundu olarak işaretle.
+            $('.btn-mark-as-read').on('click', function () {
+                var id = $(this).data('id');
+                var topic = $(this).data('topic');
+
+                var confirmationMessage = `'${topic}' konulu mesajı okundu olarak işaretlemek istediğinizden emin misiniz?`;
+
+                showConfirmationModal(confirmationMessage,
+                    function () {
+                        $.ajax({
+                            url: '/Admin/Message/ReadMessage',
+                            type: 'POST',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                                id: id
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Mesaj okundu olarak işaretlendi.');
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                }
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function () {
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+
+            // Seçilen mesajı okundu olarak işaretle.
+            $('.btn-delete-message').on('click', function () {
+                var id = $(this).data('id');
+                var topic = $(this).data('topic');
+
+                var confirmationMessage = `'${topic}' konulu mesajı silmek istediğinizden emin misiniz?`;
+
+                showConfirmationModal(confirmationMessage,
+                    function () {
+                        $.ajax({
+                            url: '/Admin/Message/DeleteMessage',
+                            type: 'POST',
+                            data: {
+                                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                                id: id
+                            },
+                            success: function (response) {
+                                if (response.success) {
+                                    toastr.success(response.message || 'Mesaj başarıyla silindi.');
+                                } else {
+                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                }
+                                setTimeout(function () {
+                                    location.reload();
+                                }, 3000);
+                            },
+                            error: function () {
+                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                            }
+                        });
+                    }
+                );
+            });
+        });
+    </script>
+}

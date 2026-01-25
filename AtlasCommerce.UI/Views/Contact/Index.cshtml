@@ -1,0 +1,157 @@
+﻿@model AtlasCommerce.Application.ViewModels.UserMessageVM
+
+@using AtlasCommerce.Application.Interfaces
+@inject ICurrentUserService _currentUserService
+
+@{
+    ViewData["Title"] = "İletişim";
+    var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
+
+    var firstName = _currentUserService.FirstName();
+    var lastName = _currentUserService.LastName();
+    var userName = _currentUserService.UserName();
+    var emailAddress = _currentUserService.EmailAddress();
+    var phoneNumber = _currentUserService.PhoneNumber();
+
+    var settings_phone = Model?.Settings?.PhoneNumber;
+    var settings_email = Model?.Settings?.EmailAddress;
+    var settings_address = Model?.Settings?.Address;
+    var settings_address_encoded = System.Net.WebUtility.UrlEncode(settings_address);
+    var settings_address_iframe_src = "https://www.google.com/maps?q=" + settings_address_encoded + "&output=embed";
+    var settings_mailto = "mailto:" + settings_email;
+}
+
+<div class="contact-page container my-5">
+    <h2 class="text-center mb-4">Bize Ulaşın</h2>
+
+    <div class="row align-items-stretch" style="min-height: 500px;">
+        <!-- Bilgi Kartları -->
+        <div class="col-md-6 d-flex flex-column">
+            <div class="info-card p-4 rounded bg-white mb-3">
+                <div class="my-4">
+                    <h5>Telefon</h5>
+                    <p><a href="tel:@settings_phone">@settings_phone</a></p>
+                </div>
+
+                <div class="my-4">
+                    <h5>E‑Posta Adresi</h5>
+                    <p>
+                        <a href="@settings_mailto">@settings_email</a><br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="map-card" style="flex-grow: 1;">
+                <iframe width="100%"
+                        height="100%"
+                        style="border: 0; border-radius: 8px;"
+                        loading="lazy"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="@settings_address_iframe_src">
+            </iframe>
+            </div>
+        </div>
+
+        <!-- İletişim Formu -->
+        <div class="col-md-6">
+            @if (!isAuthenticated)
+            {
+                <form asp-controller="Contact" asp-action="SendMessageAsync" method="post" class="contact-form p-4 rounded bg-white">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Ad</label>
+                        <input asp-for="Name" class="form-control" placeholder="Adınız" autocomplete="off" maxlength="30" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Surname" class="form-label">Soyad</label>
+                        <input asp-for="Surname" class="form-control" placeholder="Soyadınız" autocomplete="off" maxlength="30" />
+                        <span asp-validation-for="Surname" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label">Telefon Numarası</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon Numaranız" autocomplete="off" maxlength="11" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmailAddress" class="form-label">E-Posta Adresi *</label>
+                        <input asp-for="EmailAddress" class="form-control" placeholder="E-posta Adresiniz" autocomplete="off" maxlength="50" />
+                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Topic" class="form-label">Konu *</label>
+                        <textarea asp-for="Topic" class="form-control" rows="1" placeholder="Konu" autocomplete="off" maxlength="100"></textarea>
+                        <span asp-validation-for="Topic" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Message" class="form-label">Mesajınız *</label>
+                        <textarea asp-for="Message" class="form-control" rows="5" placeholder="Mesaj..." autocomplete="off" maxlength="500"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
+                        <i class="ri-send-plane-line"></i> Gönder
+                    </button>
+                </form>
+            }
+            else
+            {
+                <form asp-controller="Contact" asp-action="SendMessageAsync" method="post" class="contact-form p-4 rounded bg-white">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Ad</label>
+                        <input asp-for="Name" class="form-control" placeholder="Ad" autocomplete="off" maxlength="30" value="@firstName" readonly />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Surname" class="form-label">Soyad</label>
+                        <input asp-for="Surname" class="form-control" placeholder="Soyad" autocomplete="off" maxlength="30" value="@lastName" readonly />
+                        <span asp-validation-for="Surname" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label">Telefon Numarası</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon Numarası" autocomplete="off" maxlength="11" value="@phoneNumber" readonly />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="EmailAddress" class="form-label">E-Posta Adresi *</label>
+                        <input asp-for="EmailAddress" class="form-control" placeholder="E-posta Adresi" autocomplete="off" maxlength="50" value="@emailAddress" readonly />
+                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
+                    </div>
+
+
+
+
+                    <div class="mb-3">
+                        <label asp-for="Topic" class="form-label">Konu *</label>
+                        <input asp-for="Topic" class="form-control" placeholder="Konu" maxlength="100" />
+                        <span asp-validation-for="Topic" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Message" class="form-label">Mesajınız *</label>
+                        <textarea asp-for="Message" class="form-control" rows="5" maxlength="500"></textarea>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
+                        <i class="ri-send-plane-line"></i> Gönder
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
