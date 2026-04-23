@@ -151,11 +151,19 @@ namespace AtlasCommerce.UI.Controllers.Cart
                 if (img?.Data != null)
                     imageDataUri = $"data:image/png;base64,{Convert.ToBase64String(img.Data)}";
 
+                var basePrice = product.SalePriceExcludingTaxes;
+
+                var otvAmount = basePrice * ((decimal)product.OTV / 100);
+                var vatAmount = (basePrice + otvAmount) * ((decimal)product.TaxRate / 100);
+
                 cart.Add(new CartItemVM
                 {
                     ProductId = product.Id,
                     Title = product.Name!,
-                    Price = product.SalePriceIncludingTaxes,
+                    PriceExcludingTaxes = basePrice,
+                    PriceIncludingTaxes = basePrice + otvAmount + vatAmount,
+                    VATAmount = vatAmount,
+                    OTVAmount = otvAmount,
                     Quantity = quantity,
                     ImageUrl = imageDataUri
                 });
@@ -164,6 +172,17 @@ namespace AtlasCommerce.UI.Controllers.Cart
             SaveCart(cart);
 
             return Json(new { success = true, cartCount = cart.Sum(x => x.Quantity) });
+        }
+
+        [HttpPost]
+        public IActionResult Clear()
+        {
+            HttpContext.Session.Remove(CartSessionKey);
+
+            return Json(new
+            {
+                success = true
+            });
         }
 
         [HttpPost]
@@ -182,7 +201,7 @@ namespace AtlasCommerce.UI.Controllers.Cart
             }
 
             var totalQuantity = cart.Sum(x => x.Quantity);
-            var totalPrice = cart.Sum(x => x.Price * x.Quantity);
+            var totalPrice = cart.Sum(x => x.PriceIncludingTaxes * x.Quantity);
 
             return Json(new { success = true, totalQuantity, totalPrice });
         }
@@ -206,11 +225,24 @@ namespace AtlasCommerce.UI.Controllers.Cart
 
             HttpContext.Session.SetString(CartSessionKey, JsonConvert.SerializeObject(cart));
 
-            var rowTotal = item != null ? item.Price * item.Quantity : 0;
-            var total = cart.Sum(x => x.Price * x.Quantity);
+            var rowTotal = item != null ? item.PriceIncludingTaxes * item.Quantity : 0;
+            var total = cart.Sum(x => x.PriceIncludingTaxes * x.Quantity);
             var count = cart.Sum(x => x.Quantity);
+            var subTotal = cart.Sum(x => x.PriceExcludingTaxes * x.Quantity);
+            var totalVAT = cart.Sum(x => x.VATAmount * x.Quantity);
+            var totalOTV = cart.Sum(x => x.OTVAmount * x.Quantity);
+            var totalTax = totalVAT + totalOTV;
 
-            return Json(new { rowTotal, total, count });
+            return Json(new
+            {
+                rowTotal,
+                total,
+                count,
+                subTotal,
+                totalVAT,
+                totalOTV,
+                totalTax
+            });
         }
 
         [HttpGet]
@@ -221,7 +253,7 @@ namespace AtlasCommerce.UI.Controllers.Cart
                 ? new List<CartItemVM>()
                 : JsonConvert.DeserializeObject<List<CartItemVM>>(sessionCart);
 
-            var total = cartItems.Sum(x => x.Price * x.Quantity);
+            var total = cartItems?.Sum(x => x.PriceIncludingTaxes * x.Quantity) ?? 0;
 
             return Json(new { total });
         }

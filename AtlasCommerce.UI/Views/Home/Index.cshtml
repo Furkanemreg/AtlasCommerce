@@ -132,7 +132,7 @@
 @if (Model?.SelectedProducts != null && Model.SelectedProducts.Any())
 {
         <section class="home-products">
-            <h2 class="products-title">FEATURED PRODUCTS</h2>
+            <h2 class="products-title">Seçili Ürünler</h2>
 
         @{
             var groupedSelected = Model.SelectedProducts
@@ -204,7 +204,7 @@
             </div>
 
             <div class="products-footer mt-4">
-                <a asp-controller="Products" asp-action="All" class="view-all-btn">View All</a>
+            <a asp-controller="Products" asp-action="All" class="view-all-btn">Tümünü Görüntüle</a>
             </div>
         </section>
 }
@@ -212,7 +212,7 @@
 
 <!-- Body => Kategoriler Alanı -->
 <section class="home-categories">
-    <h2 class="categories-title">TOP CATEGORIES</h2>
+    <h2 class="categories-title">Öne Çıkan Kategoriler</h2>
 
     <div class="categories-wrapper">
         @foreach (var category in Model.DropdownCategories ?? Enumerable.Empty<DropdownCategoryVM>())
@@ -235,7 +235,7 @@
     </div>
 
     <div class="categories-footer">
-        <a asp-controller="Categories" asp-action="Index" class="view-all-btn">View All</a>
+        <a asp-controller="Categories" asp-action="Index" class="view-all-btn">Tümünü Görüntüle</a>
     </div>
 </section>
 
@@ -250,7 +250,7 @@
                         <!-- Başlık ve Tümünü Görüntüle -->
                         <div class="showcase-header">
                             <h3 class="showcase-category-title">@category.Name</h3>
-                    <a asp-controller="Categories" asp-action="View" asp-route-id="@category.Id" class="view-all-btn-topright">View All</a>
+                    <a asp-controller="Categories" asp-action="View" asp-route-id="@category.Id" class="view-all-btn-topright">Tümünü Görüntüle</a>
                         </div>
 
                         <div id="@carouselId" class="carousel slide" data-bs-ride="carousel">

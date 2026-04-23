@@ -47,7 +47,7 @@
             <div class="nav-search d-none d-md-flex position-relative" style="width: 280px;">
                 <input id="mainSearchInput"
                        type="text"
-                       placeholder="Search in Products..."
+                       placeholder="Ürünlerde Ara..."
                        class="form-control pe-5"
                        style="color: gray;" />
                 <i id="mainSearchIcon"
@@ -64,7 +64,7 @@
                 <!-- Sepet ikonu -->
                 <div class="nav-cart d-flex align-items-center">
                     <a asp-controller="Cart" asp-action="Index" class="nav-icon position-relative" style="color: black !important;">
-                        <i class="fas fa-shopping-cart" style="color: #606060;"></i>
+                        <i class="fas fa-shopping-cart" style="color: #337ab7;"></i>
                         <span id="cartItemCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             @(ViewBag.CartItemCount ?? 0)
                         </span>
@@ -104,19 +104,19 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountMenu">
                                 <li>
                                     <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Profile">
-                                        <i class="ri-user-3-line me-1"></i> My Account
+                                        <i class="ri-user-3-line me-1"></i> Hesabım
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Settings">
-                                        <i class="ri-settings-3-line me-1"></i> Settings
+                                        <i class="ri-settings-3-line me-1"></i> Ayarlar
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider" style="color: #343a40;" /></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
                                         <button type="submit" class="dropdown-item text-danger dropdown-item-options">
-                                            <i class="ri-logout-box-line me-1"></i> Log Out
+                                            <i class="ri-logout-box-line me-1"></i> Çıkış Yap
                                         </button>
                                     </form>
                                 </li>
@@ -125,8 +125,8 @@
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Log In</a>
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Register</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Giriş Yap</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Kayıt Ol</a>
                     }
                 </div>
             </div>
@@ -170,18 +170,18 @@
             </div>
 
             <div class="footer-links">
-                <h4 style="color: #CFE8FF;">Quick Links</h4>
+                <h4 style="color: #CFE8FF;">Hızlı Bağlantılar</h4>
                 <ul>
-                    <li><a href="/">Home</a></li>
-                    <li><a asp-controller="Home" asp-action="About">About Us</a></li>
-                    <li><a asp-controller="Home" asp-action="Services">Our Services</a></li>
-                    <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
-                    <li><a asp-controller="Contact" asp-action="Index">Contact Us</a></li>
+                    <li><a href="/">Anasayfa</a></li>
+                    <li><a asp-controller="Home" asp-action="About">Hakkımızda</a></li>
+                    <li><a asp-controller="Home" asp-action="Services">Hizmetlerimiz</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a></li>
+                    <li><a asp-controller="Contact" asp-action="Index">İletişim</a></li>
                 </ul>
             </div>
 
             <div class="footer-contact">
-                <h4 style="color: #CFE8FF;">Contact Us</h4>
+                <h4 style="color: #CFE8FF;">Bize Ulaşın</h4>
                 <ul>
                     <li><i class="ri-map-pin-line"></i> @settings?.Address</li>
                     <li><i class="ri-phone-line"></i> @settings?.PhoneNumber</li>
@@ -198,7 +198,7 @@
         <div class="footer-bottom">
             <p>&copy; 2026 @settings?.BrandName</p>
             <p style="font-size:5px;" class="mb-0 p-0">
-                Developed By FurkanEmreGinyol & Abdul Qadeer Osmani
+                Developed By FurkanEmreGinyol & AbdulQadeerOsmani
             </p>
         </div>
     </footer>
@@ -213,7 +213,7 @@
 
             <!-- Tooltip -->
             <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
-                Contact Us
+                Bize Ulaşın
             </span>
         </a>
     </div>
@@ -226,7 +226,7 @@
 
             <!-- Tooltip -->
             <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
-                Contact via WhatsApp
+                WhatsApp İle İletişime Geç
             </span>
         </a>
     </div>

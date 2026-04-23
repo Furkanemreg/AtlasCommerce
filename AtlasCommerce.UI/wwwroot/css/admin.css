@@ -1049,7 +1049,7 @@ body {
     color: #888;
 }
 
-    .todo-list .empty-message-content i {
-        font-size: 2rem;
-        margin-bottom: 10px;
-    }
+.todo-list .empty-message-content i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
