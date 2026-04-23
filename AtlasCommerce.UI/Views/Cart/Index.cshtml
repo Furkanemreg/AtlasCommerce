@@ -10,7 +10,17 @@
 
 <div class="container">
     <div class="cart-container floating-animation">
-        <h1 class="cart-title">Sepetim</h1>
+        <div class="position-relative mb-3">
+            <h1 class="cart-title text-center m-0">Sepetim</h1>
+
+            @if (Model != null && Model.Items.Any())
+            {
+                <button class="btn btn-sm btn-outline-danger position-absolute end-0 top-50 translate-middle-y" id="clearCartBtn">
+                    <i class="fas fa-trash-alt me-1"></i>
+                    Sepeti Temizle
+                </button>
+            }
+        </div>
 
         <!-- Empty Cart State -->
         <div class="empty-cart @(Model == null || !Model.Items.Any() ? "" : "d-none")" id="emptyCart">
@@ -54,10 +64,10 @@
                                 </div>
                             </td>
                             <td>
-                                <span class="price-display">₺@item.Price.ToString("N2")</span>
+                                <span class="price-display">₺ @item.PriceIncludingTaxes.ToString("N2")</span>
                             </td>
                             <td>
-                                <span class="price-display" id="rowTotal-@item.ProductId">₺@((item.Price * item.Quantity).ToString("N2"))</span>
+                                <span class="price-display" id="rowTotal-@item.ProductId">₺ @((item.PriceIncludingTaxes * item.Quantity).ToString("N2"))</span>
                             </td>
                             <td>
                                 <div class="action-buttons">
@@ -84,17 +94,30 @@
                             <div class="d-flex justify-content-between mb-2">
                                 <span class="fs-5">Ara Toplam: </span>
                                 <span class="total-amount fs-5" id="cartSubtotal">
-                                    ₺ @Model.TotalAmount.ToString("N2")
+                                    ₺ @Model?.BaseTotal.ToString("N2")
                                 </span>
                             </div>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="fs-5">Toplam Kargo Ücreti: </span>
-                                <span class="fs-5" id="cartShipping">₺ 0.00</span>
-                            </div>
+
+                            @if (Model?.TotalTAX > 0)
+                            {
+                                <div class="d-flex justify-content-between mb-2 align-items-center">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="fs-5">Toplam Vergiler</span>
+
+                                        <i class="fas fa-circle-info text-secondary"
+                                           style="cursor:pointer"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#taxDetailModal"></i>
+                                    </div>
+
+                                    <span class="fs-5" id="cartTaxTotal">₺ @(Model.TotalTAX.ToString("N2"))</span>
+                                </div>
+                            }
+
                             <div class="d-flex justify-content-between border-top pt-2 mt-2">
                                 <span class="fs-5">Genel Toplam: </span>
                                 <span class="total-amount fs-5 fw-bold text-success" id="cartGrandTotal">
-                                    ₺@Model.TotalAmount.ToString("N2")
+                                    ₺ @Model?.TotalAmount.ToString("N2")
                                 </span>
                             </div>
                         </div>
@@ -107,11 +130,11 @@
                     <div class="d-flex gap-3 justify-content-end align-items-center">
                         <a asp-controller="Home" asp-action="Index" class="continue-shopping">
                             <i class="fas fa-arrow-left me-2"></i>
-                            Alışverişe Devam
+                            ALIŞVERİŞE DEVAM
                         </a>
                         <a asp-controller="Checkout" asp-action="Index" class="checkout-btn">
                             <i class="fas fa-credit-card me-2"></i>
-                            Ödeme Yap
+                            ÖDEMEYE GEÇ
                         </a>
                     </div>
                 </div>
@@ -146,6 +169,48 @@
     </div>
 </div>
 
+<!-- Tax Information Modal -->
+<div class="modal fade" id="taxDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header" style="background: #0d6efd !important;">
+                <h5 class="modal-title">
+                    Vergi Detayları
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                @if (Model?.TotalVAT > 0)
+                {
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>KDV Toplam</span>
+                        <strong id="vatTotalInfo">₺ @Model?.TotalVAT.ToString("N2")</strong>
+                    </div>
+                }
+
+                @if (Model?.TotalOTV > 0)
+                {
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>ÖTV Toplam</span>
+                        <strong id="otvTotalInfo">₺ @Model?.TotalOTV.ToString("N2")</strong>
+                    </div>
+                }
+
+                <hr class="m-2" />
+
+                <div class="d-flex justify-content-between">
+                    <span>Toplam Vergi</span>
+                    <strong id="taxTotalInfo">₺ @(Model?.TotalTAX.ToString("N2"))</strong>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
 @section Scripts {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -166,27 +231,32 @@
                 url: '/Cart/UpdateQuantity',
                 type: 'POST',
                 data: { productId: productId, quantity: value },
+                
                 success: function (res) {
-                    // Update row total
+                    // row total
                     let $rowTotal = $(`#rowTotal-${productId}`);
-                    $rowTotal.fadeOut(100, function () {
-                        $rowTotal.text(res.rowTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                        $rowTotal.fadeIn(200);
-                    });
+                    $rowTotal.text(res.rowTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
+                    
+                    // subtotal + grand total
+                    $("#cartSubtotal").text(res.subTotal.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
+                    $("#cartGrandTotal").text(res.total.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
 
-                    // Update cart total
-                    let $cartTotal = $("#cartSubtotal, #cartGrandTotal");
-                    $cartTotal.fadeOut(100, function () {
-                        $cartTotal.text(res.total.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }));
-                        $cartTotal.fadeIn(200);
-                    });
+                    // TAX update
+                    if ($("#cartTaxTotal").length) {
+                        $("#cartTaxTotal").text(res.totalTax.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
+                    }
 
-                    // Update count
-                    let cartCount = $("#cartCount");
-                    cartCount.fadeOut(100, function () {
-                        cartCount.text(res.count);
-                        cartCount.fadeIn(200);
-                    });
+                    if ($("#taxTotalInfo").length) {
+                        $("#taxTotalInfo").text(res.totalTax.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
+                    }
+
+                    if ($("#vatTotalInfo").length) {
+                        $("#vatTotalInfo").text(res.totalVAT.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
+                    }
+
+                    if ($("#otvTotalInfo").length) {
+                        $("#otvTotalInfo").text(res.totalOTV.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' }).replace('₺', '₺ '));
+                    }
 
                     updateCartCount();
                 }
@@ -226,17 +296,56 @@
                             $(`tr[data-id="${productToDelete}"]`).remove();
                             $("#cartCount").text(response.totalQuantity);
                             $("#cartItemCount").text(response.totalQuantity);
-                            $("#cartSubtotal, #cartGrandTotal").text(response.totalPrice.toFixed(2) + " ₺");
+                            $("#cartSubtotal, #cartGrandTotal").text("₺ " + response.subTotal.toFixed(2));
 
                             if (response.totalQuantity === 0) {
                                 $("#emptyCart").removeClass("d-none");
                                 $("#cartTable").addClass("d-none");
                                 $("#cartSummary").addClass("d-none");
+
+                                $("#clearCartBtn").remove();
                             }
                         }
                         $("#confirmDeleteModal").modal("hide");
                     }
                 });
+            });
+        });
+
+        $("#clearCartBtn").click(function () {
+
+            if (!confirm("Sepeti temizlemek istediğinizden emin misiniz ?")) {
+                return;
+            }
+
+            $.ajax({
+                url: '/Cart/Clear',
+                type: 'POST',
+                success: function (response) {
+
+                    if (response.success) {
+
+                        // UI reset
+                        $("#cartItems").empty();
+                        $("#cartTable").addClass("d-none");
+                        $("#cartSummary").addClass("d-none");
+                        $("#emptyCart").removeClass("d-none");
+
+                        // totals reset
+                        $("#cartSubtotal").text("₺ 0,00");
+                        $("#cartGrandTotal").text("₺ 0,00");
+                        $("#cartTaxTotal").text("₺ 0,00");
+
+                        $("#vatTotalInfo").text("₺ 0,00");
+                        $("#otvTotalInfo").text("₺ 0,00");
+                        $("#taxTotalInfo").text("₺ 0,00");
+
+                        // badge reset
+                        $("#cartItemCount").text("0");
+
+                        $("#clearCartBtn").remove();
+                    }
+                }
             });
         });
     </script>

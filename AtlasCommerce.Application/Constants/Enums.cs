@@ -47,3 +47,15 @@ public enum enmColors
     [Description("Birden Fazla Renk")]
     MultiColor = 14
 }
+
+public enum enmPaymentPlatform
+{
+    [Description("Trendyol")]
+    Trendyol = 1,
+
+    [Description("Hepsiburada")]
+    Hepsiburada = 2,
+
+    [Description("Shopify")]
+    Shopify = 3
+}

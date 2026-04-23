@@ -2222,7 +2222,58 @@ main {
         transform: translateY(-2px);
         box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
     }
+.save-order-btn {
+    background: linear-gradient(135deg, #f7971e, #ffd200); /* warm tone */
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
+    .save-order-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+
+    .save-order-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .save-order-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(255, 193, 7, 0.4);
+        color: #fff;
+    }
+
+.checkout-btn, 
+.continue-shopping,
+.save-order-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.checkout-btn i,
+.continue-shopping i,
+.save-order-btn i {
+    display: flex;
+    align-items: center;
+}
 .empty-cart {
     text-align: center;
     padding: 4rem 2rem;
