@@ -44,3 +44,48 @@ public enum enmOrderStatus
     [Description("İade Edildi")]
     Returned = 8
 }
+
+public enum enmPaymentStatus
+{
+    [Description("Ödeme Bekleniyor")]
+    Pending = 0,
+
+    [Description("Ödeme Onaylandı")]
+    Authorized = 1,
+
+    [Description("Ödeme Tamamlandı")]
+    Paid = 2,
+
+    [Description("Ödeme Başarısız")]
+    Failed = 3,
+
+    [Description("İptal Edildi")]
+    Cancelled = 4,
+
+    [Description("İade Edildi")]
+    Refunded = 5,
+
+    [Description("Kısmi İade")]
+    PartiallyRefunded = 6
+}
+
+public enum enmReturnStatus
+{
+    [Description("İade Yok")]
+    None = 0,
+
+    [Description("İade Talep Edildi")]
+    Requested = 1,
+
+    [Description("İade Onaylandı")]
+    Approved = 2,
+
+    [Description("İade Reddedildi")]
+    Rejected = 3,
+
+    [Description("Ürün Teslim Alındı")]
+    Received = 4,
+
+    [Description("Para İadesi Yapıldı")]
+    Refunded = 5
+}

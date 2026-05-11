@@ -9,6 +9,7 @@ namespace AtlasCommerce.Application.ViewModels
     public class CartItemVM
     {
         public Guid ProductId { get; set; }
+        public string? ProductCode { get; set; }
         public string Title { get; set; } = string.Empty;
 
         public decimal PriceExcludingTaxes { get; set; }

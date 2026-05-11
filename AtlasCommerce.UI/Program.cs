@@ -1,7 +1,6 @@
 using AtlasCommerce.Application.Middlewares;
 using AtlasCommerce.Application;
 using AtlasCommerce.Application.Interfaces;
-using AtlasCommerce.Application.Middlewares;
 using AtlasCommerce.Persistance;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,7 +15,8 @@ IConfiguration configuration = builder.Configuration.SetBasePath(System.IO.Direc
 builder.Services.AddPersistanceServices(builder.Configuration);
 builder.Services.AddApplicationServices();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(); 
+builder.Services.AddMemoryCache();
 
 // USER AUTH
 builder.Services.ConfigureApplicationCookie(options =>

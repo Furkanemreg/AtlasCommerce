@@ -2,13 +2,19 @@
 @{
     var settings = Model.Settings as WebsiteSettingsVM;
 
-    var wpUrl = settings?.PhoneNumber != null
-        ? "https://wa.me/" + settings.PhoneNumber
-        : "#";
+    string wpUrl = "";
+    string mailtoUrl = "";
 
-    var mailtoUrl = settings?.EmailAddress != null
-        ? "mailto:" + settings.EmailAddress
-        : "#";
+    if (settings != null)
+    {
+        wpUrl = !string.IsNullOrWhiteSpace(settings?.PhoneNumber)
+            ? "https://wa.me/" + settings.PhoneNumber.Replace(" ", "")
+            : "#";
+
+        mailtoUrl = !string.IsNullOrWhiteSpace(settings?.EmailAddress)
+            ? "mailto:" + settings.EmailAddress
+            : "#";
+    }
 }
 
 <!DOCTYPE html>

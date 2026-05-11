@@ -1,0 +1,303 @@
+﻿@using AtlasCommerce.UI.Helpers
+@model AtlasCommerce.Application.ViewModels.PaymentListVM
+
+@{
+    ViewData["Title"] = "Ödemelerim";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    .ol-root {
+        font-family: 'DM Sans', sans-serif;
+        padding: 2rem 1rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .ol-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .ol-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .ol-title-icon {
+        width: 36px;
+        height: 36px;
+        background: #1D9E75;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .ol-count-badge {
+        background: #E1F5EE;
+        color: #085041;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
+    }
+
+    .ol-panel {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .ol-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ol-table thead th {
+        font-family: 'Syne', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        color: #aaa;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fafafa;
+        text-align: left;
+    }
+
+    .ol-table thead th.text-right {
+        text-align: right;
+    }
+
+    .ol-table tbody tr {
+        border-bottom: 1px solid #f0f0f0;
+        transition: background .15s;
+    }
+
+    .ol-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .ol-table tbody tr:hover {
+        background: #fafafa;
+    }
+
+    .ol-table tbody td {
+        padding: 14px 16px;
+        font-size: 13.5px;
+        color: #1a1a1a;
+        vertical-align: middle;
+    }
+
+    .ol-order-num {
+        font-family: 'Syne', sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        color: #1a1a1a;
+    }
+
+    .ol-order-sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+
+    .ol-date-main {
+        font-size: 13px;
+        color: #1a1a1a;
+    }
+
+    .ol-date-time {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+
+    .ol-amount {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        display: block;
+        text-align: right;
+    }
+
+    .td-right {
+        text-align: right;
+    }
+
+    /* Kart marka renk noktası */
+    .card-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .card-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ddd;
+    }
+
+    .card-dot.visa {
+        background: #1A1F71;
+    }
+
+    .card-dot.mastercard {
+        background: #EB001B;
+    }
+
+    .card-dot.amex {
+        background: #007BC1;
+    }
+
+    .card-dot.troy {
+        background: #E63946;
+    }
+
+    .status-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.2px;
+    }
+
+    .s-draft {
+        background: #f0f0f0;
+        color: #666;
+    }
+
+    .s-pending {
+        background: #FAEEDA;
+        color: #633806;
+    }
+
+    .s-paid {
+        background: #E1F5EE;
+        color: #085041;
+    }
+
+    .s-cancelled {
+        background: #FCEBEB;
+        color: #791F1F;
+    }
+
+    .detail-btn {
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        background: none;
+        border: 1px solid #ddd;
+        padding: 6px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        white-space: nowrap;
+        transition: all .2s;
+        display: inline-block;
+    }
+
+    .detail-btn:hover {
+        background: #f5f5f5;
+        color: #1a1a1a;
+        border-color: #bbb;
+    }
+</style>
+
+<div class="ol-root">
+    <div class="ol-header">
+        <h1 class="ol-title mt-3">
+            <div class="ol-title-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#fff"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+                    <line x1="1" y1="10" x2="23" y2="10" />
+                </svg>
+            </div>
+            Ödemelerim
+            <span class="ol-count-badge">@Model.Payments.Count Ödeme</span>
+        </h1>
+    </div>
+
+    <div class="ol-panel">
+        <table class="ol-table">
+            <thead>
+                <tr>
+                    <th>Kart</th>
+                    <th>Sipariş</th>
+                    <th>Tarih</th>
+                    <th>Durum</th>
+                    <th class="text-right">Tutar</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model.Payments)
+                {
+                    var statusClass = p.Status switch
+                    {
+                        enmPaymentStatus.Pending => "s-pending",
+                        enmPaymentStatus.Paid => "s-paid",
+                        enmPaymentStatus.Failed => "s-cancelled",
+                        _ => "s-draft"
+                    };
+
+                    var brandSlug = (p.CardBrand ?? "").ToLower() switch
+                    {
+                        "visa" => "visa",
+                        "mastercard" => "mastercard",
+                        "amex" => "amex",
+                        "troy" => "troy",
+                        _ => ""
+                    };
+
+                    <tr>
+                        <td>
+                            <div class="ol-order-num card-chip">
+                                <span class="card-dot @brandSlug"></span>
+                                @p.CardBrand
+                            </div>
+                            <div class="ol-order-sub">@p.CardNumber</div>
+                        </td>
+                        <td>
+                            <div class="ol-order-num">#@p.OrderNumber</div>
+                            <div class="ol-order-sub">₺ @p.OrderTotal.ToString("N2")</div>
+                        </td>
+                        <td>
+                            <div class="ol-date-main">@p.CreatedAt.ToString("dd.MM.yyyy")</div>
+                            <div class="ol-date-time">@p.CreatedAt.ToString("HH:mm")</div>
+                        </td>
+                        <td>
+                            <span class="status-badge @statusClass">
+                                @EnumHelper.GetEnumDescription(p.Status)
+                            </span>
+                        </td>
+                        <td class="td-right">
+                            <span class="ol-amount">₺ @p.Amount.ToString("N2")</span>
+                        </td>
+                        <td class="td-right">
+                            <a href="/Order/Detail/@p.OrderId" class="detail-btn">Siparişe Git</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

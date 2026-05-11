@@ -13,6 +13,10 @@ namespace AtlasCommerce.Application.ViewModels
         public string? PhoneNumber { get; set; }
         public string? EmailAddress { get; set; }
         public string? Address { get; set; }
+        public string? Country { get; set; }
+        public string? City { get; set; }
+        public string? District { get; set; }
+        public string? ZipCode { get; set; }
         public string? LogoPath { get; set; }
         public string? FooterText { get; set; }
         public string? Instagram { get; set; }

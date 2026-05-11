@@ -20,6 +20,10 @@ namespace AtlasCommerce.Domain.Common
 
         public virtual DateTime? UpdatedAt { get; set; }
 
+        public virtual Guid? DeletedBy { get; set; }
+
+        public virtual DateTime? DeletedAt { get; set; }
+
         public virtual bool IsDeleted { get; set; } = false;
     }
 }

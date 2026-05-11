@@ -5,6 +5,16 @@
     Layout = "_Layout";
     ViewData["Title"] = Model?.Category?.Name;
 
+    var settings = Model?.Settings as WebsiteSettingsVM;
+
+    string phoneNumber = "";
+    string emailAddress = "";
+
+    if (settings != null)
+    {
+        phoneNumber = !string.IsNullOrWhiteSpace(settings!.PhoneNumber) ? settings!.PhoneNumber.Replace(" ", "") : "";
+        emailAddress = !string.IsNullOrWhiteSpace(settings!.EmailAddress) ? settings!.EmailAddress.Replace(" ", "") : "";
+    }
 
     // var searchTerm = Model.SearchTerm ?? "";
     var pageSize = Model.PageSize;
@@ -656,9 +666,9 @@
                                                     </a>
 
                                                     <div class="flex justify-center mt-2 mb-2">
-                                                        <a href="https://wa.me/905397193054?text=@Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {product.Title} ürünü hakkında bilgi almak istiyorum.")"
-                                                           target="_blank" rel="noopener"
-                                                           class="w-full max-w-[160px] px-4 py-2 text-sm font-semibold text-white text-center rounded-md transition bg-green-600 hover:bg-green-700">
+                                                    <a href="@($"https://wa.me/{phoneNumber}?text={Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {product.Title} ürünü hakkında bilgi almak istiyorum.")}")"
+                                                            target="_blank" rel="noopener"
+                                                            class="w-full max-w-[160px] px-4 py-2 text-sm font-semibold text-white text-center rounded-md transition bg-green-600 hover:bg-green-700">
                                                             <i class="fab fa-whatsapp"></i> Bilgi Al
                                                         </a>
                                                     </div>
