@@ -1,0 +1,515 @@
+﻿@using AtlasCommerce.UI.Helpers
+@model AtlasCommerce.Application.ViewModels.OrderListVM
+
+@{
+    ViewData["Title"] = "Siparişlerim";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    .ol-root {
+        font-family: 'DM Sans', sans-serif;
+        padding: 2rem 1rem;
+        max-width: 1100px;
+        margin: 0 auto;
+    }
+
+    .ol-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .ol-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+    }
+
+    .ol-title-icon {
+        width: 36px;
+        height: 36px;
+        background: #185FA5;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .ol-count-badge {
+        background: #E6F1FB;
+        color: #0C447C;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.3px;
+    }
+
+    .ol-panel {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 16px;
+        overflow: hidden;
+    }
+
+    .ol-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .ol-table thead th {
+        font-family: 'Syne', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        color: #999;
+        padding: 12px 16px;
+        border-bottom: 1px solid #f0f0f0;
+        background: #fafafa;
+        text-align: left;
+    }
+
+    .ol-table thead th.text-right {
+        text-align: right;
+    }
+
+    .ol-table tbody tr {
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.15s;
+    }
+
+    .ol-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    .ol-table tbody tr:hover {
+        background: #fafafa;
+    }
+
+    .ol-table tbody td {
+        padding: 14px 16px;
+        font-size: 13.5px;
+        color: #1a1a1a;
+        vertical-align: middle;
+    }
+
+    .ol-order-num {
+        font-family: 'Syne', sans-serif;
+        font-weight: 600;
+        font-size: 13px;
+        color: #1a1a1a;
+    }
+
+    .ol-order-sub {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+
+    .ol-date-main {
+        font-size: 13px;
+        color: #1a1a1a;
+    }
+
+    .ol-date-time {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+
+    .ol-item-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        color: #888;
+    }
+
+    .ol-amount {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        text-align: right;
+        display: block;
+    }
+
+    .td-right {
+        text-align: right;
+    }
+
+    .status-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.2px;
+    }
+
+    .s-draft {
+        background: #f0f0f0;
+        color: #666;
+    }
+    /* Taslak */
+    .s-pending {
+        background: #FAEEDA;
+        color: #633806;
+    }
+    /* Ödeme Bekleniyor */
+    .s-paid {
+        background: #E1F5EE;
+        color: #085041;
+    }
+    /* Ödendi */
+    .s-preparing {
+        background: #EEEDFE;
+        color: #3C3489;
+    }
+    /* Hazırlanıyor */
+    .s-shipped {
+        background: #E6F1FB;
+        color: #0C447C;
+    }
+    /* Kargoya Verildi */
+    .s-delivered {
+        background: #EAF3DE;
+        color: #27500A;
+    }
+    /* Teslim Edildi */
+    .s-cancelled {
+        background: #FCEBEB;
+        color: #791F1F;
+    }
+    /* İptal Edildi */
+    .s-return {
+        background: #FAECE7;
+        color: #4A1B0C;
+    }
+    /* İade Talebi */
+    .s-returned {
+        background: #D3D1C7;
+        color: #2C2C2A;
+    }
+
+    .detail-btn {
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        background: none;
+        border: 1px solid #ddd;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .detail-btn:hover {
+        background: #f5f5f5;
+        color: #1a1a1a;
+        border-color: #bbb;
+    }
+
+    .del-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(2px);
+    }
+
+    .del-modal-backdrop.show {
+        display: flex;
+    }
+
+    .del-modal {
+        width: 100%;
+        max-width: 380px;
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px 24px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,.18);
+        animation: fadeIn .18s ease;
+    }
+
+    .del-modal-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #FDECEC;
+        color: #D64545;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0 auto 18px;
+    }
+
+    .del-modal-title {
+        font-family: 'Syne',sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .del-modal-text {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 24px;
+    }
+
+    .del-modal-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .del-cancel-btn,
+    .del-confirm-btn {
+        flex: 1;
+        height: 46px;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Syne',sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .del-cancel-btn {
+        background: #f3f3f3;
+        color: #555;
+    }
+
+    .del-cancel-btn:hover {
+        background: #e7e7e7;
+    }
+
+    .del-confirm-btn {
+        background: #D64545;
+        color: #fff;
+    }
+
+    .del-confirm-btn:hover {
+        background: #BB3535;
+    }
+
+    .detail-btn {
+        background: #fff;
+        transition: all .18s ease;
+    }
+
+    .detail-btn-success {
+        border: 1px solid #1D9E75;
+        color: #1D9E75;
+    }
+
+    .detail-btn-success:hover {
+        background: #1D9E75;
+        color: #fff;
+    }
+
+    .detail-btn-danger {
+        border: 1px solid #D64545;
+        color: #D64545;
+    }
+
+    .detail-btn-danger:hover {
+        background: #D64545;
+        color: #fff;
+    }
+</style>
+
+<div class="ol-root">
+    <div class="ol-header">
+        <h1 class="ol-title mt-3">
+            <div class="ol-title-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                    <rect x="9" y="3" width="6" height="4" rx="2" />
+                    <path d="M9 12h6M9 16h4" />
+                </svg>
+            </div>
+            Siparişlerim
+            <span class="ol-count-badge">@Model.Orders.Count() sipariş</span>
+        </h1>
+    </div>
+
+    <div class="ol-panel">
+        <table class="ol-table">
+            <thead>
+                <tr>
+                    <th>Sipariş Numarası</th>
+                    <th>Sipariş Tarihi</th>
+                    <th>Ürün Sayısı</th>
+                    <th>Sipariş Durumu</th>
+                    <th class="text-right">Tutar</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>
+                            <div class="ol-order-num">#@order.OrderNumber</div>
+                        </td>
+                        <td>
+                            <div class="ol-date-main">@order.CreatedAt.ToString("dd.MM.yyyy")</div>
+                            <div class="ol-date-time">@order.CreatedAt.ToString("HH:mm")</div>
+                        </td>
+                        <td>
+                            <span class="ol-item-count">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                                    <line x1="3" y1="6" x2="21" y2="6" />
+                                </svg>
+                                @order.ItemCount ürün
+                            </span>
+                        </td>
+                        <td>
+                            @{
+                                var statusClass = order.Status switch
+                                {
+                                    enmOrderStatus.Draft => "s-draft",
+                                    enmOrderStatus.PendingPayment => "s-pending",
+                                    enmOrderStatus.Paid => "s-paid",
+                                    enmOrderStatus.Preparing => "s-preparing",
+                                    enmOrderStatus.Shipped => "s-shipped",
+                                    enmOrderStatus.Delivered => "s-delivered",
+                                    enmOrderStatus.Cancelled => "s-cancelled",
+                                    enmOrderStatus.ReturnRequested => "s-return",
+                                    enmOrderStatus.Returned => "s-returned",
+                                    _ => "s-draft"
+                                };
+                            }
+                            <span class="status-badge @statusClass">
+                                @EnumHelper.GetEnumDescription(order.Status)
+                            </span>
+                        </td>
+                        <td class="td-right">
+                            <span class="ol-amount">₺ @order.TotalAmount.ToString("N2")</span>
+                        </td>
+                        <td class="td-right">
+                            @if (order.Status == enmOrderStatus.Draft)
+                            {
+                                <form id="deleteDraftForm-@order.Id"
+                                      asp-controller="Order"
+                                      asp-action="DeleteDraft"
+                                      method="post"
+                                      style="display:inline;">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                    <button type="button" onclick="openDeleteModal('@order.Id')" class="detail-btn detail-btn-danger">
+                                        Sil
+                                    </button>
+                                </form>
+                                <form asp-controller="Order" asp-action="StartPayment" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="orderId" value="@order.Id" />
+                                    <button type="submit" class="detail-btn detail-btn-success">
+                                        Öde
+                                    </button>
+                                </form>
+                            }
+
+                            <a href="/Order/Detail/@order.Id" class="detail-btn">Detay</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="del-modal-backdrop" id="deleteModalBackdrop">
+    <div class="del-modal">
+
+        <div class="del-modal-icon">
+            !
+        </div>
+
+        <div class="del-modal-title">
+            Taslak siparişinizi silmek istediğinizden emin misiniz ?
+        </div>
+
+        <div class="del-modal-text">
+            Bu işlem geri alınamaz.
+        </div>
+
+        <div class="del-modal-actions">
+            <button type="button"
+                    class="del-cancel-btn"
+                    onclick="closeDeleteModal()">
+                Vazgeç
+            </button>
+
+            <button type="button"
+                    class="del-confirm-btn"
+                    onclick="confirmDelete()">
+                Sil
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let activeDeleteFormId = null;
+
+    function openDeleteModal(orderId) {
+
+        activeDeleteFormId = "deleteDraftForm-" + orderId;
+
+        document
+            .getElementById("deleteModalBackdrop")
+            .classList.add("show");
+
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeDeleteModal() {
+
+        document
+            .getElementById("deleteModalBackdrop")
+            .classList.remove("show");
+
+        document.body.style.overflow = "";
+    }
+
+    function confirmDelete() {
+
+        if (!activeDeleteFormId)
+            return;
+
+        document.getElementById(activeDeleteFormId).submit();
+    }
+
+    document.addEventListener("keydown", function (e) {
+
+        if (e.key === "Escape")
+            closeDeleteModal();
+    });
+</script>

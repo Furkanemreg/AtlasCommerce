@@ -30,7 +30,7 @@
             <p class="mb-2"><strong>Telefon Numarası:</strong> @phoneNumber</p>
             <div class="row mt-8">
                 <div class="col-12 mb-2 profile-options">
-                    <a href="#" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
+                    <a asp-controller="Order" asp-action="Index" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
                         <i class='bx bx-shopping-bag'></i>
                         <span class="mx-auto">Siparişlerim</span>
                     </a>
@@ -39,7 +39,7 @@
 
             <div class="row mt-2">
                 <div class="col-12 mb-2 profile-options">
-                    <a href="#" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
+                    <a asp-controller="Payments" asp-action="Index" class="px-4 py-2 w-100 d-flex align-items-center rounded-lg profile-btn">
                         <i class='bx bx-credit-card'></i>
                         <span class="mx-auto">Ödemelerim</span>
                     </a>

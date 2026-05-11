@@ -10,7 +10,18 @@
     var categoryName = Model?.Category?.Name;
     if (string.IsNullOrEmpty(categoryName))
     {
-        categoryName = (await _categoryService.GetByIdAsync(Model.CategoryId)).Name;
+        categoryName = (await _categoryService.GetByIdAsync(Model.CategoryId))?.Name ?? "";
+    }
+
+    var settings = Model?.Settings as WebsiteSettingsVM;
+
+    string phoneNumber = "";
+    string emailAddress = "";
+
+    if (settings != null)
+    {
+        phoneNumber = !string.IsNullOrWhiteSpace(settings!.PhoneNumber) ? settings!.PhoneNumber.Replace(" ", "") : "";
+        emailAddress = !string.IsNullOrWhiteSpace(settings!.EmailAddress) ? settings!.EmailAddress.Replace(" ", "") : "";
     }
 
     ViewData["Title"] = Model?.Title;
@@ -230,7 +241,7 @@
 
                 <div class="mt-6 space-y-4">
                     <!-- Bilgi Al -->
-                    <a href="https://wa.me/905397193054?text=@Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {Model.Title} ürünü hakkında bilgi almak istiyorum.")"
+                    <a href="@($"https://wa.me/{phoneNumber}?text={Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {Model.Title} ürünü hakkında bilgi almak istiyorum.")}")"
                        target="_blank" rel="noopener"
                        class="flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-hidden bg-green-600 hover:bg-green-700">
                         <i class="fab fa-whatsapp me-2"></i> Bilgi Al

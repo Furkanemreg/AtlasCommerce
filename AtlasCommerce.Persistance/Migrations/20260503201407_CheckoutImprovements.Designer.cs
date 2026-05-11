@@ -4,6 +4,7 @@ using AtlasCommerce.Persistance.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AtlasCommerce.Persistance.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260503201407_CheckoutImprovements")]
+    partial class CheckoutImprovements
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,9 +249,6 @@ namespace AtlasCommerce.Persistance.Migrations
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("District")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -325,9 +325,6 @@ namespace AtlasCommerce.Persistance.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("OTVRate")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
@@ -341,13 +338,7 @@ namespace AtlasCommerce.Persistance.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("TaxRate")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPriceExclTax")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("UnitPriceInclTax")
+                    b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -476,11 +467,9 @@ namespace AtlasCommerce.Persistance.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("CardBrand")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CardNumber")
-                        .IsRequired()
+                    b.Property<string>("CardLast4")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -511,7 +500,7 @@ namespace AtlasCommerce.Persistance.Migrations
                     b.Property<Guid>("OrderId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("PaidAt")
+                    b.Property<DateTime?>("PaidAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("PaymentProvider")
@@ -521,8 +510,9 @@ namespace AtlasCommerce.Persistance.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("TransactionId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("TransactionId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -866,12 +856,6 @@ namespace AtlasCommerce.Persistance.Migrations
                     b.Property<string>("BrandName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("City")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Country")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -883,9 +867,6 @@ namespace AtlasCommerce.Persistance.Migrations
 
                     b.Property<Guid?>("DeletedBy")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("District")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("EmailAddress")
                         .HasColumnType("nvarchar(max)");
@@ -915,9 +896,6 @@ namespace AtlasCommerce.Persistance.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Youtube")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ZipCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

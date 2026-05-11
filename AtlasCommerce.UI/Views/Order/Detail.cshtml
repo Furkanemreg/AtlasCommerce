@@ -1,0 +1,365 @@
+﻿@using AtlasCommerce.UI.Helpers
+@model AtlasCommerce.Application.ViewModels.OrderDetailVM
+
+@{
+    ViewData["Title"] = "Sipariş Detayı";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    .od-root {
+        font-family: 'DM Sans', sans-serif;
+        padding: 2rem 1rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .od-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 2rem;
+    }
+
+    .od-title-icon {
+        width: 36px;
+        height: 36px;
+        background: #185FA5;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .od-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .od-back {
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #888;
+        background: none;
+        border: 1px solid #ddd;
+        padding: 6px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all .2s;
+        margin-left: auto;
+    }
+
+        .od-back:hover {
+            background: #f5f5f5;
+            color: #1a1a1a;
+            border-color: #bbb;
+        }
+
+    .od-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .od-card-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        color: #aaa;
+        margin-bottom: 1rem;
+    }
+
+    .od-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .od-info-key {
+        font-size: 11px;
+        color: #aaa;
+        margin-bottom: 3px;
+    }
+
+    .od-info-val {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #1a1a1a;
+    }
+
+    .status-badge {
+        display: inline-block;
+        font-size: 11px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 20px;
+        letter-spacing: 0.2px;
+    }
+
+    .s-draft {
+        background: #f0f0f0;
+        color: #666;
+    }
+
+    .s-pending {
+        background: #FAEEDA;
+        color: #633806;
+    }
+
+    .s-paid {
+        background: #E1F5EE;
+        color: #085041;
+    }
+
+    .s-preparing {
+        background: #EEEDFE;
+        color: #3C3489;
+    }
+
+    .s-shipped {
+        background: #E6F1FB;
+        color: #0C447C;
+    }
+
+    .s-delivered {
+        background: #EAF3DE;
+        color: #27500A;
+    }
+
+    .s-cancelled {
+        background: #FCEBEB;
+        color: #791F1F;
+    }
+
+    .s-return {
+        background: #FAECE7;
+        color: #4A1B0C;
+    }
+
+    .s-returned {
+        background: #D3D1C7;
+        color: #2C2C2A;
+    }
+
+    .item-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+    .item-name {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    .item-meta {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+
+    .item-unit {
+        font-size: 13px;
+        color: #888;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .item-total {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        text-align: right;
+        white-space: nowrap;
+        min-width: 90px;
+    }
+
+    .pay-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 0;
+        font-size: 13.5px;
+        color: #666;
+    }
+
+        .summary-row .val {
+            font-weight: 500;
+            color: #1a1a1a;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .summary-row.grand {
+            border-top: 1px solid #eee;
+            margin-top: 8px;
+            padding-top: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+            .summary-row.grand .val {
+                font-size: 18px;
+                font-weight: 700;
+                color: #1D9E75;
+            }
+</style>
+
+<div class="od-root">
+
+    <div class="od-header">
+        <div class="od-title-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" />
+                <rect x="9" y="3" width="6" height="4" rx="2" />
+                <path d="M9 12h6M9 16h4" />
+            </svg>
+        </div>
+        <h1 class="od-title mt-3">Sipariş Detayı</h1>
+        <a asp-controller="Order" asp-action="Index" class="od-back">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+            </svg>
+            Siparişlerime Dön
+        </a>
+    </div>
+
+    <!-- Sipariş Bilgileri -->
+    <div class="od-card">
+        <div class="od-card-label">Sipariş Bilgileri</div>
+        <div class="od-info-grid">
+            <div>
+                <div class="od-info-key">Sipariş Numarası</div>
+                <div class="od-info-val" style="font-family:'Syne',sans-serif;">#@Model.OrderNumber</div>
+            </div>
+            <div>
+                <div class="od-info-key">Sipariş Tarihi</div>
+                <div class="od-info-val">@Model.CreatedAt.ToString("dd.MM.yyyy") — @Model.CreatedAt.ToString("HH:mm")</div>
+            </div>
+            <div>
+                <div class="od-info-key">Durum</div>
+                @{
+                    var statusClass = Model.Status switch
+                    {
+                        enmOrderStatus.Draft => "s-draft",
+                        enmOrderStatus.PendingPayment => "s-pending",
+                        enmOrderStatus.Paid => "s-paid",
+                        enmOrderStatus.Preparing => "s-preparing",
+                        enmOrderStatus.Shipped => "s-shipped",
+                        enmOrderStatus.Delivered => "s-delivered",
+                        enmOrderStatus.Cancelled => "s-cancelled",
+                        enmOrderStatus.ReturnRequested => "s-return",
+                        enmOrderStatus.Returned => "s-returned",
+                        _ => "s-draft"
+                    };
+                }
+                <span class="status-badge @statusClass">
+                    @EnumHelper.GetEnumDescription(Model.Status)
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ürünler -->
+    <div class="od-card">
+        <div class="od-card-label">Ürünler</div>
+        @foreach (var item in Model.Items)
+        {
+            <div class="item-row">
+                <div>
+                    <p class="item-name">@item.ProductName</p>
+                    <p class="item-meta">Ürün Kodu: @item.Barcode</p>
+                </div>
+                <div class="item-unit">@item.Quantity adet × ₺ @item.UnitPrice.ToString("N2")</div>
+                <div class="item-total">₺ @item.TotalPrice.ToString("N2")</div>
+            </div>
+        }
+    </div>
+
+    <!-- Ödeme Bilgileri -->
+    @if (Model.Payment != null)
+    {
+        <div class="od-card">
+            <div class="od-card-label">Ödeme Bilgileri</div>
+            <div class="pay-grid">
+                <div>
+                    <div class="od-info-key">Tutar</div>
+                    <div class="od-info-val">₺ @Model.Payment.Amount.ToString("N2")</div>
+                </div>
+                <div>
+                    <div class="od-info-key">Durum</div>
+                    <div class="od-info-val">@EnumHelper.GetEnumDescription(Model.Payment.Status)</div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Payment.CardBrand))
+                {
+                    <div>
+                        <div class="od-info-key">Kart</div>
+                        <div class="od-info-val">@Model.Payment.CardBrand (•••• @Model.Payment.CardNumber)</div>
+                    </div>
+                }
+                <div>
+                    <div class="od-info-key">Oluşturulma Tarihi</div>
+                    <div class="od-info-val">@Model.Payment.CreatedAt.ToString("dd.MM.yyyy") — @Model.Payment.CreatedAt.ToString("HH:mm")</div>
+                </div>
+                @if (Model.Payment.PaidAt.HasValue)
+                {
+                    <div>
+                        <div class="od-info-key">Ödeme Tarihi</div>
+                        <div class="od-info-val">@Model.Payment.PaidAt.Value.ToString("dd.MM.yyyy") — @Model.Payment.PaidAt.Value.ToString("HH:mm")</div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Sipariş Özeti -->
+    <div class="od-card">
+        <div class="od-card-label">Sipariş Özeti</div>
+        <div class="summary-row">
+            <span>Ara Toplam</span>
+            <span class="val">₺ @Model.SubTotal.ToString("N2")</span>
+        </div>
+        @if (Model.TotalTAX > 0)
+        {
+            <div class="summary-row">
+                <span>Vergiler</span>
+                <span class="val">₺ @Model.TotalTAX.ToString("N2")</span>
+            </div>
+        }
+        <div class="summary-row grand">
+            <span>Genel Toplam</span>
+            <span class="val">₺ @Model.TotalAmount.ToString("N2")</span>
+        </div>
+    </div>
+
+</div>

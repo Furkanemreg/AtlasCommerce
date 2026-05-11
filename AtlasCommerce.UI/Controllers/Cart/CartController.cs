@@ -159,6 +159,7 @@ namespace AtlasCommerce.UI.Controllers.Cart
                 cart.Add(new CartItemVM
                 {
                     ProductId = product.Id,
+                    ProductCode = product.Barcode,
                     Title = product.Name!,
                     PriceExcludingTaxes = basePrice,
                     PriceIncludingTaxes = basePrice + otvAmount + vatAmount,
@@ -192,7 +193,8 @@ namespace AtlasCommerce.UI.Controllers.Cart
             if (string.IsNullOrEmpty(sessionCart))
                 return Json(new { success = false });
 
-            var cart = JsonConvert.DeserializeObject<List<CartItemVM>>(sessionCart);
+            var cart = JsonConvert.DeserializeObject<List<CartItemVM>>(sessionCart)!;
+
             var itemToRemove = cart.FirstOrDefault(x => x.ProductId == productId);
             if (itemToRemove != null)
             {
@@ -201,9 +203,22 @@ namespace AtlasCommerce.UI.Controllers.Cart
             }
 
             var totalQuantity = cart.Sum(x => x.Quantity);
-            var totalPrice = cart.Sum(x => x.PriceIncludingTaxes * x.Quantity);
+            var total = cart.Sum(x => x.PriceIncludingTaxes * x.Quantity);
+            var subTotal = cart.Sum(x => x.PriceExcludingTaxes * x.Quantity);
+            var totalVAT = cart.Sum(x => x.VATAmount * x.Quantity);
+            var totalOTV = cart.Sum(x => x.OTVAmount * x.Quantity);
+            var totalTax = totalVAT + totalOTV;
 
-            return Json(new { success = true, totalQuantity, totalPrice });
+            return Json(new
+            {
+                success = true,
+                totalQuantity,
+                total,
+                subTotal,
+                totalVAT,
+                totalOTV,
+                totalTax
+            });
         }
 
         [HttpPost]

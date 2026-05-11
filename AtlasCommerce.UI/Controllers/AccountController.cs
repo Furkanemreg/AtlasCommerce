@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Newtonsoft.Json;
 
 namespace AtlasCommerce.UI.Controllers
 {
@@ -79,6 +80,14 @@ namespace AtlasCommerce.UI.Controllers
             }
 
             ViewBag.CategoryWithProducts = categoryWithProducts;
+        }
+
+        private void SetCart()
+        {
+            var sessionCart = HttpContext.Session.GetString("CartSession");
+            ViewBag.CartItemCount = !string.IsNullOrEmpty(sessionCart)
+                ? JsonConvert.DeserializeObject<List<CartItemVM>>(sessionCart)!.Sum(x => x.Quantity)
+                : 0;
         }
 
         [HttpGet, AllowAnonymous]
@@ -215,6 +224,7 @@ namespace AtlasCommerce.UI.Controllers
         public async Task<IActionResult> Profile()
         {
             await LoadProductsToDropdown();
+            SetCart();
 
             var vm = new EmptyVM();
 
@@ -228,6 +238,7 @@ namespace AtlasCommerce.UI.Controllers
         public async Task<IActionResult> Settings()
         {
             await LoadProductsToDropdown();
+            SetCart();
 
             var vm = new EmptyVM();
 
@@ -241,6 +252,7 @@ namespace AtlasCommerce.UI.Controllers
         public async Task<IActionResult> Messages()
         {
             await LoadProductsToDropdown();
+            SetCart();
 
             var vm = new EmptyVM();
 

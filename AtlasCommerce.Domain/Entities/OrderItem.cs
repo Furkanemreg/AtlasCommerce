@@ -9,19 +9,35 @@ namespace AtlasCommerce.Domain.Entities
 {
     public class OrderItem : BaseEntity
     {
-        public virtual Order Order { get; set; }
         public Guid OrderId { get; set; }
+        public virtual Order Order { get; set; }
 
-        public virtual Product Product { get; set; }
         public Guid ProductId { get; set; }
+        public virtual Product Product { get; set; }
 
-        // Snapshot alanlar (Product'tan kopya)
+        // SNAPSHOT
         public string ProductName { get; set; } = null!;
         public string Barcode { get; set; }
 
-        public decimal UnitPrice { get; set; } // SalePrice INCLUDING Taxes
+        public decimal UnitPriceInclTax { get; set; } // For UI
+        public decimal UnitPriceExclTax { get; set; } // For Calculation
+
+        // TAX
+        public int TaxRate { get; set; }   // KDV
+        public int OTVRate { get; set; }
+
         public int Quantity { get; set; }
 
-        public decimal TotalPrice => UnitPrice * Quantity;
+        // CALCULATIONS
+        public decimal TaxAmount =>
+            SubTotal * TaxRate / 100;
+
+        public decimal OTVAmount =>
+            SubTotal * OTVRate / 100;
+
+        public decimal SubTotal => UnitPriceExclTax * Quantity;
+        
+        public decimal TotalPrice =>
+            UnitPriceInclTax * Quantity;
     }
 }

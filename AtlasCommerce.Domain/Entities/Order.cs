@@ -12,6 +12,8 @@ namespace AtlasCommerce.Domain.Entities
         // Kullanıcı
         public Guid UserId { get; set; }
 
+        // Sipariş Bilgisi
+        public string OrderNumber { get; set; }
         // Sipariş durumu
         public enmOrderStatus Status { get; set; } = enmOrderStatus.Draft;
 
@@ -22,8 +24,9 @@ namespace AtlasCommerce.Domain.Entities
 
         // Adres bilgisi (snapshot!)
         public string? ShippingAddress { get; set; }
-        public string? City { get; set; }
         public string? Country { get; set; }
+        public string? City { get; set; }
+        public string? District { get; set; }
         public string? ZipCode { get; set; }
 
         // Ödeme bilgisi
@@ -32,6 +35,8 @@ namespace AtlasCommerce.Domain.Entities
         public string? PaymentId { get; set; }
 
         // Navigation
-        public virtual ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+        public virtual ICollection<OrderItem> Items { get; set; } = new List<OrderItem>(); 
+        public virtual ICollection<Payment>? Payments { get; set; } = new List<Payment>();
+        public virtual ICollection<OrderReturn>? Returns { get; set; } = new List<OrderReturn>();
     }
 }

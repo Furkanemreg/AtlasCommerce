@@ -1,0 +1,844 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model CheckoutVM
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Sipariş Özeti";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    .co-root {
+        font-family: 'DM Sans', sans-serif;
+        max-width: 1000px;
+        margin: 2.5rem auto;
+        padding: 0 1rem;
+    }
+
+    /* Stepper */
+    .co-steps { display: flex; align-items: center; gap: 0; margin-bottom: 2rem; }
+    .co-step { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 500; }
+    .co-step-num { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
+    .co-step.done .co-step-num { background: #1D9E75; color: #fff; }
+    .co-step.active .co-step-num { background: #1a1a1a; color: #fff; }
+    .co-step.idle .co-step-num { background: #f0f0f0; color: #aaa; }
+    .co-step.done .co-step-label { color: #1D9E75; }
+    .co-step.active .co-step-label { color: #1a1a1a; font-weight: 600; }
+    .co-step.idle .co-step-label { color: #bbb; }
+    .co-step-sep { flex: 1; height: 1px; background: #e8e8e8; margin: 0 12px; max-width: 48px; }
+
+    .co-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.4px; color: #1a1a1a; }
+    .co-body { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
+
+    .co-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 1.35rem; }
+
+    .co-section-label {
+        font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600; color: #aaa;
+        letter-spacing: 0.6px; text-transform: uppercase; margin-bottom: 1rem;
+        display: flex; align-items: center; gap: 10px;
+    }
+    .co-section-label::after { content: ''; flex: 1; height: 1px; background: #f0f0f0; }
+
+    .co-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .co-label { font-size: 11px; font-weight: 500; color: #888; letter-spacing: 0.2px; }
+    .co-input, .co-textarea {
+        font-family: 'DM Sans', sans-serif; font-size: 13.5px; background: #f8f8f8;
+        border: 1px solid #eee; border-radius: 8px; padding: 9px 12px; color: #1a1a1a;
+        outline: none; transition: border 0.2s, background 0.2s; width: 100%;
+    }
+    .co-input:focus, .co-textarea:focus { border-color: #aaa; background: #fff; }
+    .co-textarea { resize: none; height: 76px; line-height: 1.5; }
+    .co-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field-error { font-size: 11px; color: #A32D2D; margin-top: -6px; margin-bottom: 4px; }
+
+    /* Order items */
+    .order-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid #f5f5f5; transition: opacity 0.25s, transform 0.25s; }
+    .order-item:last-of-type { border-bottom: none; }
+    .order-item-img { width: 46px; height: 46px; border-radius: 10px; object-fit: cover; border: 1px solid #eee; background: #f5f5f5; flex-shrink: 0; }
+    .order-item-name { font-size: 12.5px; font-weight: 500; color: #1a1a1a; line-height: 1.4; }
+    .order-item-unit { font-size: 10px; color: #bbb; margin-top: 1px; }
+    .order-item-right { margin-left: auto; text-align: right; flex-shrink: 0; }
+    .order-item-total { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: #1a1a1a; }
+
+    .qty-ctrl { display: flex; align-items: center; background: #f5f5f5; border: 1px solid #eee; border-radius: 6px; overflow: hidden; width: fit-content; margin-top: 5px; }
+    .qty-b { width: 24px; height: 24px; background: none; border: none; font-size: 15px; color: #666; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.1s; }
+    .qty-b:hover { background: #e8e8e8; color: #1a1a1a; }
+    .qty-n { font-size: 12px; font-weight: 500; min-width: 24px; text-align: center; color: #1a1a1a; }
+    .del-link { font-size: 10px; color: #ccc; background: none; border: none; cursor: pointer; padding: 0; margin-top: 4px; display: block; text-align: right; transition: color 0.2s; font-family: 'DM Sans', sans-serif; }
+    .del-link:hover { color: #A32D2D; }
+
+    .summary-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #777; padding: 4px 0; }
+    .summary-row .v { font-weight: 500; color: #1a1a1a; font-family: 'Syne', sans-serif; }
+    .summary-row .v-green { color: #1D9E75; }
+
+    .summary-subrow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #aaa;
+        padding: 2px 0 2px 14px;
+        position: relative;
+    }
+
+    .summary-subrow::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 50%;
+        width: 6px;
+        height: 1px;
+        background: #ccc;
+    }
+
+    .summary-total { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #eee; margin-top: 6px; }
+    .summary-total-label { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+    .summary-total-val { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: #1D9E75; }
+
+    .summary-group-title {
+        margin-top: 8px;
+        padding-top: 10px;
+        border-top: 1px dashed #eee;
+        font-weight: 600;
+        color: #444;
+    }
+
+    .summary-group-title span:first-child {
+        font-size: 12.5px;
+        letter-spacing: 0.2px;
+    }
+
+    .summary-group-title .v {
+        font-family: 'Syne', sans-serif;
+        font-weight: 700;
+        color: #1a1a1a;
+    }
+
+    .summary-subrow {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #888;
+        padding: 3px 0 3px 14px;
+        position: relative;
+    }
+
+    .summary-subrow::before {
+        content: '';
+        position: absolute;
+        left: 4px;
+        top: 50%;
+        width: 6px;
+        height: 1px;
+        background: #ccc;
+    }
+
+    .summary-subrow .v {
+        font-family: 'Syne', sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #555;
+    }
+
+    .open-pay-btn {
+        width: 100%;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        background: #1D9E75;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .open-pay-btn:hover {
+        background: #0F6E56;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+
+    .open-pay-btn:active {
+        transform: translateY(0);
+    }
+
+    .secure-note { font-size: 10.5px; color: #bbb; text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+    .item-removing { opacity: 0; transform: translateX(16px); pointer-events: none; }
+
+    /* ── Payment Modal ── */
+    .pm-backdrop {
+        display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+        z-index: 1050; align-items: center; justify-content: center;
+        backdrop-filter: blur(2px);
+    }
+    .pm-backdrop.open { display: flex; }
+
+    .pm-modal {
+        background: #fff; border-radius: 20px; width: 100%; max-width: 440px;
+        margin: 1rem; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+        animation: modalIn 0.25s ease;
+    }
+
+    .pm-header { padding: 1.35rem 1.5rem 0; }
+    .pm-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .pm-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #1a1a1a; }
+
+    .pm-close {
+        width: 30px; height: 30px; background: #f5f5f5; border: none; border-radius: 8px;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        color: #888; transition: background 0.15s;
+    }
+    .pm-close:hover { background: #eee; }
+
+    /* Card preview */
+    .card-preview {
+        background: #1a1a1a; border-radius: 14px; padding: 1.25rem 1.5rem;
+        margin-bottom: 1.25rem; position: relative; overflow: hidden; min-height: 110px;
+    }
+    .card-preview::before {
+        content: ''; position: absolute; top: -30px; right: -30px;
+        width: 130px; height: 130px; border-radius: 50%; background: rgba(255,255,255,0.05);
+    }
+    .card-preview::after {
+        content: ''; position: absolute; bottom: -40px; left: -20px;
+        width: 150px; height: 150px; border-radius: 50%; background: rgba(255,255,255,0.03);
+    }
+    .card-chip { width: 28px; height: 20px; background: #f0c060; border-radius: 4px; margin-bottom: 14px; position: relative; z-index: 1; }
+    .card-num-display { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 500; color: #fff; letter-spacing: 3px; margin-bottom: 14px; position: relative; z-index: 1; }
+    .card-bottom-row { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1; }
+    .card-meta-label { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 2px; }
+    .card-meta-val { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 500; color: #fff; letter-spacing: 1px; }
+
+    /* Modal form */
+    .pm-body { padding: 0 1.5rem 1.5rem; }
+    .pm-card-logos { display: flex; gap: 6px; margin-bottom: 12px; }
+    .pm-card-logo {
+        height: 22px; padding: 3px 8px; border: 1px solid #eee; border-radius: 5px;
+        font-size: 9px; font-weight: 700; display: flex; align-items: center;
+        background: #f8f8f8; color: #666; letter-spacing: 0.3px;
+    }
+    .pm-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .pm-label { font-size: 11px; font-weight: 500; color: #888; }
+    .pm-input-wrap { position: relative; }
+    .pm-input {
+        font-family: 'DM Sans', sans-serif; font-size: 13.5px; background: #f8f8f8;
+        border: 1px solid #eee; border-radius: 8px; padding: 9px 12px; color: #1a1a1a;
+        outline: none; transition: border 0.2s, background 0.2s; width: 100%;
+    }
+    .pm-input.with-icon { padding-right: 36px; }
+    .pm-input:focus { border-color: #aaa; background: #fff; }
+    .pm-input.error { border-color: #E24B4A !important; }
+    .pm-input-icon { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #ccc; pointer-events: none; }
+    .pm-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .pm-divider { border: none; border-top: 1px solid #f0f0f0; margin: 12px 0; }
+
+    .pm-amount-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .pm-amount-label { font-size: 13px; color: #777; }
+    .pm-amount-val { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #1D9E75; }
+
+    .pm-submit-btn {
+        width: 100%; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600;
+        background: #1D9E75; color: #fff; border: none; border-radius: 12px; padding: 13px;
+        cursor: pointer; transition: all 0.2s; display: flex; align-items: center;
+        justify-content: center; gap: 8px;
+    }
+    .pm-submit-btn:hover { background: #0F6E56; transform: translateY(-1px); }
+    .pm-submit-btn:active { transform: translateY(0); }
+    .pm-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .pm-secure-note { font-size: 10.5px; color: #bbb; text-align: center; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+    /* Success state */
+    .pm-success { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 1.5rem; text-align: center; }
+    .pm-success.show { display: flex; }
+    .pm-success-icon { width: 60px; height: 60px; background: #EAF3DE; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .pm-success-title { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .pm-success-sub { font-size: 13px; color: #888; line-height: 1.6; margin-bottom: 1.5rem; }
+    .pm-success-close { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; background: #1a1a1a; color: #fff; border: none; border-radius: 10px; padding: 10px 24px; cursor: pointer; transition: background 0.2s; }
+    .pm-success-close:hover { background: #333; }
+
+    .pickup-toggle {
+        margin-bottom: 1.25rem;
+        padding: 14px 16px;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        background: #fafafa;
+    }
+
+    .pickup-check {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 500;
+        color: #1a1a1a;
+    }
+
+    .pickup-check input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: #1D9E75;
+        cursor: pointer;
+    }
+
+    .pickup-note {
+        margin-top: 8px;
+        font-size: 11px;
+        line-height: 1.5;
+        color: #888;
+        padding-left: 26px;
+    }
+
+    .address-disabled {
+        opacity: 0.55;
+        transition: opacity 0.2s ease;
+    }
+</style>
+
+<div class="co-root">
+    <!-- Stepper -->
+    <div class="co-steps">
+        <div class="co-step done">
+            <div class="co-step-num">✓</div>
+            <span class="co-step-label">Sepet</span>
+        </div>
+        <div class="co-step-sep"></div>
+        <div class="co-step active">
+            <div class="co-step-num">2</div>
+            <span class="co-step-label">Teslimat</span>
+        </div>
+        <div class="co-step-sep"></div>
+        <div class="co-step idle">
+            <div class="co-step-num">3</div>
+            <span class="co-step-label">Ödeme</span>
+        </div>
+    </div>
+
+    <h1 class="co-title">Sipariş Bilgileri</h1>
+
+    <form id="checkoutForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="requestId" value="@Guid.NewGuid()" />
+        <input type="hidden" name="paymentId" value="@Model.PaymentId" />
+        <input type="hidden" name="orderId" value="@Model.OrderId" />
+
+        <div class="co-body">
+            <!-- LEFT -->
+            <div class="co-card" id="addressCard">
+                <div class="co-section-label">Teslimat adresi</div>
+
+                <div class="co-field">
+                    <label class="co-label">Açık Adres *</label>
+                    <textarea asp-for="ShippingAddress" class="co-textarea" placeholder="Mahalle, sokak, bina no, daire..." maxlength="300"></textarea>
+                    <span asp-validation-for="ShippingAddress" class="field-error mt-1"></span>
+                </div>
+                <div class="co-row">
+                    <div class="co-field">
+                        <label class="co-label">Ülke *</label>
+                        <input asp-for="Country" class="co-input" placeholder="Türkiye" maxlength="50" />
+                        <span asp-validation-for="Country" class="field-error mt-1"></span>
+                    </div>
+                    <div class="co-field">
+                        <label class="co-label">Şehir *</label>
+                        <input asp-for="City" class="co-input" placeholder="İstanbul" maxlength="50" />
+                        <span asp-validation-for="City" class="field-error mt-1"></span>
+                    </div>
+                </div>
+                <div class="co-row">
+                    <div class="co-field">
+                        <label class="co-label">İlçe *</label>
+                        <input asp-for="District" class="co-input" placeholder="Sarıyer" maxlength="50" />
+                        <span asp-validation-for="District" class="field-error mt-1"></span>
+                    </div>
+                    <div class="co-field">
+                        <label class="co-label">Posta Kodu</label>
+                        <input asp-for="ZipCode" class="co-input" placeholder="34000" maxlength="20" />
+                        <span asp-validation-for="ZipCode" class="field-error mt-1"></span>
+                    </div>
+                </div>
+                <div class="pickup-toggle">
+                    <label class="pickup-check">
+                        <input type="checkbox" id="pickupCheckbox" />
+                        <span>Mağazadan teslim almak istiyorum</span>
+                    </label>
+
+                    <div class="pickup-note">
+                        Bu seçenek seçildiğinde teslimat adresi yerine varsayılan mağaza adresi kullanılacaktır.
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div style="position:sticky; top:20px; display:flex; flex-direction:column; gap:1rem;">
+                <div class="co-card">
+                    <div class="co-section-label">Sipariş Özeti</div>
+                    <div id="orderItems">
+                        @foreach (var item in Model.Items)
+                        {
+                            <div class="order-item" data-id="@item.ProductId">
+                                <img src="@item.ImageUrl" alt="@item.Title" class="order-item-img" />
+                                <div>
+                                    <div class="order-item-name">@item.Title</div>
+                                    <div class="order-item-unit">₺ @item.PriceIncludingTaxes.ToString("N2") / adet</div>
+                                    <div class="qty-ctrl">
+                                        <button type="button" class="qty-b" onclick="updateQty('@item.ProductId', -1)">−</button>
+                                        <span class="qty-n" id="qty-@item.ProductId">@item.Quantity</span>
+                                        <button type="button" class="qty-b" onclick="updateQty('@item.ProductId', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div class="order-item-right">
+                                    <div class="order-item-total" id="rowTotal-@item.ProductId">
+                                        ₺ @((item.Quantity * item.PriceIncludingTaxes).ToString("N2"))
+                                    </div>
+                                    <button type="button" class="del-link remove-item-btn" data-id="@item.ProductId">Kaldır</button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <hr style="border:none; border-top:1px solid #f0f0f0; margin:10px 0;">
+
+                    <div class="summary-row">
+                        <span>Ara toplam</span>
+                        <span class="v" id="cartSubtotal">₺ @Model.SubTotal.ToString("N2")</span>
+                    </div>
+
+                    <div class="summary-row summary-group-title">
+                        <span>Vergiler</span>
+                        <span class="v" id="cardTaxTotal">₺ @Model.TaxTotal.ToString("N2")</span>
+                    </div>
+
+                    @if (Model.VatTotal > 0)
+                    {
+                        <div class="summary-subrow">
+                            <span>KDV</span>
+                            <span class="v" id="vatTotal">₺ @Model.VatTotal.ToString("N2")</span>
+                        </div>
+                    }
+
+                    @if (Model.OtvTotal > 0)
+                    {
+                        <div class="summary-subrow">
+                            <span>ÖTV</span>
+                            <span class="v" id="otvTotal">₺ @Model.OtvTotal.ToString("N2")</span>
+                        </div>
+                    }
+                    @* <div class="summary-row">
+                        <span>Kargo</span>
+                        <span class="v v-green">Ücretsiz</span>
+                    </div> *@
+                    <div class="summary-total">
+                        <span class="summary-total-label">Genel toplam</span>
+                        <span class="summary-total-val" id="cartTotal">₺ @Model.Total.ToString("N2")</span>
+                    </div>
+
+                    <button type="button" class="open-pay-btn mt-2" id="openPayBtn" onclick="openPaymentModal()">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        Ödeme Yap
+                    </button>
+
+                    <div class="secure-note">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        Güvenli ödeme
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- ══════════════════════════════════════
+     PAYMENT MODAL
+══════════════════════════════════════ -->
+<div class="pm-backdrop" id="pmBackdrop" onclick="backdropClose(event)">
+    <div class="pm-modal" id="pmModal">
+
+        <!-- Form view -->
+        <div id="pmFormView">
+            <div class="pm-header">
+                <div class="pm-title-row">
+                    <span class="pm-title">Ödeme Bilgileri</span>
+                    <button class="pm-close" onclick="closePaymentModal()">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Card preview -->
+                <div class="card-preview">
+                    <div class="card-chip"></div>
+                    <div class="card-num-display" id="previewNum">•••• •••• •••• ••••</div>
+                    <div class="card-bottom-row">
+                        <div>
+                            <div class="card-meta-label">Kart sahibi</div>
+                            <div class="card-meta-val" id="previewName">AD SOYAD</div>
+                        </div>
+                        <div>
+                            <div class="card-meta-label">Son tarih</div>
+                            <div class="card-meta-val" id="previewExp">MM/YY</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pm-body">
+                <div class="pm-card-logos">
+                    <div class="pm-card-logo">VISA</div>
+                    <div class="pm-card-logo">MC</div>
+                    <div class="pm-card-logo">TROY</div>
+                    <div class="pm-card-logo">AMEX</div>
+                </div>
+
+                <div class="pm-field">
+                    <label class="pm-label">Kart Numarası</label>
+                    <div class="pm-input-wrap">
+                        <input class="pm-input with-icon" id="pmCardNum" placeholder="0000 0000 0000 0000" maxlength="19" oninput="fmtCardNum(this)" autocomplete="cc-number" />
+                        <span class="pm-input-icon">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                                <line x1="1" y1="10" x2="23" y2="10"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="pm-field">
+                    <label class="pm-label">Kart Üzerindeki İsim</label>
+                    <input class="pm-input" id="pmCardName" placeholder="Ad Soyad" style="text-transform:uppercase" oninput="updatePreviewName(this)" autocomplete="cc-name" />
+                </div>
+
+                <div class="pm-row-2">
+                    <div class="pm-field">
+                        <label class="pm-label">Son Kullanma Tarihi</label>
+                        <input class="pm-input" id="pmCardExp" placeholder="MM/YY" maxlength="5" oninput="fmtExp(this)" autocomplete="cc-exp" />
+                    </div>
+                    <div class="pm-field">
+                        <label class="pm-label">CVV</label>
+                        <div class="pm-input-wrap">
+                            <input class="pm-input with-icon" id="pmCardCvv" placeholder="•••" maxlength="3" type="password" autocomplete="cc-csc" />
+                            <span class="pm-input-icon">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <line x1="12" y1="8" x2="12" y2="12"/>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="pm-divider">
+
+                <div class="pm-amount-row">
+                    <span class="pm-amount-label">Ödenecek Tutar</span>
+                    <span class="pm-amount-val" id="pmTotalDisplay">₺ @Model.Total.ToString("N2")</span>
+                </div>
+
+                <button type="button" class="pm-submit-btn" id="pmSubmitBtn" onclick="submitPayment()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Ödemeyi Tamamla
+                </button>
+
+                <div class="pm-secure-note">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    Güvenli ödeme
+                </div>
+            </div>
+        </div>
+
+        <!-- Success view -->
+        <div class="pm-success" id="pmSuccessView">
+            <div class="pm-success-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                </svg>
+            </div>
+            <div class="pm-success-title">Siparişiniz alındı!</div>
+            <div class="pm-success-sub">Ödemeniz başarıyla işlendi.<br>Onay e-Postası kısa sürede gönderilecek.</div>
+            <button class="pm-success-close" onclick="closeAndRedirectToOrders()">Tamam</button>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        const csrfToken = $('input[name="__RequestVerificationToken"]').val();
+
+        $.ajaxSetup({
+            headers: {
+                'RequestVerificationToken': csrfToken
+            }
+        });
+
+        // ── Modal open/close ──
+        function openPaymentModal() {
+            // Validate address form first
+            if (!$("#checkoutForm").valid()) return;
+
+            document.getElementById('pmBackdrop').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            document.getElementById('pmFormView').style.display = '';
+            document.getElementById('pmSuccessView').classList.remove('show');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('pmBackdrop').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeAndRedirectToOrders() {
+            closePaymentModal(); // mevcut UI cleanup
+
+            setTimeout(function () {
+                window.location.href = '/Order';
+            }, 1500);
+        }
+
+        function backdropClose(e) {
+            if (e.target === document.getElementById('pmBackdrop')) closePaymentModal();
+        }
+
+        // ESC key closes modal
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') closePaymentModal();
+        });
+
+        // ── Card preview live update ──
+        function fmtCardNum(el) {
+            let v = el.value.replace(/\D/g, '').slice(0, 16);
+            el.value = v.replace(/(.{4})/g, '$1 ').trim();
+            const disp = v.padEnd(16, '•').replace(/(.{4})/g, '$1 ').trim();
+            document.getElementById('previewNum').textContent = disp;
+            el.classList.remove('error');
+        }
+
+        function updatePreviewName(el) {
+            const v = el.value.toUpperCase();
+            document.getElementById('previewName').textContent = v || 'AD SOYAD';
+            el.classList.remove('error');
+        }
+
+        function fmtExp(el) {
+            let v = el.value.replace(/\D/g, '');
+            if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2, 4);
+            el.value = v;
+            document.getElementById('previewExp').textContent = v || 'MM/YY';
+            el.classList.remove('error');
+        }
+
+        function submitPayment() {
+
+            const paymentId = $('input[name="paymentId"]').val();
+
+            const btn = document.getElementById('pmSubmitBtn');
+            btn.textContent = 'İşleniyor...';
+            btn.disabled = true;
+
+            // CASE 1: EXISTING PAYMENT (Draft flow)
+            if (paymentId) {
+
+                $.ajax({
+                    url: '/Order/CompletePayment',
+                    type: 'POST',
+                    data: { paymentId: paymentId },
+                    success: function () {
+                        document.getElementById('pmFormView').style.display = 'none';
+                        document.getElementById('pmSuccessView').classList.add('show');
+                    },
+                    error: function () {
+                        btn.textContent = 'Ödemeyi Tamamla';
+                        btn.disabled = false;
+                        toastr.error('Ödeme başarısız');
+                    }
+                });
+
+                return;
+            }
+
+            // CASE 2: CART → NEW ORDER FLOW
+            const isPickup = $('#pickupCheckbox').is(':checked'); // Mağazada Teslim
+
+            const formData = {
+                requestId: $('input[name="requestId"]').val(),
+
+                isPickup: isPickup,
+
+                shippingAddress: isPickup
+                    ? 'Mağazadan Teslim'
+                    : $('textarea[name="ShippingAddress"]').val(),
+
+                country: isPickup
+                    ? 'Türkiye'
+                    : $('input[name="Country"]').val(),
+
+                city: isPickup
+                    ? 'İstanbul'
+                    : $('input[name="City"]').val(),
+
+                district: isPickup
+                    ? 'Mağaza'
+                    : $('input[name="District"]').val(),
+
+                zipCode: isPickup
+                    ? '34408'
+                    : $('input[name="ZipCode"]').val(),
+
+                cardNumber: $('#pmCardNum').val().replace(/\s/g, ''),
+                nameOnCard: $('#pmCardName').val(),
+                exp: $('#pmCardExp').val(),
+                cvv: $('#pmCardCvv').val()
+            };
+
+            $.post('@Url.Action("CreateOrderForPayment", "Order")', formData, function (res) {
+
+                $.post('/Order/CompletePayment', { paymentId: res.paymentId }, function () {
+                    document.getElementById('pmFormView').style.display = 'none';
+                    document.getElementById('pmSuccessView').classList.add('show');
+                });
+
+            }).fail(function () {
+                btn.textContent = 'Ödemeyi Tamamla';
+                btn.disabled = false;
+                toastr.error('Ödeme hatası');
+            });
+        }
+
+        // ── Cart interactions ──
+        function updateQty(productId, change) {
+            let $span = $("#qty-" + productId);
+            let value = parseInt($span.text()) || 1;
+            value += change;
+            if (value < 1) value = 1;
+            $span.text(value);
+
+            $.post('/Cart/UpdateQuantity', { productId: productId, quantity: value }, function (res) {
+
+                const fmt = n => '₺ ' + (n ?? 0).toLocaleString('tr-TR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+
+                // ROW
+                $("#rowTotal-" + productId).text(fmt(res.rowTotal));
+
+                // CART TOTALS
+                $("#cartTotal").text(fmt(res.total));
+                $("#cartSubtotal").text(fmt(res.subTotal));
+                $("#cartItemCount").text(res.count);
+
+                // TAXS
+                $("#cardTaxTotal").text(fmt(res.totalTax));
+
+                if ($("#vatTotal").length)
+                    $("#vatTotal").text(fmt(res.totalVAT));
+
+                if ($("#otvTotal").length)
+                    $("#otvTotal").text(fmt(res.totalOTV));
+
+                // modal sync
+                $("#pmTotalDisplay").text(fmt(res.total));
+            });
+        }
+
+        $(document).on("click", ".remove-item-btn", function () {
+            const id = $(this).data("id");
+            const $row = $(`[data-id="${id}"]`);
+
+            $row.addClass('item-removing');
+
+            setTimeout(function () {
+                $.post('/Cart/Remove', { productId: id }, function (res) {
+
+                    $row.remove();
+
+                    const fmt = n => '₺ ' + (n ?? 0).toLocaleString('tr-TR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+
+                    // ── CART TOTALS ──
+                    $("#cartTotal").text(fmt(res.total));
+                    $("#cartSubtotal").text(fmt(res.subTotal));
+                    $("#pmTotalDisplay").text(fmt(res.total));
+
+                    // ── TAX BREAKDOWN ──
+                    $("#cardTaxTotal").text(fmt(res.totalTax));
+
+                    if ($("#vatTotal").length)
+                        $("#vatTotal").text(fmt(res.totalVAT));
+
+                    if ($("#otvTotal").length)
+                        $("#otvTotal").text(fmt(res.totalOTV));
+
+                    // ── COUNT ──
+                    $("#cartItemCount").text(res.totalQuantity);
+
+                    // empty cart redirect
+                    if (res.totalQuantity === 0) {
+                        location.href = "/Cart";
+                    }
+                });
+            }, 260);
+        });
+
+        // Mağazada Teslim
+        const pickupCheckbox = document.getElementById('pickupCheckbox');
+        const addressCard = document.getElementById('addressCard');
+
+        pickupCheckbox.addEventListener('change', function () {
+
+            const addressInputs = addressCard.querySelectorAll(
+                'input:not(#pickupCheckbox), textarea'
+            );
+
+            if (this.checked) {
+
+                addressCard.classList.add('address-disabled');
+
+                addressInputs.forEach(x => {
+                    x.required = false;
+                    x.disabled = true;
+                });
+
+            } else {
+
+                addressCard.classList.remove('address-disabled');
+
+                addressInputs.forEach(x => {
+                    x.disabled = false;
+                });
+            }
+        });
+    </script>
+}

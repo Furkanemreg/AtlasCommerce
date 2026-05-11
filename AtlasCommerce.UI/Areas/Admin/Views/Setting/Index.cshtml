@@ -22,7 +22,7 @@
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
                 <h2 class="text-base/7 font-semibold theme-label">Genel Ayarlar</h2>
-                <p class="mt-1 text-sm/6 text-gray-600">Website için temel ayarları buradan yapabilirsiniz.</p>
+                <p class="mt-1 text-sm/6 text-gray-600">Websiteniz için temel ayarları buradan yapabilirsiniz.</p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
@@ -48,9 +48,43 @@
                     </div>
 
                     <div class="sm:col-span-6">
-                        <label asp-for="Address" class="block text-sm/6 font-medium theme-label">Adres</label>
+                        <label asp-for="Address" class="block text-sm/6 font-medium theme-label">Açık Adres</label>
                         <div class="mt-2">
-                            <textarea asp-for="Address" rows="3" placeholder="Adres" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm"></textarea>
+                            <textarea asp-for="Address" rows="3" placeholder="Açık Adres" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-4">
+                        <div class="flex items-center space-x-6">
+                            <small class="info-text">
+                                <i class='bx bx-info-circle'></i>
+                                Mağazada teslim siparişlerde teslimat adresi olarak kullanılacaktır.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-3">
+                        <label asp-for="Country" class="block text-sm/6 font-medium theme-label">Ülke</label>
+                        <div class="mt-2">
+                            <input asp-for="Country" type="text" placeholder="Türkiye" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label asp-for="City" class="block text-sm/6 font-medium theme-label">İl</label>
+                        <div class="mt-2">
+                            <input asp-for="City" type="text" placeholder="İstanbul" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label asp-for="District" class="block text-sm/6 font-medium theme-label">İlçe</label>
+                        <div class="mt-2">
+                            <input asp-for="District" type="text" placeholder="Kağıthane" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label asp-for="ZipCode" class="block text-sm/6 font-medium theme-label">Posta Kodu</label>
+                        <div class="mt-2">
+                            <input asp-for="ZipCode" type="text" placeholder="34408" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
 
