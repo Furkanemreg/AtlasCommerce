@@ -104,9 +104,23 @@
             const isPassword = passwordInput.type === 'password';
             passwordInput.type = isPassword ? 'text' : 'password';
 
-            // İsteğe bağlı: ikon rengi değiştir
             eyeIcon.classList.toggle('text-gray-500', !isPassword);
             eyeIcon.classList.toggle('text-gray-800', isPassword);
         });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+
+        var msg = '@TempData["RegisterMessage"]';
+        if (msg) {
+            toastr.success(msg);
+        }
+
+        var error = '@TempData["ErrorMessage"]';
+        if (error) {
+            toastr.error(error);
+        }
+
     });
 </script>

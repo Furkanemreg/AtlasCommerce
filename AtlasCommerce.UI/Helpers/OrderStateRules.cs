@@ -12,7 +12,9 @@
 
                 // Payment => Fulfillment
                 (enmOrderStatus.Paid, enmOrderStatus.Preparing) => true,
+                (enmOrderStatus.Paid, enmOrderStatus.WaitingInStore) => true,
                 (enmOrderStatus.Preparing, enmOrderStatus.Shipped) => true,
+                (enmOrderStatus.Preparing, enmOrderStatus.WaitingInStore) => true,
                 (enmOrderStatus.Shipped, enmOrderStatus.Delivered) => true,
 
                 // Cancellation rules

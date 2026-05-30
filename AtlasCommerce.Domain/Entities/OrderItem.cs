@@ -18,6 +18,7 @@ namespace AtlasCommerce.Domain.Entities
         // SNAPSHOT
         public string ProductName { get; set; } = null!;
         public string Barcode { get; set; }
+        public string? ImageUrl { get; set; }
 
         public decimal UnitPriceInclTax { get; set; } // For UI
         public decimal UnitPriceExclTax { get; set; } // For Calculation

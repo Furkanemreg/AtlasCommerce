@@ -98,10 +98,67 @@ namespace AtlasCommerce.UI.Controllers.Contact
             return View(vm);
         }
 
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //[Route("Contact/SendMessageAsync")]
+        //public async Task<IActionResult> SendMessageAsync([FromForm] UserMessageVM messageVM)
+        //{
+        //    if (!ModelState.IsValid)
+        //    {
+        //        await LoadProductsToDropdown();
+        //        SetCart();
+        //        return View("Index", messageVM);
+        //    }
+
+        //    try
+        //    {
+        //        var message = new UserMessage
+        //        {
+        //            EmailAddress = "",
+        //            Topic = messageVM.Topic,
+        //            Message = messageVM.Message,
+        //        };
+
+        //        if (User.Identity?.IsAuthenticated ?? false)
+        //        {
+        //            // Giriş yapmış kullanıcı bilgilerini otomatik al
+        //            var user = await _userManager.GetUserAsync(User);
+        //            if (user != null)
+        //            {
+        //                message.UserId = user.Id;
+        //                message.Name = user.FirstName;
+        //                message.Surname = user.LastName;
+        //                message.EmailAddress = user.Email;
+        //                message.PhoneNumber = user.PhoneNumber;
+        //            }
+        //        }
+        //        else
+        //        {
+        //            // "Giriş yapmamış kullanıcı" formdan bilgilerini girer
+        //            message.Name = messageVM.Name;
+        //            message.Surname = messageVM.Surname;
+        //            message.EmailAddress = messageVM.EmailAddress;
+        //            message.PhoneNumber = messageVM.PhoneNumber;
+        //        }
+
+        //        await _baseService.AddAsync(message);
+        //        await _unitOfWork.Commit();
+
+        //        TempData["SuccessMessage"] = "Mesajınız başarıyla gönderildi.";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "Mesaj gönderilirken hata oluştu.");
+        //        TempData["ErrorMessage"] = "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.";
+        //    }
+
+        //    return RedirectToAction("Index");
+        //}
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("Contact/SendMessageAsync")]
-        public async Task<IActionResult> SendMessageAsync([FromForm] UserMessageVM messageVM)
+        public async Task<IActionResult> SendMessageAsync(UserMessageVM messageVM)
         {
             if (!ModelState.IsValid)
             {
@@ -119,22 +176,23 @@ namespace AtlasCommerce.UI.Controllers.Contact
                     Message = messageVM.Message,
                 };
 
-                if (User.Identity?.IsAuthenticated ?? false)
+                if (User.Identity?.IsAuthenticated == true)
                 {
-                    // Giriş yapmış kullanıcı bilgilerini otomatik al
                     var user = await _userManager.GetUserAsync(User);
-                    if (user != null)
-                    {
-                        message.UserId = user.Id;
-                        message.Name = user.FirstName;
-                        message.Surname = user.LastName;
-                        message.EmailAddress = user.Email;
-                        message.PhoneNumber = user.PhoneNumber;
-                    }
+
+                    if (user == null)
+                        return Unauthorized();
+
+                    // SADECE SERVER VERİSİ
+                    message.UserId = user.Id;
+                    message.Name = user.FirstName;
+                    message.Surname = user.LastName;
+                    message.EmailAddress = user.Email;
+                    message.PhoneNumber = user.PhoneNumber;
                 }
                 else
                 {
-                    // "Giriş yapmamış kullanıcı" formdan bilgilerini girer
+                    // Guest User formdan gelir
                     message.Name = messageVM.Name;
                     message.Surname = messageVM.Surname;
                     message.EmailAddress = messageVM.EmailAddress;
@@ -149,7 +207,7 @@ namespace AtlasCommerce.UI.Controllers.Contact
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Mesaj gönderilirken hata oluştu.");
-                TempData["ErrorMessage"] = "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.";
+                TempData["ErrorMessage"] = "Mesaj gönderilirken bir hata oluştu.";
             }
 
             return RedirectToAction("Index");

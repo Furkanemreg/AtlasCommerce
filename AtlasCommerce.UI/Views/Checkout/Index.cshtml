@@ -4,16 +4,60 @@
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Sipariş Özeti";
+
+    var isOrderLocked = Model.OrderId != null && Model.OrderId != Guid.Empty; // TASLAK KAYDEDİLMİŞ SİPARİŞ ÜZERİNDEN GELİP ÖDEME YAPILACAKSA MİKTAR GÜNCELLEME/ÜRÜN SİLME VS. YAPILAMAZ.
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
+    .qty-disabled {
+        opacity: .55;
+        position: relative;
+    }
+
+    .qty-disabled:hover::after {
+        content: attr(data-tooltip);
+    }
+
+    /* BOŞSA HİÇ GÖSTERME */
+    .qty-disabled:not([data-tooltip]):hover::after {
+        content: none;
+        display: none;
+    }
+
+    .qty-disabled:hover::before {
+        content: "";
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 6px solid transparent;
+        border-top-color: #1a1a1a;
+    }
+
+    .order-lock-warning {
+        margin-top: 6px;
+        font-size: 11px;
+        color: #B42318;
+    }
     .co-root {
         font-family: 'DM Sans', sans-serif;
         max-width: 1000px;
         margin: 2.5rem auto;
         padding: 0 1rem;
+    }
+
+    .is-readonly {
+        background: #f6f7f9 !important;
+        border: 1px solid #eee !important;
+        color: #6b7280 !important;
+        cursor: default;
+    }
+
+        .is-readonly:focus {
+        border-color: #eee !important;
+        background: #f6f7f9 !important;
     }
 
     /* Stepper */
@@ -29,6 +73,23 @@
     .co-step-sep { flex: 1; height: 1px; background: #e8e8e8; margin: 0 12px; max-width: 48px; }
 
     .co-title { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 1.5rem; letter-spacing: -0.4px; color: #1a1a1a; }
+
+    .co-alt-title {
+        display: inline-flex;
+        align-items: center;
+        gap: .35rem;
+        padding: .35rem .7rem;
+        font-family: 'Syne', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: -.1px;
+        color: #5f6368;
+        background: #c8e691;
+        border: 1px solid #e5e7eb;
+        border-radius: 999px;
+        margin-top: -0.75rem;
+        margin-bottom: 1.5rem;
+    }
     .co-body { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
 
     .co-card { background: #fff; border: 1px solid #eee; border-radius: 16px; padding: 1.35rem; }
@@ -327,6 +388,10 @@
     </div>
 
     <h1 class="co-title">Sipariş Bilgileri</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.OrderNumber))
+    {
+        <h5 class="co-alt-title">@($"#{Model.OrderNumber}")</h5>
+    }
 
     <form id="checkoutForm">
         @Html.AntiForgeryToken()
@@ -341,41 +406,44 @@
 
                 <div class="co-field">
                     <label class="co-label">Açık Adres *</label>
-                    <textarea asp-for="ShippingAddress" class="co-textarea" placeholder="Mahalle, sokak, bina no, daire..." maxlength="300"></textarea>
+                    <textarea class="co-textarea is-readonly" name="ShippingAddress"
+                            placeholder="Mahalle, sokak, bina no, daire..."
+                            maxlength="300"
+                            readonly>@Model.Settings?.Address</textarea>
                     <span asp-validation-for="ShippingAddress" class="field-error mt-1"></span>
                 </div>
                 <div class="co-row">
                     <div class="co-field">
                         <label class="co-label">Ülke *</label>
-                        <input asp-for="Country" class="co-input" placeholder="Türkiye" maxlength="50" />
+                        <input asp-for="Country" class="co-input is-readonly" placeholder="Türkiye" maxlength="50" value="@Model.Settings?.Country" readonly />
                         <span asp-validation-for="Country" class="field-error mt-1"></span>
                     </div>
                     <div class="co-field">
                         <label class="co-label">Şehir *</label>
-                        <input asp-for="City" class="co-input" placeholder="İstanbul" maxlength="50" />
+                        <input asp-for="City" class="co-input is-readonly" placeholder="İstanbul" maxlength="50" value="@Model.Settings?.City" readonly />
                         <span asp-validation-for="City" class="field-error mt-1"></span>
                     </div>
                 </div>
                 <div class="co-row">
                     <div class="co-field">
                         <label class="co-label">İlçe *</label>
-                        <input asp-for="District" class="co-input" placeholder="Sarıyer" maxlength="50" />
+                        <input asp-for="District" class="co-input is-readonly" placeholder="Sarıyer" maxlength="50" value="@Model.Settings?.District" readonly />
                         <span asp-validation-for="District" class="field-error mt-1"></span>
                     </div>
                     <div class="co-field">
                         <label class="co-label">Posta Kodu</label>
-                        <input asp-for="ZipCode" class="co-input" placeholder="34000" maxlength="20" />
+                        <input asp-for="ZipCode" class="co-input is-readonly" placeholder="34000" maxlength="20" value="@Model.Settings?.ZipCode" readonly />
                         <span asp-validation-for="ZipCode" class="field-error mt-1"></span>
                     </div>
                 </div>
                 <div class="pickup-toggle">
                     <label class="pickup-check">
-                        <input type="checkbox" id="pickupCheckbox" />
+                        <input type="checkbox" id="pickupCheckbox" checked disabled />
                         <span>Mağazadan teslim almak istiyorum</span>
                     </label>
 
                     <div class="pickup-note">
-                        Bu seçenek seçildiğinde teslimat adresi yerine varsayılan mağaza adresi kullanılacaktır.
+                        Kargo entegrasonu eklenene kadar teslimat adresi olarak varsayılan mağaza adresi kullanılacaktır.
                     </div>
                 </div>
             </div>
@@ -392,17 +460,17 @@
                                 <div>
                                     <div class="order-item-name">@item.Title</div>
                                     <div class="order-item-unit">₺ @item.PriceIncludingTaxes.ToString("N2") / adet</div>
-                                    <div class="qty-ctrl">
-                                        <button type="button" class="qty-b" onclick="updateQty('@item.ProductId', -1)">−</button>
+                                    <div class="qty-ctrl @(isOrderLocked ? "qty-disabled" : "")">
+                                        <button type="button" class="qty-b" onclick="updateQty('@item.ProductId', -1)" @(isOrderLocked ? "disabled" : "")>−</button>
                                         <span class="qty-n" id="qty-@item.ProductId">@item.Quantity</span>
-                                        <button type="button" class="qty-b" onclick="updateQty('@item.ProductId', 1)">+</button>
+                                        <button type="button" class="qty-b" onclick="updateQty('@item.ProductId', 1)" @(isOrderLocked ? "disabled" : "")>+</button>
                                     </div>
                                 </div>
                                 <div class="order-item-right">
                                     <div class="order-item-total" id="rowTotal-@item.ProductId">
                                         ₺ @((item.Quantity * item.PriceIncludingTaxes).ToString("N2"))
                                     </div>
-                                    <button type="button" class="del-link remove-item-btn" data-id="@item.ProductId">Kaldır</button>
+                                    <button type="button" class="del-link remove-item-btn @(isOrderLocked ? "qty-disabled" : "")" data-id="@item.ProductId">Kaldır</button>
                                 </div>
                             </div>
                         }
@@ -601,6 +669,8 @@
             }
         });
 
+        window.isOrderLocked = @(isOrderLocked.ToString().ToLower());
+
         // ── Modal open/close ──
         function openPaymentModal() {
             // Validate address form first
@@ -694,25 +764,11 @@
 
                 isPickup: isPickup,
 
-                shippingAddress: isPickup
-                    ? 'Mağazadan Teslim'
-                    : $('textarea[name="ShippingAddress"]').val(),
-
-                country: isPickup
-                    ? 'Türkiye'
-                    : $('input[name="Country"]').val(),
-
-                city: isPickup
-                    ? 'İstanbul'
-                    : $('input[name="City"]').val(),
-
-                district: isPickup
-                    ? 'Mağaza'
-                    : $('input[name="District"]').val(),
-
-                zipCode: isPickup
-                    ? '34408'
-                    : $('input[name="ZipCode"]').val(),
+                shippingAddress: $('textarea[name="ShippingAddress"]').val(),
+                country: $('input[name="Country"]').val(),
+                city: $('input[name="City"]').val(),
+                district: $('input[name="District"]').val(),
+                zipCode: $('input[name="ZipCode"]').val(),
 
                 cardNumber: $('#pmCardNum').val().replace(/\s/g, ''),
                 nameOnCard: $('#pmCardName').val(),
@@ -736,6 +792,11 @@
 
         // ── Cart interactions ──
         function updateQty(productId, change) {
+            if (window.isOrderLocked === true) {
+                toastr.warning("Sipariş oluşturulduğu için güncelleme yapılamaz.");
+                return;
+            }
+
             let $span = $("#qty-" + productId);
             let value = parseInt($span.text()) || 1;
             value += change;
@@ -772,6 +833,11 @@
         }
 
         $(document).on("click", ".remove-item-btn", function () {
+            if (window.isOrderLocked === true) {
+                toastr.warning("Sipariş oluşturulduğu için güncelleme yapılamaz.");
+                return;
+            }
+
             const id = $(this).data("id");
             const $row = $(`[data-id="${id}"]`);
 
@@ -812,33 +878,33 @@
             }, 260);
         });
 
-        // Mağazada Teslim
         const pickupCheckbox = document.getElementById('pickupCheckbox');
         const addressCard = document.getElementById('addressCard');
 
-        pickupCheckbox.addEventListener('change', function () {
+        // KARGO ENTEGRASYONU OLMADIĞI İÇİN ŞUAN MAĞAZADA TESLİM
+        // pickupCheckbox.addEventListener('change', function () {
 
-            const addressInputs = addressCard.querySelectorAll(
-                'input:not(#pickupCheckbox), textarea'
-            );
+        //     const addressInputs = addressCard.querySelectorAll(
+        //         'input:not(#pickupCheckbox), textarea'
+        //     );
 
-            if (this.checked) {
+        //     if (this.checked) {
 
-                addressCard.classList.add('address-disabled');
+        //         addressCard.classList.add('address-disabled');
 
-                addressInputs.forEach(x => {
-                    x.required = false;
-                    x.disabled = true;
-                });
+        //         addressInputs.forEach(x => {
+        //             x.required = false;
+        //             x.disabled = true;
+        //         });
 
-            } else {
+        //     } else {
 
-                addressCard.classList.remove('address-disabled');
+        //         addressCard.classList.remove('address-disabled');
 
-                addressInputs.forEach(x => {
-                    x.disabled = false;
-                });
-            }
-        });
+        //         addressInputs.forEach(x => {
+        //             x.disabled = false;
+        //         });
+        //     }
+        // });
     </script>
 }

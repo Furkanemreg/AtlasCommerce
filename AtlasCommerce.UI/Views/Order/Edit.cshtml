@@ -1,0 +1,338 @@
+﻿@using AtlasCommerce.UI.Helpers
+@model AtlasCommerce.Application.ViewModels.OrderDetailVM
+
+@{
+    ViewData["Title"] = "Sipariş Düzenle";
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+    .oe-root {
+        font-family: 'DM Sans', sans-serif;
+        padding: 2rem 1rem;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .oe-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 2rem;
+    }
+
+    .oe-title-icon {
+        width: 36px;
+        height: 36px;
+        background: #185FA5;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .oe-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin: 0;
+    }
+
+    .oe-back {
+        font-family: 'Syne', sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: #888;
+        background: none;
+        border: 1px solid #ddd;
+        padding: 6px 14px;
+        border-radius: 8px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all .2s;
+        margin-left: auto;
+    }
+
+        .oe-back:hover {
+            background: #f5f5f5;
+            color: #1a1a1a;
+            border-color: #bbb;
+        }
+
+    .oe-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .oe-card-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        color: #aaa;
+        margin-bottom: 1.1rem;
+    }
+
+    .oe-field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .oe-field {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .oe-label {
+        font-size: 11px;
+        color: #aaa;
+        font-weight: 500;
+    }
+
+    .oe-input {
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13.5px;
+        color: #1a1a1a;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 9px 12px;
+        outline: none;
+        transition: border-color .2s, box-shadow .2s;
+        background: #fff;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+        .oe-input:focus {
+            border-color: #185FA5;
+            box-shadow: 0 0 0 3px rgba(24, 95, 165, .1);
+        }
+
+    .item-row {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+        .item-row:last-child {
+            border-bottom: none;
+        }
+
+    .item-name {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    .item-meta {
+        font-size: 11px;
+        color: #aaa;
+        margin-top: 2px;
+    }
+
+    .qty-control {
+        display: flex;
+        align-items: center;
+        background: #f5f5f5;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .qty-btn {
+        width: 30px;
+        height: 30px;
+        background: none;
+        border: none;
+        font-size: 16px;
+        color: #555;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background .1s;
+    }
+
+        .qty-btn:hover {
+            background: #e8e8e8;
+            color: #111;
+        }
+
+    .qty-input {
+        width: 42px;
+        text-align: center;
+        border: none;
+        background: transparent;
+        font-size: 13px;
+        font-weight: 500;
+        color: #1a1a1a;
+        font-family: 'DM Sans', sans-serif;
+        -moz-appearance: textfield;
+    }
+
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+        }
+
+    .oe-footer {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: .5rem;
+    }
+
+    .oe-submit {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        background: #185FA5;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 28px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all .2s;
+    }
+
+        .oe-submit:hover {
+            background: #0C447C;
+            transform: translateY(-1px);
+        }
+
+    .oe-cancel {
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        background: #f0f0f0;
+        color: #555;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 12px 24px;
+        cursor: pointer;
+        transition: all .2s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .oe-cancel:hover {
+            background: #e0e0e0;
+            color: #1a1a1a;
+        }
+</style>
+
+<form asp-action="Edit" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="oe-root">
+
+        <div class="oe-header">
+            <div class="oe-title-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+            </div>
+            <h1 class="oe-title mt-3">Sipariş Düzenle</h1>
+            <a asp-controller="Order" asp-action="Detail" asp-route-id="@Model.Id" class="oe-back">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Geri Dön
+            </a>
+        </div>
+
+        <!-- Sipariş Bilgileri -->
+        <div class="oe-card">
+            <div class="oe-card-label">Teslimat Bilgileri</div>
+            <div class="oe-field-grid">
+                <div class="oe-field" style="grid-column: 1 / -1">
+                    <label class="oe-label">Adres</label>
+                    <input asp-for="Address" class="oe-input" placeholder="Teslimat adresi" />
+                </div>
+                <div class="oe-field">
+                    <label class="oe-label">Şehir</label>
+                    <input asp-for="City" class="oe-input" placeholder="Şehir" />
+                </div>
+                <div class="oe-field">
+                    <label class="oe-label">İlçe</label>
+                    <input asp-for="District" class="oe-input" placeholder="İlçe" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Ürünler -->
+        <div class="oe-card">
+            <div class="oe-card-label">Ürünler</div>
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                <input type="hidden" asp-for="Items[i].ProductId" />
+                <div class="item-row">
+                    <div>
+                        <p class="item-name">@Model.Items[i].ProductName</p>
+                        <p class="item-meta">@Model.Items[i].Barcode</p>
+                    </div>
+                    <div class="qty-control">
+                        <button type="button" class="qty-btn"
+                                onclick="adjustQty(this, -1)">
+                            −
+                        </button>
+                        <input asp-for="Items[i].Quantity" type="number"
+                               class="qty-input" min="1" />
+                        <button type="button" class="qty-btn"
+                                onclick="adjustQty(this, 1)">
+                            +
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Footer -->
+        <div class="oe-footer">
+            <a asp-controller="Order" asp-action="Detail"
+               asp-route-id="@Model.Id" class="oe-cancel">İptal</a>
+            <button type="submit" class="oe-submit">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Güncelle
+            </button>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function adjustQty(btn, delta) {
+            const input = btn.parentElement.querySelector('.qty-input');
+            const val = parseInt(input.value) || 1;
+            input.value = Math.max(1, val + delta);
+        }
+    </script>
+}

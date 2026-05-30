@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 using Newtonsoft.Json;
+using AtlasCommerce.Persistance.Services;
 
 namespace AtlasCommerce.UI.Controllers
 {
@@ -19,8 +20,10 @@ namespace AtlasCommerce.UI.Controllers
         private readonly RoleManager<IdentityRole<Guid>> _roleManager;
         private readonly IBaseService<Category> _categoryService;
         private readonly IBaseService<Product> _productService;
+        private readonly IBaseService<UserMessage> _messageService;
         private readonly IBaseService<WebsiteSettings> _settingsService;
         private readonly IImageService _imageService;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
 
         public AccountController(
@@ -29,8 +32,10 @@ namespace AtlasCommerce.UI.Controllers
             RoleManager<IdentityRole<Guid>> roleManager,
             IBaseService<Category> categoryService,
             IBaseService<Product> productService,
+            IBaseService<UserMessage> messageService,
             IBaseService<WebsiteSettings> settingsService,
             IImageService imageService,
+            IEmailService emailService,
             IMapper mapper)
         {
             _userManager = userManager;
@@ -38,8 +43,10 @@ namespace AtlasCommerce.UI.Controllers
             _roleManager = roleManager;
             _categoryService = categoryService;
             _productService = productService;
+            _messageService = messageService;
             _settingsService = settingsService;
             _imageService = imageService;
+            _emailService = emailService;
             _mapper = mapper;
         }
 
@@ -102,11 +109,51 @@ namespace AtlasCommerce.UI.Controllers
             return View(registerVM);
         }
 
+        //[HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Register(RegisterVM vm)
+        //{
+        //    await LoadProductsToDropdown();
+        //    if (!ModelState.IsValid) return View(vm);
+
+        //    var user = new AppUser
+        //    {
+        //        FirstName = vm.FirstName,
+        //        LastName = vm.LastName,
+        //        UserName = vm.UserName,
+        //        Email = vm.Email,
+        //        PhoneNumber = vm.PhoneNumber,
+        //    };
+
+        //    var create = await _userManager.CreateAsync(user, vm.Password);
+        //    if (!create.Succeeded)
+        //    {
+        //        foreach (var e in create.Errors)
+        //            ModelState.AddModelError("", e.Description);
+        //        return View(vm);
+        //    }
+
+        //    // "User" rolü yoksa oluştur
+        //    if (!await _roleManager.RoleExistsAsync("User"))
+        //    {
+        //        await _roleManager.CreateAsync(new IdentityRole<Guid>("User"));
+        //    }
+
+        //    // Kullanıcıyı "User" rolüne ata
+        //    await _userManager.AddToRoleAsync(user, "User");
+
+
+
+        //    TempData["RegisterMessage"] = "Kayıt başarılı. Giriş yapabilirsiniz.";
+        //    return RedirectToAction(nameof(Login));
+        //}
+
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVM vm)
         {
             await LoadProductsToDropdown();
-            if (!ModelState.IsValid) return View(vm);
+
+            if (!ModelState.IsValid)
+                return View(vm);
 
             var user = new AppUser
             {
@@ -115,6 +162,7 @@ namespace AtlasCommerce.UI.Controllers
                 UserName = vm.UserName,
                 Email = vm.Email,
                 PhoneNumber = vm.PhoneNumber,
+                EmailConfirmed = false
             };
 
             var create = await _userManager.CreateAsync(user, vm.Password);
@@ -122,6 +170,7 @@ namespace AtlasCommerce.UI.Controllers
             {
                 foreach (var e in create.Errors)
                     ModelState.AddModelError("", e.Description);
+
                 return View(vm);
             }
 
@@ -131,11 +180,63 @@ namespace AtlasCommerce.UI.Controllers
                 await _roleManager.CreateAsync(new IdentityRole<Guid>("User"));
             }
 
-            // Kullanıcıyı "User" rolüne ata
+            // Kullanıcıyı role ata
             await _userManager.AddToRoleAsync(user, "User");
 
-            TempData["RegisterMessage"] = "Kayıt başarılı. Giriş yapabilirsiniz.";
+            // =========================
+            // EMAIL CONFIRMATION
+            // =========================
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+            var confirmationLink = Url.Action(
+                "ConfirmEmail",
+                "Account",
+                new
+                {
+                    userId = user.Id,
+                    token = token
+                },
+                Request.Scheme
+            );
+
+            await _emailService.SendAsync(
+                user.Email,
+                "Hesabınızı doğrulayın",
+                        $@"
+                    <h3>Hoş geldiniz {user.FirstName}</h3>
+                    <p>AtlasCommerce hesabınızı aktifleştirmek için aşağıdaki linke tıklayın:</p>
+                    <a href='{confirmationLink}'>Hesabımı Doğrula</a>
+                "
+            );
+
+            TempData["RegisterMessage"] = "Kayıt başarılı. Email adresinize doğrulama linki gönderildi.";
+
             return RedirectToAction(nameof(Login));
+        }
+
+        [HttpGet, AllowAnonymous]
+        public async Task<IActionResult> ConfirmEmail(Guid userId, string token)
+        {
+            await LoadProductsToDropdown();
+
+            var vm = new EmptyVM();
+
+            var settingsEntity = (await _settingsService.GetAllAsync()).FirstOrDefault();
+            vm.Settings = _mapper.Map<WebsiteSettingsVM>(settingsEntity);
+
+            if (userId == Guid.Empty || string.IsNullOrEmpty(token))
+                return BadRequest();
+
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+                return NotFound();
+
+            var result = await _userManager.ConfirmEmailAsync(user, token);
+
+            if (result.Succeeded)
+                return View("ConfirmEmailSuccess", vm);
+
+            return View("ConfirmEmailFailed", vm);
         }
 
         //public IActionResult Login(string? returnUrl = null)
@@ -171,6 +272,12 @@ namespace AtlasCommerce.UI.Controllers
             if (user == null)
             {
                 ModelState.AddModelError("", "Kullanıcı bulunamadı.");
+                return View(vm);
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                ModelState.AddModelError("", "Email adresiniz doğrulanmamış. Lütfen gelen kutunuzu kontrol ediniz.");
                 return View(vm);
             }
 
@@ -254,12 +361,34 @@ namespace AtlasCommerce.UI.Controllers
             await LoadProductsToDropdown();
             SetCart();
 
-            var vm = new EmptyVM();
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+                return Unauthorized();
+
+            var messages = await _messageService.GetAllAsync(x => x.UserId == user.Id);
+
+            var vm = new UserMessagesVM
+            {
+                Messages = messages
+                    .OrderByDescending(x => x.CreatedAt)
+                    .Select(x => new UserMessageItemVM
+                    {
+                        Id = x.Id,
+                        Topic = x.Topic,
+                        Message = x.Message,
+                        CreatedAt = x.CreatedAt,
+                        IsRead = x.IsRead,
+
+                        AdminReply = x.AdminReply,
+                        RepliedAt = x.RepliedAt,
+                        RepliedBy = x.RepliedBy
+                    }).ToList()
+            };
 
             var settingsEntity = (await _settingsService.GetAllAsync()).FirstOrDefault();
             vm.Settings = _mapper.Map<WebsiteSettingsVM>(settingsEntity);
 
-            return View();
+            return View(vm);
         }
 
         [Authorize]

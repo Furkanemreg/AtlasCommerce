@@ -50,6 +50,7 @@ namespace AtlasCommerce.Persistance
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();

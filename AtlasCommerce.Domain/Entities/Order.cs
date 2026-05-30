@@ -34,6 +34,8 @@ namespace AtlasCommerce.Domain.Entities
         public enmPlatform SalesChannel { get; set; } = enmPlatform.Website;
         public string? PaymentId { get; set; }
 
+        public bool IsPickup { get; set; } = true; // Mağazada teslim mi ?
+
         // Navigation
         public virtual ICollection<OrderItem> Items { get; set; } = new List<OrderItem>(); 
         public virtual ICollection<Payment>? Payments { get; set; } = new List<Payment>();

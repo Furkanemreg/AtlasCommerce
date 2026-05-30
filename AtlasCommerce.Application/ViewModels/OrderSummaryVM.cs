@@ -10,6 +10,7 @@ namespace AtlasCommerce.Application.ViewModels
     {
         public Guid Id { get; set; }
         public string OrderNumber { get; set; }
+        public bool IsPickup { get; set; }
 
         public decimal TotalAmount { get; set; }
         public int ItemCount { get; set; }

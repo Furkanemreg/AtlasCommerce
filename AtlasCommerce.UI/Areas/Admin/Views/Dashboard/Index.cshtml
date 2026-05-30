@@ -148,8 +148,7 @@
                 {
                     <li class="empty-message">
                         <div style="color: #888;">
-                            <i class='bx bx-message-square-x'></i>
-                            <p>Hiç mesaj bulunamadı.</p>
+                            <p><i class='bx bx-message-square-x me-2'></i>Yanıtlanmamış mesajınız bulunmuyor.</p>
                         </div>
                     </li>
                 }
@@ -163,7 +162,6 @@
     </div>
 </main>
 
-<!-- Bootstrap Modal -->
 <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -172,23 +170,36 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Ad Soyad:</strong> <span id="modalFullName" style="word-break: break-word;"></span></p>
-                <p><strong>Email Adresi:</strong> <span id="modalEmailAddress" style="word-break: break-word;"></span></p>
-                <p><strong>Mesaj Tarihi:</strong> <span id="modalMessageDate" style="word-break: break-word;"></span></p>
-                <p><strong>Konu:</strong> <span id="modalTopic" style="word-break: break-word;"></span></p>
-                <p style="margin-bottom: 0;"><strong>Mesaj:</strong> <span id="modalContent" style="white-space: pre-wrap; word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Ad Soyad:</strong> <span id="modalFullName" style="word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Email Adresi:</strong> <span id="modalEmailAddress" style="word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Mesaj Tarihi:</strong> <span id="modalMessageDate" style="word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Konu:</strong> <span id="modalTopic" style="word-break: break-word;"></span></p>
+                <p class="mb-2" style="margin-bottom: 0;"><strong>Mesaj:</strong> <span id="modalContent" style="white-space: pre-wrap; word-break: break-word;"></span></p>
             </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+            <div class="modal-footer flex-column align-items-stretch">
+
+                <div class="w-100 mb-2">
+                    <label class="form-label"><strong>Yanıt</strong></label>
+                    <textarea id="modalReplyInput" class="form-control" rows="3" placeholder="Yanıtınız..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 w-100">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-primary" id="btnSendReply">
+                        Yanıtla
+                    </button>
+                </div>
+
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        let currentMessageId = null;
+
         const messageModalEl = document.getElementById("messageModal");
         const messageModal = new bootstrap.Modal(messageModalEl);
 
@@ -196,6 +207,7 @@
             el.addEventListener("click", async function (e) {
                 e.preventDefault();
                 const id = this.getAttribute("data-id");
+                currentMessageId = id;
 
 				try {
 					const response = await fetch(`/Message/ViewMessage?id=${id}`);
@@ -215,6 +227,37 @@
                     alert("Hata: " + error.message);
                 }
             });
+        });
+
+        document.getElementById("btnSendReply").addEventListener("click", async function () {
+
+            const reply = document.getElementById("modalReplyInput").value;
+
+            if (!reply || reply.trim() === "") {
+                toastr.error("Mesaj yanıtı boş olamaz.");
+                return;
+            }
+
+            const response = await fetch("/Message/ReplyMessage", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify({
+                    messageId: currentMessageId,
+                    reply: reply
+                })
+            });
+
+            if (response.ok) {
+                toastr.success("Mesaj yanıtınız gönderildi.");
+                document.getElementById("modalReplyInput").value = "";
+                messageModal.hide();
+                location.reload();
+            } else {
+                toastr.error("Yanıt gönderilemedi.");
+            }
         });
     });
 </script>

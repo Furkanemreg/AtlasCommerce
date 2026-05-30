@@ -43,5 +43,10 @@ namespace AtlasCommerce.Domain.Entities
         public required string Message { get; set; }
 
         public bool IsRead { get; set; } = false;
+
+        // ADMIN REPLY
+        public string? AdminReply { get; set; }
+        public DateTime? RepliedAt { get; set; }
+        public Guid? RepliedBy { get; set; }
     }
 }

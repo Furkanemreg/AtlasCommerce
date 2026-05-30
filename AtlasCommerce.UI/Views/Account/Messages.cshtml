@@ -1,4 +1,160 @@
-﻿@{
+﻿@using AtlasCommerce.Application.ViewModels
+@model UserMessagesVM
+
+@{
     ViewData["Title"] = "Mesajlarım";
-    Layout = "_Layout";
 }
+<style>
+    .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+        opacity: 1;
+    }
+</style>
+<div class="container py-5">
+
+    <h3 class="mb-4">📩 Mesajlarım</h3>
+
+    @if (Model.Messages == null || !Model.Messages.Any())
+    {
+        <div class="alert alert-info">
+            Henüz gönderdiğiniz bir mesaj bulunmuyor.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Konu</th>
+                        <th>Mesaj</th>
+                        <th>Tarih</th>
+                        <th>Durum</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Messages)
+                    {
+                        <tr class="message-row"
+                            style="cursor:pointer"
+                            data-topic="@item.Topic"
+                            data-message="@item.Message"
+                            data-date="@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")"
+                            data-isread="@item.IsRead"
+                            data-isread="@item.IsRead"
+                            data-reply="@item.AdminReply"
+                            data-repliedat="@item.RepliedAt?.ToString("dd.MM.yyyy HH:mm")">
+
+                            <td>
+                                @item.Topic
+                            </td>
+
+                            <td>
+                                @(item.Message.Length > 60
+                                    ? item.Message.Substring(0, 60) + "..."
+                                    : item.Message)
+                            </td>
+
+                            <td>@item.CreatedAt.ToString("dd.MM.yyyy")</td>
+
+                            <td>
+                                @if (item.IsRead)
+                                {
+                                    <span class="badge bg-success">Okundu</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary text-white">Okunmadı</span>
+                                }
+                            </td>
+                            <td>
+                                @if(!string.IsNullOrWhiteSpace(item.AdminReply))
+                                {
+                                    <span class="badge bg-success">Yanıtlandı</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger text-white">Yanıtlanmadı</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<div class="modal fade" id="messageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTopic"></h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="text-muted mb-2" id="modalDate"></div>
+
+                <div class="mb-3">
+                    <strong>Mesaj:</strong>
+                    <p id="modalMessage" class="mt-2"></p>
+                </div>
+
+                <hr />
+
+                <div class="mb-3 mt-3">
+                    <strong>Yönetici Yanıtı:</strong>
+                    <p id="modalReply" class="mt-2 text-success"></p>
+                    <small class="text-muted" id="modalReplyDate"></small>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("click", function (e) {
+
+            const row = e.target.closest(".message-row");
+            if (!row) return;
+
+            const topic = row.getAttribute("data-topic");
+            const message = row.getAttribute("data-message");
+            const date = row.getAttribute("data-date");
+            const reply = row.getAttribute("data-reply");
+            const repliedAt = row.getAttribute("data-repliedat");
+
+            document.getElementById("modalTopic").innerText = topic;
+            document.getElementById("modalMessage").innerText = message;
+            document.getElementById("modalDate").innerText = date;
+
+            // ADMIN REPLY
+            const replyEl = document.getElementById("modalReply");
+            const replyDateEl = document.getElementById("modalReplyDate");
+
+            if (reply && reply.trim() !== "") {
+                replyEl.innerText = reply;
+                replyEl.classList.remove("text-danger");
+                replyEl.classList.add("text-success");
+
+                replyDateEl.innerText = repliedAt ?? "";
+            } else {
+                replyEl.innerText = "Henüz yanıtlanmadı.";
+                replyEl.classList.remove("text-success");
+                replyEl.classList.add("text-danger");
+
+                replyDateEl.innerText = "";
+            }
+
+            var modal = new bootstrap.Modal(document.getElementById("messageModal"));
+            modal.show();
+        });
+    });
+</script>
