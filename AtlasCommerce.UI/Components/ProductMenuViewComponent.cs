@@ -66,8 +66,7 @@ namespace AtlasCommerce.UI.Components
 
         //    return View(vms);
         //}
-
-
+        
         public async Task<IViewComponentResult> InvokeAsync()
         {
             var categories = await _categoryService.GetAllAsync(c => c.IsActive && c.ShowInDropDown);

@@ -12,11 +12,13 @@ namespace AtlasCommerce.Application.ViewModels
 
         public ICollection<CategoryWithProductsVM>? CategoryWithProducts { get; set; }
 
-        public ICollection<SaleProductVM>? SelectedProducts =>
-            CategoryWithProducts?
-                .SelectMany(c => c.Products)
-                .Where(p => p.ShowInSelected)
-                .ToList();
+        //public ICollection<SaleProductVM>? SelectedProducts =>
+        //    CategoryWithProducts?
+        //        .SelectMany(c => c.Products)
+        //        .Where(p => p.ShowInSelected)
+        //        .ToList();
+
+        public List<SaleProductVM>? SelectedProducts { get; set; }
 
         public WebsiteSettingsVM? Settings { get; set; }
         public List<BannerVM>? Banners { get; set; }

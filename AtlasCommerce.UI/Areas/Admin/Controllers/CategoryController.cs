@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq.Expressions;
+using AtlasCommerce.Application.Interfaces.Caching;
+using AtlasCommerce.Persistance.Services.Caching;
 
 namespace AtlasCommerce.UI.Areas.Admin.Controllers
 {
@@ -22,14 +24,29 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         private readonly IImageService _imageService;
         private readonly IBaseService<Image> _imageBaseService;
         private readonly IBaseService<WebsiteSettings> _settingsService;
+        private readonly ICategoryCacheService _categoryCacheService;
+        private readonly IHomeCacheService _homeCacheService;
+        private readonly ICategoryPageCacheService _categoryPageCacheService;
 
-        public CategoryController(IBaseService<Category> baseService, IUnitOfWork unitOfWork, IMapper mapper, IAccountService accountService, IBaseService<Image> imageBaseService, IBaseService<WebsiteSettings> settingsService, IImageService imageService) : base(baseService, unitOfWork)
+        public CategoryController(IBaseService<Category> baseService, 
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IAccountService accountService, 
+            IBaseService<Image> imageBaseService, 
+            IBaseService<WebsiteSettings> settingsService, 
+            IImageService imageService, 
+            ICategoryCacheService categoryCacheService,
+            IHomeCacheService homeCacheService,
+            ICategoryPageCacheService categoryPageCacheService) : base(baseService, unitOfWork)
         {
             _mapper = mapper;
             _accountService = accountService;
             _imageBaseService = imageBaseService;
             _imageService = imageService;
             _settingsService = settingsService;
+            _categoryCacheService = categoryCacheService;
+            _homeCacheService = homeCacheService;
+            _categoryPageCacheService = categoryPageCacheService;
         }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
@@ -163,7 +180,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             {
                 var dropdownCount = (await _baseService.GetAllAsync(i => i.ShowInDropDown && i.IsActive)).Count;
                 if (dropdownCount >= 8)
-                    return Json(new { success = false, message = "En fazla 8 kategori ana menüde gösterilebilir." });
+                    return Json(new { success = false, message = "A maximum of 8 categories can be displayed in the main menu." });
             }
 
             if (!category.IsActive)
@@ -219,22 +236,26 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
                 await _unitOfWork.Commit();
             }
 
-            return Json(new { success = true, message = "Kategori başarıyla kaydedildi." });
+            await _categoryCacheService.RemoveAsync();
+            await _homeCacheService.RemoveAsync();
+            await _categoryPageCacheService.RemoveAllAsync();
+
+            return Json(new { success = true, message = "Category saved successfully." });
         }
 
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return Json(new { success = false, message = "Geçersiz kategori ID." });
+                return Json(new { success = false, message = "Invalid category ID." });
 
             Guid entityId = Guid.Parse(id);
             if (entityId.Equals(Guid.Empty))
-                return Json(new { success = false, message = "Geçersiz kategori ID." });
+                return Json(new { success = false, message = "Invalid category ID." });
 
             Category category = await _baseService.GetByIdAsync(entityId);
             if (category == null)
-                return Json(new { success = false, message = "Kategori bulunamdı." });
+                return Json(new { success = false, message = "Category not found." });
 
             category.ShowInDropDown = false;
             category.IsActive = false;
@@ -242,7 +263,11 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             await _baseService.DeleteAsync(category);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = "Kategori başarıyla silindi." });
+            await _categoryCacheService.RemoveAsync();
+            await _homeCacheService.RemoveAsync();
+            await _categoryPageCacheService.RemoveAllAsync();
+
+            return Json(new { success = true, message = "Category deleted successfully." });
         }
     }
 }

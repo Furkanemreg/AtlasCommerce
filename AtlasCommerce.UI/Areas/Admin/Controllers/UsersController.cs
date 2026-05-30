@@ -53,7 +53,8 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
                 user.IsActive = false;
 
                 await _accountService.UpdateAsync(user);
-                return Json(new { success = true, message = "Kullanıcı erişimi durduruldu." });
+                
+                return Json(new { success = true, message = "User access has been suspended." });
             }
             catch (Exception ex)
             {
@@ -75,7 +76,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
 
                 await _accountService.UpdateAsync(user);
 
-                return Json(new { success = true, message = "Kullanıcı erişimi aktif edildi." });
+                return Json(new { success = true, message = "User access has been activated." });
             }
             catch (Exception ex)
             {

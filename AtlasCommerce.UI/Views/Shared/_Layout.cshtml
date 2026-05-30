@@ -135,6 +135,39 @@
                         <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Kayıt Ol</a>
                     }
                 </div>
+
+                <!-- CACHE ICON -->
+                <div class="nav-cache d-flex align-items-center ms-3 position-relative group">
+                    <button type="button"
+                            id="cacheStatusBtn"
+                            class="btn btn-sm btn-light position-relative"
+                            title="Cache Durumu">
+                        <i class="fas fa-database"></i>
+
+                        <!-- küçük aktif indicator -->
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                        </span>
+                    </button>
+
+                    <!-- Tooltip -->
+                    <span class="absolute top-full right-0 mt-2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-900 text-white text-xs px-3 py-2 rounded shadow w-64 z-50">
+                        Sayfa verileri performans için önbellekten yüklenir.<br /><br />
+                        Güncellemeler cache temizlenene kadar görünmeyebilir.<br /><br />
+                        <b>Cache temizleme</b> ile veriler yeniden oluşturulur.
+                    </span>
+
+                    <div id="cachePanel"
+                         class="position-absolute bg-white shadow rounded p-2 d-none"
+                         style="right:0; top:40px; min-width:180px; z-index:9999;">
+
+                        <div class="small text-muted mb-2">Cache Yönetimi</div>
+
+                        <button id="clearCacheBtn"
+                                class="btn btn-sm btn-danger w-100">
+                            Önbelleği Temizle
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -256,7 +289,34 @@
             </text>
         }
     </script>
+    <script>
+        document.getElementById("cacheStatusBtn").addEventListener("click", function () {
+            const panel = document.getElementById("cachePanel");
+            panel.classList.toggle("d-none");
+        });
 
+        document.getElementById("clearCacheBtn").addEventListener("click", async function () {
+
+            const res = await fetch('Cache/ClearAll', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (res.ok) {
+                toastr.success("Önbellek temizlendi. Sayfa yenileniyor...");
+                document.querySelector(".bg-success").classList.remove("bg-success");
+                document.querySelector(".bg-success")?.classList.add("bg-danger");
+
+                setTimeout(function () {
+                    location.reload();
+                }, 3000);
+            } else {
+                toastr.error("Önbellek temizlenemedi.");
+            }
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

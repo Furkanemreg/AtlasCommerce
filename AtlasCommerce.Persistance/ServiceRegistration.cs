@@ -1,8 +1,10 @@
 ﻿using AtlasCommerce.Application;
 using AtlasCommerce.Application.Interfaces;
+using AtlasCommerce.Application.Interfaces.Caching;
 using AtlasCommerce.Domain.Entities;
 using AtlasCommerce.Persistance.Context;
 using AtlasCommerce.Persistance.Services;
+using AtlasCommerce.Persistance.Services.Caching;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +57,26 @@ namespace AtlasCommerce.Persistance
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
 
+            #region Caching
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration =
+                    configuration["Redis:Connection"];
+
+                options.InstanceName = "AtlasCommerce:";
+            });
+
+            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddScoped<ICartCacheService, CartCacheService>();
+            services.AddScoped<IDropdownCacheService, DropdownCacheService>();
+            services.AddScoped<ISettingsCacheService, SettingsCacheService>();
+            services.AddScoped<IBannerCacheService, BannerCacheService>();
+            services.AddScoped<IHomeCacheService, HomeCacheService>();
+            services.AddScoped<ICategoryCacheService, CategoryCacheService>();
+            services.AddScoped<ICategoryPageCacheService, CategoryPageCacheService>();
+            services.AddScoped<IProductListCacheService, ProductListCacheService>();
+            #endregion
+            
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IBaseService<>), typeof(BaseService<>));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

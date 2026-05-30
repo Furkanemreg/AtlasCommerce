@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using AtlasCommerce.Application.Interfaces.Caching;
 
 namespace AtlasCommerce.UI.Areas.Admin.Controllers
 {
@@ -26,8 +27,19 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         private readonly IBaseService<WebsiteSettings> _settingsService;
         private readonly ApplicationDbContext _context;
         private readonly IProductService _productService;
+        private readonly IProductListCacheService _productListCacheService;
 
-        public ProductController(IBaseService<Product> baseService, IUnitOfWork unitOfWork, IMapper mapper, IAccountService accountService, IImageService imageService, IBaseService<Image> imageBaseService, IBaseService<Category> categoryService, ApplicationDbContext context, IProductService productService, IBaseService<WebsiteSettings> settingsService) : base(baseService, unitOfWork)
+        public ProductController(IBaseService<Product> baseService, 
+            IUnitOfWork unitOfWork, 
+            IMapper mapper, 
+            IAccountService accountService, 
+            IImageService imageService, 
+            IBaseService<Image> imageBaseService, 
+            IBaseService<Category> categoryService, 
+            ApplicationDbContext context, 
+            IProductService productService, 
+            IBaseService<WebsiteSettings> settingsService,
+            IProductListCacheService productListCacheService) : base(baseService, unitOfWork)
         {
             _mapper = mapper;
             _accountService = accountService;
@@ -37,6 +49,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             _context = context;
             _productService = productService;
             _settingsService = settingsService;
+            _productListCacheService = productListCacheService;
         }
 
         public async Task<IActionResult> Index(int pageNumber = 1, int pageSize = 10, string? searchTerm = null)
@@ -147,7 +160,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             {
                 product = await _baseService.GetByIdAsync(vm.Id);
                 if (product == null)
-                    return Json(new { success = false, message = "Seçilen ürün bulunamadı." });
+                    return Json(new { success = false, message = "The selected product could not be found." });
 
                 _mapper.Map(vm, product);
                 // Eski resimleri, silme-kept işlemleri öncesi getirelim
@@ -216,7 +229,9 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
 
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = "Ürün başarıyla kaydedildi." });
+            await _productListCacheService.RemoveAsync();
+
+            return Json(new { success = true, message = "Product saved successfully." });
         }
 
         //[HttpPost]
@@ -299,20 +314,22 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return Json(new { success = false, message = "Geçersiz ürün ID." });
+                return Json(new { success = false, message = "Invalid product ID." });
 
             Guid entityId = Guid.Parse(id);
             if (entityId.Equals(Guid.Empty))
-                return Json(new { success = false, message = "Geçersiz ürün ID." });
+                return Json(new { success = false, message = "Invalid product ID." });
 
             Product product = await _baseService.GetByIdAsync(entityId);
             if (product == null)
-                return Json(new { success = false, message = "Ürün bulunamdı." });
+                return Json(new { success = false, message = "Product not found." });
 
             await _baseService.DeleteAsync(product);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = "Ürün başarıyla silindi." });
+            await _productListCacheService.RemoveAsync();
+
+            return Json(new { success = true, message = "Product deleted successfully." });
         }
 
         [NonAction]
