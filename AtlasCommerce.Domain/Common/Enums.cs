@@ -32,17 +32,20 @@ public enum enmOrderStatus
     [Description("Kargoya Verildi")]
     Shipped = 4,
 
+    [Description("Mağazada Alım Bekliyor")] // Mağazada Teslim için.
+    WaitingInStore = 5,
+
     [Description("Teslim Edildi")]
-    Delivered = 5,
+    Delivered = 6,
 
     [Description("İptal Edildi")]
-    Cancelled = 6,
+    Cancelled = 7,
 
     [Description("İade Talebi")]
-    ReturnRequested = 7,
+    ReturnRequested = 8,
 
     [Description("İade Edildi")]
-    Returned = 8
+    Returned = 9
 }
 
 public enum enmPaymentStatus

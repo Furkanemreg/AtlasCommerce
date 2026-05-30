@@ -31,6 +31,11 @@ namespace AtlasCommerce.Application.ViewModels
 
         public DateTime CreatedAt { get; set; }
 
+        // ADMIN REPLY
+        public string? AdminReply { get; set; }
+        public DateTime? RepliedAt { get; set; }
+        public Guid? RepliedBy { get; set; }
+
         public WebsiteSettingsVM? Settings { get; set; }
     }
 }

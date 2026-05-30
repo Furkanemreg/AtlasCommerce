@@ -32,6 +32,7 @@ namespace AtlasCommerce.Application.ViewModels
         // Taslak siparişi ödemek için
         public Guid? OrderId { get; set; }
         public Guid? PaymentId { get; set; }
+        public string? OrderNumber { get; set; }
 
         // UI
         public List<CartItemVM> Items { get; set; } = new();

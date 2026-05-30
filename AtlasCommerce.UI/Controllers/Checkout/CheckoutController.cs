@@ -154,6 +154,7 @@ namespace AtlasCommerce.UI.Controllers.Checkout
 
             return View("Index", vm);
         }
+
         [HttpGet]
         public async Task<IActionResult> FromOrder(Guid orderId, Guid paymentId)
         {
@@ -185,6 +186,7 @@ namespace AtlasCommerce.UI.Controllers.Checkout
 
                 VATAmount = x.TaxAmount,
                 OTVAmount = x.OTVAmount,
+                ImageUrl = x.ImageUrl,
                 Settings = settingsVm
             }).ToList();
 
@@ -193,14 +195,15 @@ namespace AtlasCommerce.UI.Controllers.Checkout
                 Items = items,
 
                 SubTotal = items.Sum(x => x.PriceExcludingTaxes * x.Quantity),
-                VatTotal = items.Sum(x => x.VATAmount * x.Quantity),
+                VatTotal = items.Sum(x => x.VATAmount),
                 OtvTotal = items.Sum(x => x.OTVAmount * x.Quantity),
                 Total = items.Sum(x => x.PriceIncludingTaxes * x.Quantity),
 
                 Settings = settingsVm,
 
                 OrderId = order.Id,
-                PaymentId = payment.Id
+                PaymentId = payment.Id,
+                OrderNumber = order.OrderNumber
             };
 
             return View("Index", vm);

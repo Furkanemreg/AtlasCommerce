@@ -414,6 +414,77 @@
     }
 
     .item-flash { animation: rowFlash 0.4s ease; }
+
+    .auth-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.5);
+        backdrop-filter: blur(2px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-backdrop.show {
+        display: flex;
+    }
+
+    .auth-modal {
+        background: #fff;
+        border-radius: 14px;
+        padding: 24px;
+        width: 320px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,.2);
+    }
+
+    .auth-title {
+        font-family: 'Syne',sans-serif;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .auth-text {
+        font-size: 13px;
+        color: #777;
+        margin-bottom: 18px;
+    }
+
+    .auth-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .auth-login-btn {
+        background: #1D9E75;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .auth-login-btn,
+    .auth-login-btn:visited,
+    .auth-login-btn:hover,
+    .auth-login-btn:active,
+    .auth-login-btn:focus {
+        color: #fff !important;
+        text-decoration: none !important;
+    }
+
+    .auth-close-btn {
+        background: #eee;
+        border: none;
+        padding: 10px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 13px;
+    }
 </style>
 
 <div class="cart-root">
@@ -523,7 +594,7 @@
                     </div>
                 </div>
 
-                <form asp-controller="Order" asp-action="SaveDraft" method="post" style="display:inline;">
+                @* <form asp-controller="Order" asp-action="SaveDraft" method="post" style="display:inline;">
                     <button type="submit" class="draft-btn">
                         <i class="fas fa-file"></i>
                         Taslak Olarak Kaydet
@@ -533,7 +604,25 @@
                 <a asp-controller="Checkout" asp-action="Index" class="checkout-btn">
                     <i class="fas fa-credit-card"></i>
                     Siparişi Tamamla
-                </a>
+                </a> *@
+
+
+                <form id="saveDraftForm"
+                      asp-controller="Order"
+                      asp-action="SaveDraft"
+                      method="post"
+                      style="display:inline;">
+
+                    <button type="button" class="draft-btn" onclick="handleSaveDraft()">
+                        <i class="fas fa-file"></i>
+                        Taslak Olarak Kaydet
+                    </button>
+                </form>
+
+                <button type="button" onclick="handleCheckout()" class="checkout-btn">
+                    <i class="fas fa-credit-card"></i>
+                    Siparişi Tamamla
+                </button>
 
                 <a asp-controller="Home" asp-action="Index" class="continue-link">
                     <i class="fas fa-chevron-left" style="font-size:10px;"></i>
@@ -608,7 +697,7 @@
         <div class="modal-content" style="border-radius:16px; border:none; overflow:hidden;">
             <div class="modal-header border-0 pb-0 d-flex align-items-center">
                 <h5 class="modal-title mb-2" style="font-family:'Syne',sans-serif; font-size:16px; font-weight:600;">
-                    Sepeti temizle
+                    Sepeti Temizle
                 </h5>
                 <button type="button" class="btn-close btn-close-white mb-1" data-bs-dismiss="modal"></button>
             </div>
@@ -621,6 +710,26 @@
                     Temizle
                 </button>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Please login in order to continue. -->
+<div class="auth-backdrop" id="authModal">
+    <div class="auth-modal">
+        <div class="auth-title">Giriş Gerekli</div>
+        <div class="auth-text">
+            Bu işlemi yapabilmek için giriş yapmanız gerekiyor.
+        </div>
+
+        <div class="auth-actions">
+            <a href="/Account/Login?returnUrl=@Context.Request.Path" class="auth-login-btn">
+                Giriş Yap
+            </a>
+
+            <button type="button" onclick="closeAuthModal()" class="auth-close-btn">
+                Kapat
+            </button>
         </div>
     </div>
 </div>
@@ -775,6 +884,38 @@
                 </div>
             `);
             $("#clearCartBtn").remove();
+        }
+
+        function openAuthModal() {
+            document.getElementById("authModal").classList.add("show");
+            document.body.style.overflow = "hidden";
+        }
+
+        function closeAuthModal() {
+            document.getElementById("authModal").classList.remove("show");
+            document.body.style.overflow = "";
+        }
+
+        function handleSaveDraft() {
+            const isLoggedIn = @((User.Identity?.IsAuthenticated ?? false).ToString().ToLower());
+
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+
+            document.getElementById("saveDraftForm").submit();
+        }
+
+        function handleCheckout() {
+            const isLoggedIn = @((User.Identity?.IsAuthenticated ?? false).ToString().ToLower());
+
+            if (!isLoggedIn) {
+                openAuthModal();
+                return;
+            }
+
+            window.location.href = '/Checkout/Index';
         }
     </script>
 }

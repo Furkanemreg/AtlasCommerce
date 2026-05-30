@@ -1,0 +1,30 @@
+﻿@model AtlasCommerce.Application.ViewModels.EmptyVM
+
+@{
+    ViewData["Title"] = "Email Doğrulama Başarısız";
+    Layout = "_Layout";
+}
+
+<div style="max-width:520px;margin:80px auto;text-align:center;font-family:DM Sans, sans-serif;">
+
+    <div style="width:80px;height:80px;border-radius:50%;background:#FDEAEA;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#C62828" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+    </div>
+
+    <h2 style="font-weight:700;color:#1a1a1a;margin-bottom:10px;">
+        Email doğrulama başarısız
+    </h2>
+
+    <p style="color:#666;font-size:14px;line-height:1.6;margin-bottom:25px;">
+        Link geçersiz veya süresi dolmuş olabilir. Lütfen tekrar kayıt olun veya yeni doğrulama isteyin.
+    </p>
+
+    <a href="/Account/Register"
+       style="display:inline-block;padding:12px 22px;background:#1a1a1a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;">
+        Yeniden Kayıt Ol
+    </a>
+
+</div>

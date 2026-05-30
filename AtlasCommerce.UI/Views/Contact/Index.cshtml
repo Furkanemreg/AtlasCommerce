@@ -55,48 +55,44 @@
 
         <!-- İletişim Formu -->
         <div class="col-md-6">
-            @if (!isAuthenticated)
+            @if (isAuthenticated)
             {
                 <form asp-controller="Contact" asp-action="SendMessageAsync" method="post" class="contact-form p-4 rounded bg-white">
-                    <div class="mb-3">
-                        <label asp-for="Name" class="form-label">Ad</label>
-                        <input asp-for="Name" class="form-control" placeholder="Adınız" autocomplete="off" maxlength="30" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
+                    <div class="contact-form p-4 rounded bg-white">
+                        <div class="mb-3">
+                            <label class="form-label">Ad</label>
+                            <input class="form-control" value="@firstName" disabled />
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Surname" class="form-label">Soyad</label>
-                        <input asp-for="Surname" class="form-control" placeholder="Soyadınız" autocomplete="off" maxlength="30" />
-                        <span asp-validation-for="Surname" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Soyad</label>
+                            <input class="form-control" value="@lastName" disabled />
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="PhoneNumber" class="form-label">Telefon Numarası</label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon Numaranız" autocomplete="off" maxlength="11" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Telefon</label>
+                            <input class="form-control" value="@phoneNumber" disabled />
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="EmailAddress" class="form-label">E-Posta Adresi *</label>
-                        <input asp-for="EmailAddress" class="form-control" placeholder="E-posta Adresiniz" autocomplete="off" maxlength="50" />
-                        <span asp-validation-for="EmailAddress" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">E-Posta</label>
+                            <input class="form-control" value="@emailAddress" disabled />
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Topic" class="form-label">Konu *</label>
-                        <textarea asp-for="Topic" class="form-control" rows="1" placeholder="Konu" autocomplete="off" maxlength="100"></textarea>
-                        <span asp-validation-for="Topic" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="Topic" class="form-label">Konu *</label>
+                            <input asp-for="Topic" class="form-control" />
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Message" class="form-label">Mesajınız *</label>
-                        <textarea asp-for="Message" class="form-control" rows="5" placeholder="Mesaj..." autocomplete="off" maxlength="500"></textarea>
-                        <span asp-validation-for="Message" class="text-danger"></span>
-                    </div>
+                        <div class="mb-3">
+                            <label asp-for="Message" class="form-label">Mesaj *</label>
+                            <textarea asp-for="Message" class="form-control"></textarea>
+                        </div>
 
-                    <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
-                        <i class="ri-send-plane-line"></i> Gönder
-                    </button>
+                        <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
+                            <i class="ri-send-plane-line"></i> Gönder
+                        </button>
+                    </div>
                 </form>
             }
             else
@@ -104,25 +100,25 @@
                 <form asp-controller="Contact" asp-action="SendMessageAsync" method="post" class="contact-form p-4 rounded bg-white">
                     <div class="mb-3">
                         <label asp-for="Name" class="form-label">Ad</label>
-                        <input asp-for="Name" class="form-control" placeholder="Ad" autocomplete="off" maxlength="30" value="@firstName" readonly />
+                        <input asp-for="Name" class="form-control" placeholder="Ad" autocomplete="off" maxlength="30" value="@firstName" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="Surname" class="form-label">Soyad</label>
-                        <input asp-for="Surname" class="form-control" placeholder="Soyad" autocomplete="off" maxlength="30" value="@lastName" readonly />
+                        <input asp-for="Surname" class="form-control" placeholder="Soyad" autocomplete="off" maxlength="30" value="@lastName" />
                         <span asp-validation-for="Surname" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="PhoneNumber" class="form-label">Telefon Numarası</label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon Numarası" autocomplete="off" maxlength="11" value="@phoneNumber" readonly />
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon Numarası" autocomplete="off" maxlength="11" value="@phoneNumber" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
                         <label asp-for="EmailAddress" class="form-label">E-Posta Adresi *</label>
-                        <input asp-for="EmailAddress" class="form-control" placeholder="E-posta Adresi" autocomplete="off" maxlength="50" value="@emailAddress" readonly />
+                        <input asp-for="EmailAddress" class="form-control" placeholder="E-posta Adresi" autocomplete="off" maxlength="50" value="@emailAddress" />
                         <span asp-validation-for="EmailAddress" class="text-danger"></span>
                     </div>
 

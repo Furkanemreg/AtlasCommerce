@@ -26,5 +26,10 @@ namespace AtlasCommerce.Application.ViewModels
         public string? Topic { get; set; }
 
         public bool IsRead { get; set; } = false;
+
+        // ADMIN REPLY
+        public string? AdminReply { get; set; }
+        public DateTime? RepliedAt { get; set; }
+        public Guid? RepliedBy { get; set; }
     }
 }

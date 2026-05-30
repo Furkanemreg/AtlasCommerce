@@ -15,7 +15,20 @@
     int endPage = Math.Min(startPage + groupSize - 1, totalPages);
     int messageType = Model.MessageType;
 }
+<style>
+    .message-read {
+        background-color: #f5fff5 !important;
+    }
 
+    .message-unread {
+        background-color: #fff7f7 !important;
+    }
+
+    .message-read:hover,
+    .message-unread:hover {
+        filter: brightness(98%);
+    }
+ </style>
 <div class="dashboard-wrapper">
     <div class="dashboard-container">
         <div class="dashboard-header">
@@ -34,19 +47,35 @@
 
             <div class="dashboard-actions">
                 <div class="flex flex-wrap gap-2 p-2 dark rounded-2xl shadow">
-                    <a class="flex items-center justify-center px-3 py-2 text-white rounded-xl transition filter-btn btn-show-readed-messages" style="border: 1px solid var(--dark);" title="Tüm Mesajlar" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
+                    <a class="flex items-center justify-center px-3 py-2 text-white rounded-xl transition filter-btn btn-show-readed-messages" style="border: 1px solid var(--dark);" 
+                        title="Tüm Mesajlar (Silinmemiş)" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
                         <i class='bx bx-list-ul' style="color: var(--dark);"></i>
                     </a>
+
+                    <a class="flex items-center justify-center px-3 py-2 bg-green-300 text-white rounded-xl hover:bg-green-500 transition filter-btn btn-show-replied-messages"
+                        title="Yanıtlanmış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 4 })'>
+                        <i class="bx bx-message-check"></i>
+                    </a>
+                    <a class="flex items-center justify-center px-3 py-2 bg-red-300 text-white rounded-xl hover:bg-red-500 transition filter-btn btn-show-unreplied-messages"
+                        title="Yanıtlanmamış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 5 })'>
+                        <i class="bx bx-message-x"></i>
+                    </a>
+
                     <a class="flex items-center justify-center px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition filter-btn btn-show-deleted-messages"
-                       title="Silinmiş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
+                        title="Silinmiş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
                         <i class="bx bx-trash"></i>
                     </a>
-                    <a class="flex items-center justify-center px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition filter-btn btn-show-unreaded-messages" title="Sadece okunmamış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
+
+                    <a class="flex items-center justify-center px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition filter-btn btn-show-unreaded-messages" 
+                        title="Sadece okunmamış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
                         <i class="bx bx-envelope"></i>
                     </a>
-                    <a class="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition filter-btn btn-show-readed-messages" title="Sadece okunmuş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
+
+                    <a class="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition filter-btn btn-show-readed-messages" 
+                        title="Sadece okunmuş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
                         <i class="bx bx-envelope-open"></i>
                     </a>
+
                     <button type="button" class="flex items-center justify-center px-3 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition filter-btn btn-mark-all-as-unread" title="Tümünü okunmadı olarak işaretle">
                         <i class="bx bx-envelope"></i>
                     </button>
@@ -76,7 +105,7 @@
                     {
                         @foreach (var item in Model.Items)
                         {
-                            <tr>
+                            <tr class="@(item.IsRead ? "message-read" : "message-unread")">
                                 <td></td>
                                 <td class="user-cell">
                                     <div>
@@ -88,13 +117,13 @@
                                 <td>@(item?.ShortTopic ?? "-")</td>
                                 <td>@item?.CreatedAt</td>
                                 <td>
-                                    @if (item.IsRead)
+                                    @if (!string.IsNullOrWhiteSpace(item.AdminReply))
                                     {
-                                        <span class="status-label status-active">Okundu</span>
+                                        <span class="status-label status-active">Yanıtlandı</span>
                                     }
                                     else
                                     {
-                                        <span class="status-label status-inactive">Okunmadı</span>
+                                        <span class="status-label status-inactive">Yanıtlanmadı</span>
                                     }
                                 </td>
                                 <td class="action-cell">

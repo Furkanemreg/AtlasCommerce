@@ -41,29 +41,6 @@
         margin: 0;
     }
 
-    .od-back {
-        font-family: 'Syne', sans-serif;
-        font-size: 12px;
-        font-weight: 600;
-        color: #888;
-        background: none;
-        border: 1px solid #ddd;
-        padding: 6px 14px;
-        border-radius: 8px;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: all .2s;
-        margin-left: auto;
-    }
-
-        .od-back:hover {
-            background: #f5f5f5;
-            color: #1a1a1a;
-            border-color: #bbb;
-        }
-
     .od-card {
         background: #fff;
         border: 1px solid #eee;
@@ -98,6 +75,35 @@
         font-size: 13.5px;
         font-weight: 500;
         color: #1a1a1a;
+    }
+
+    .ol-ship {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: #f5f5f5;
+        color: #666;
+    }
+
+    .ol-pickup {
+        background: #EAF3DE;
+        color: #3B6D11;
+    }
+
+    .span-pickup {
+        color: #3B6D11;
+    }
+
+    .ol-delivery {
+        background: #E9F2FF;
+        color: #1D4ED8;
+    }
+
+    .span-delivery {
+        color: #1D4ED8;
     }
 
     .status-badge {
@@ -163,9 +169,9 @@
         border-bottom: 1px solid #f0f0f0;
     }
 
-        .item-row:last-child {
-            border-bottom: none;
-        }
+    .item-row:last-child {
+        border-bottom: none;
+    }
 
     .item-name {
         font-size: 13.5px;
@@ -212,29 +218,254 @@
         color: #666;
     }
 
-        .summary-row .val {
-            font-weight: 500;
-            color: #1a1a1a;
-            font-family: 'Syne', sans-serif;
-        }
+    .summary-row .val {
+        font-weight: 500;
+        color: #1a1a1a;
+        font-family: 'Syne', sans-serif;
+    }
 
-        .summary-row.grand {
-            border-top: 1px solid #eee;
-            margin-top: 8px;
-            padding-top: 14px;
-            font-weight: 500;
-            color: #1a1a1a;
-        }
+    .summary-row.grand {
+        border-top: 1px solid #eee;
+        margin-top: 8px;
+        padding-top: 14px;
+        font-weight: 500;
+        color: #1a1a1a;
+    }
 
-            .summary-row.grand .val {
-                font-size: 18px;
-                font-weight: 700;
-                color: #1D9E75;
-            }
+    .summary-row.grand .val {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1D9E75;
+    }
+
+    .od-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+    }
+
+    .od-actions form {
+        margin: 0;
+    }
+
+    .od-btn {
+        height: 32px;
+        padding: 0 14px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+        border: 1px solid #e5e5e5;
+        background: #fff;
+        font-family: 'Syne', sans-serif;
+        font-size: 11.5px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all .2s ease;
+        cursor: pointer;
+    }
+
+    .od-back {
+        height: 32px;
+        padding: 0 14px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        box-sizing: border-box;
+        font-family: 'Syne', sans-serif;
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #888;
+        background: none;
+        border: 1px solid #ddd;
+        text-decoration: none;
+        transition: all .2s;
+        margin-left: auto;
+    }
+
+    .od-back:hover {
+        background: #f5f5f5;
+        color: #1a1a1a;
+        border-color: #bbb;
+    }
+
+    .od-edit {
+        color: #185FA5;
+        border-color: rgba(24,95,165,.18);
+        background: rgba(24,95,165,.05);
+    }
+
+    .od-edit:hover {
+        background: rgba(24,95,165,.10);
+        border-color: rgba(24,95,165,.28);
+    }
+
+    .od-delete {
+        color: #B42318;
+        border-color: rgba(180,35,24,.16);
+        background: rgba(180,35,24,.05);
+    }
+
+    .od-delete:hover {
+        background: rgba(180,35,24,.10);
+        border-color: rgba(180,35,24,.28);
+    }
+
+    .od-success {
+        color: #1D9E75;
+        border-color: rgba(29, 158, 117, 0.22);
+        background: rgba(29, 158, 117, 0.08);
+    }
+
+    .od-success:hover {
+        background: rgba(29, 158, 117, 0.14);
+        border-color: rgba(29, 158, 117, 0.35);
+    }
+
+    .del-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.45);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        backdrop-filter: blur(2px);
+    }
+
+    .del-modal-backdrop.show {
+        display: flex;
+    }
+
+    .del-modal {
+        width: 100%;
+        max-width: 380px;
+        background: #fff;
+        border-radius: 18px;
+        padding: 28px 24px;
+        text-align: center;
+        box-shadow: 0 20px 60px rgba(0,0,0,.18);
+        animation: fadeIn .18s ease;
+    }
+
+    .del-modal-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: #FDECEC;
+        color: #D64545;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        font-weight: 700;
+        margin: 0 auto 18px;
+    }
+
+    .del-modal-title {
+        font-family: 'Syne',sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin-bottom: 8px;
+    }
+
+    .del-modal-text {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 24px;
+    }
+
+    .del-modal-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .del-cancel-btn,
+    .del-confirm-btn {
+        flex: 1;
+        height: 46px;
+        border: none;
+        border-radius: 12px;
+        font-family: 'Syne',sans-serif;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: .2s;
+    }
+
+    .del-cancel-btn {
+        background: #f3f3f3;
+        color: #555;
+    }
+
+    .del-cancel-btn:hover {
+        background: #e7e7e7;
+    }
+
+    .del-confirm-btn {
+        background: #D64545;
+        color: #fff;
+    }
+
+    .del-confirm-btn:hover {
+        background: #BB3535;
+    }
+
+    .od-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 8px 0;
+        border-bottom: 1px solid #f2f2f2;
+        gap: 20px;
+    }
+
+    .od-row:last-child {
+        border-bottom: none;
+    }
+
+    .od-key {
+        font-size: 12px;
+        color: #999;
+        min-width: 120px;
+    }
+
+    .od-value {
+        font-size: 13px;
+        color: #1a1a1a;
+        font-weight: 500;
+        text-align: right;
+    }
+
+    .od-row.full {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .od-row.full .od-value {
+        text-align: left;
+        margin-top: 6px;
+        font-weight: 400;
+        line-height: 1.6;
+    }
+
+    .flex-center {
+        display: flex;
+        align-items: center;
+    }
+
+    .ml-2 {
+        margin-left: 6px;
+    }
 </style>
 
 <div class="od-root">
-
     <div class="od-header">
         <div class="od-title-icon">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff"
@@ -244,17 +475,101 @@
                 <path d="M9 12h6M9 16h4" />
             </svg>
         </div>
+
         <h1 class="od-title mt-3">Sipariş Detayı</h1>
-        <a asp-controller="Order" asp-action="Index" class="od-back">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                 stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 18 9 12 15 6" />
-            </svg>
-            Siparişlerime Dön
-        </a>
+
+        <div class="od-actions">
+            @if (Model.Status == enmOrderStatus.Draft || Model.Status == enmOrderStatus.PendingPayment)
+            {
+                @* 
+                <a href="/Order/Edit/@Model.Id"
+                   class="od-btn od-edit">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.3"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z" />
+                    </svg>
+                    Düzenle
+                </a> *@
+
+                <form asp-controller="Order" asp-action="StartPayment" method="post" style="display:inline; margin:0;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="orderId" value="@Model.Id" />
+
+                    <button type="submit" class="od-btn od-success">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2.3"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
+                            <line x1="2" y1="10" x2="22" y2="10" />
+                        </svg>
+                        Öde
+                    </button>
+                </form>
+
+                <button type="button"
+                        onclick="openDeleteModal()"
+                        class="od-btn od-delete">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.3"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14H6L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                        <path d="M9 6V4h6v2" />
+                    </svg>
+                    Sil
+                </button>
+            }
+
+            <a asp-controller="Order" asp-action="Index" class="od-back">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+                Siparişlerime Dön
+            </a>
+        </div>
     </div>
 
     <!-- Sipariş Bilgileri -->
+    <div class="od-card">
+        <div class="od-card-label">Teslimat Yöntemi</div>
+        <div class="od-info-grid">
+            <div>
+                @if (Model.IsPickup)
+                {
+                    <span class="ol-ship ol-pickup">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 21h18" />
+                            <path d="M5 21V7l7-4 7 4v14" />
+                            <path d="M9 21v-6h6v6" />
+                        </svg>
+                    </span>
+
+                    <span class="ms-2 span-pickup">Mağazada Teslim</span>
+                }
+                else
+                {
+                    <span class="ol-ship ol-delivery">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3h13v13H3z" />
+                            <path d="M16 8h4l1 3v5h-5z" />
+                            <circle cx="7.5" cy="18.5" r="1.5" />
+                            <circle cx="17.5" cy="18.5" r="1.5" />
+                        </svg>
+                    </span>
+
+                    <span class="ms-2 span-delivery">Adrese teslim</span>
+                }
+            </div>
+        </div>
+    </div>
+
     <div class="od-card">
         <div class="od-card-label">Sipariş Bilgileri</div>
         <div class="od-info-grid">
@@ -324,23 +639,88 @@
                 {
                     <div>
                         <div class="od-info-key">Kart</div>
-                        <div class="od-info-val">@Model.Payment.CardBrand (•••• @Model.Payment.CardNumber)</div>
+                        <div class="od-info-val">@Model.Payment.CardBrand (@Model.Payment.CardNumber)</div>
                     </div>
                 }
                 <div>
                     <div class="od-info-key">Oluşturulma Tarihi</div>
-                    <div class="od-info-val">@Model.Payment.CreatedAt.ToString("dd.MM.yyyy") — @Model.Payment.CreatedAt.ToString("HH:mm")</div>
+                    <div class="od-info-val">
+                        @Model.Payment.CreatedAt.ToString("dd.MM.yyyy") - <span class="text-muted">@Model.Payment.CreatedAt.ToString("HH:mm")</span>
+                    </div>
                 </div>
-                @if (Model.Payment.PaidAt.HasValue)
+                @if (Model.Payment.PaidAt.HasValue && Model.Payment.PaidAt != DateTime.MinValue)
                 {
                     <div>
                         <div class="od-info-key">Ödeme Tarihi</div>
-                        <div class="od-info-val">@Model.Payment.PaidAt.Value.ToString("dd.MM.yyyy") — @Model.Payment.PaidAt.Value.ToString("HH:mm")</div>
+                        <div class="od-info-val">
+                            @Model.Payment.PaidAt.Value.ToString("dd.MM.yyyy") - <span class="text-muted">@Model.Payment.PaidAt.Value.ToString("HH:mm")</span>
+                        </div>
                     </div>
                 }
             </div>
         </div>
     }
+    <!-- Adres Bilgileri -->
+    <div class="od-card">
+        <div class="od-card-label">Teslimat Bilgileri</div>
+
+        <div class="od-row">
+            <span class="od-key">Teslimat Yöntemi</span>
+
+            <div class="od-value flex-center">
+                @if (Model.IsPickup)
+                {
+                    <span class="ol-ship ol-pickup">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 21h18" />
+                            <path d="M5 21V7l7-4 7 4v14" />
+                            <path d="M9 21v-6h6v6" />
+                        </svg>
+                    </span>
+                    <span class="ml-2 span-pickup">Mağazada Teslim</span>
+                }
+                else
+                {
+                    <span class="ol-ship ol-delivery">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 3h13v13H3z" />
+                            <path d="M16 8h4l1 3v5h-5z" />
+                            <circle cx="7.5" cy="18.5" r="1.5" />
+                            <circle cx="17.5" cy="18.5" r="1.5" />
+                        </svg>
+                    </span>
+                    <span class="ml-2 span-delivery">Adrese teslim</span>
+                }
+            </div>
+        </div>
+        
+        <div class="od-row">
+            <span class="od-key">Ülke</span>
+            <span class="od-value">@Model.Country</span>
+        </div>
+
+        <div class="od-row">
+            <span class="od-key">Şehir</span>
+            <span class="od-value">@Model.City</span>
+        </div>
+
+        <div class="od-row">
+            <span class="od-key">İlçe</span>
+            <span class="od-value">@Model.District</span>
+        </div>
+
+        <div class="od-row">
+            <span class="od-key">Posta Kodu</span>
+            <span class="od-value">@Model.ZipCode</span>
+        </div>
+
+        <div class="od-row full">
+            <span class="od-key">Açık Adres</span>
+            <span class="od-value">@Model.Address</span>
+        </div>
+    </div>
 
     <!-- Sipariş Özeti -->
     <div class="od-card">
@@ -363,3 +743,91 @@
     </div>
 
 </div>
+
+<div class="del-modal-backdrop" id="deleteModalBackdrop">
+    <div class="del-modal">
+        <div class="del-modal-icon">
+            !
+        </div>
+
+        <div class="del-modal-title">
+            Bu siparişi silmek istediğinizden emin misiniz ?
+        </div>
+
+        <div class="del-modal-text">
+            Bu işlem geri alınamaz.
+        </div>
+
+        <div class="del-modal-actions">
+            <button type="button"
+                    class="del-cancel-btn"
+                    onclick="closeDeleteModal()">
+                Vazgeç
+            </button>
+
+            <button type="button"
+                    class="del-confirm-btn"
+                    onclick="confirmDelete()">
+                Sil
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openDeleteModal() {
+
+        document
+            .getElementById("deleteModalBackdrop")
+            .classList.add("show");
+
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeDeleteModal() {
+
+        document
+            .getElementById("deleteModalBackdrop")
+            .classList.remove("show");
+
+        document.body.style.overflow = "";
+    }
+
+    async function confirmDelete() {
+
+        try {
+
+            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            const response = await fetch('/Order/DeleteDraft?orderId=@Model.Id', {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': token
+                }
+            });
+
+            if (response.ok) {
+                toastr.success(response.message || 'Siparişiniz silinmiştir.');
+                setTimeout(function () {
+                    window.location.href = '/Order/Index';
+                }, 3000);
+
+                return;
+            }
+
+            const errorText = await response.text();
+
+            toastr.error(errorText || 'Sipariş silinirken bir hata oluştu.');
+
+        } catch {
+
+            toastr.error('Sipariş silinirken bir hata oluştu.');
+        }
+    }
+
+    document.addEventListener("keydown", function (e) {
+
+        if (e.key === "Escape")
+            closeDeleteModal();
+    });
+</script>

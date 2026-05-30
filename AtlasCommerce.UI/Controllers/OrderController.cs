@@ -2,21 +2,27 @@
 using AtlasCommerce.Application.ViewModels;
 using AtlasCommerce.Domain.Entities;
 using AtlasCommerce.Persistance.Migrations;
+using AtlasCommerce.Persistance.Services;
 using AtlasCommerce.UI.Controllers.Base;
 using AtlasCommerce.UI.Controllers.Products;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
+using NuGet.Configuration;
 using System;
 
 namespace AtlasCommerce.UI.Controllers
 {
     public class OrderController : BaseController<Order>
     {
+        private readonly UserManager<AppUser> _userManager;
         private readonly ILogger<OrderController> _logger;
         private readonly IMapper _mapper;
         private readonly IImageService _imageService;
+        private readonly IEmailService _emailService;
         private readonly IBaseService<Product> _productService;
         private readonly IBaseService<Payment> _paymentService;
         private readonly IBaseService<Category> _categoryService;
@@ -25,6 +31,7 @@ namespace AtlasCommerce.UI.Controllers
         private readonly IMemoryCache _memoryCache;
 
         public OrderController(
+            UserManager<AppUser> userManager,
             IBaseService<Order> baseService, 
             IUnitOfWork unitOfWork, 
             IBaseService<Product> productService,
@@ -34,13 +41,16 @@ namespace AtlasCommerce.UI.Controllers
             ICurrentUserService currentUserService,
             ILogger<OrderController> logger, 
             IMapper mapper, 
-            IImageService imageService,
+            IImageService imageService, 
+            IEmailService emailService,
             IMemoryCache memoryCache)
             : base(baseService, unitOfWork)
         {
+            _userManager = userManager;
             _logger = logger;
             _mapper = mapper;
             _imageService = imageService;
+            _emailService = emailService;
             _productService = productService;
             _paymentService = paymentService;
             _categoryService = categoryService;
@@ -166,7 +176,8 @@ namespace AtlasCommerce.UI.Controllers
                     TotalAmount = x.TotalAmount,
                     ItemCount = x.Items?.Count ?? 0,
                     Status = x.Status,
-                    CreatedAt = x.CreatedAt
+                    CreatedAt = x.CreatedAt,
+                    IsPickup = x.IsPickup
                 }).ToList(),
 
                 Settings = settingsVm
@@ -196,6 +207,7 @@ namespace AtlasCommerce.UI.Controllers
 
         // Save Order (DRAFT)
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> SaveDraft()
         {
             var currentUserId = _currentUserService.UserId();
@@ -207,12 +219,36 @@ namespace AtlasCommerce.UI.Controllers
             var productIds = cart.Select(x => x.ProductId).ToList();
             var products = await _productService.GetAllAsync(p => productIds.Contains(p.Id));
 
+            var defaultAddress = "Varsayılan Satıcı Adresi";
+            var defaultCountry = "Varsayılan Ülke";
+            var defaultCity = "Varsayılan İl";
+            var defaultDistrict = "Varsayılan İlçe";
+            var defaultZipCode = "Varsayılan Posta Kodu";
+
+            var settingsEntity = (await _settingsService.GetAllAsync()).FirstOrDefault();
+            if (settingsEntity != null)
+            {
+                defaultAddress = settingsEntity.Address ?? "Varsayılan Satıcı Adresi";
+                defaultCountry = settingsEntity.Country ?? "Varsayılan Ülke";
+                defaultCity = settingsEntity.City ?? "Varsayılan İl";
+                defaultDistrict = settingsEntity.District ?? "Varsayılan İlçe";
+                defaultZipCode = settingsEntity.ZipCode ?? "Varsayılan Posta Kodu";
+            }
+
             var order = new Order
             {
                 UserId = currentUserId,
                 Status = enmOrderStatus.Draft,
                 CreatedAt = DateTime.Now,
                 OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{new Random().Next(1000, 9999)}",
+
+                // KARGO ENTEGRASYONU OLMADIĞI İÇİN ŞUAN MAĞAZADA TESLİM
+                ShippingAddress = defaultAddress,
+                Country = defaultCountry,
+                City = defaultCity,
+                District = defaultDistrict,
+                ZipCode = defaultZipCode,
+                IsPickup = true,
 
                 Items = new List<OrderItem>()
             };
@@ -242,7 +278,8 @@ namespace AtlasCommerce.UI.Controllers
                         TaxRate = product.TaxRate,
                         OTVRate = product.OTV,
 
-                        Quantity = item.Quantity
+                        Quantity = item.Quantity,
+                        ImageUrl = item.ImageUrl
                     });
                 }
 
@@ -259,6 +296,8 @@ namespace AtlasCommerce.UI.Controllers
 
                 _logger.LogInformation("Draft order created: {OrderId}", order.Id);
 
+                HttpContext.Session.Remove("CartSession");
+
                 return RedirectToAction("Detail", new { id = order.Id });
             }
             catch (Exception ex)
@@ -273,6 +312,7 @@ namespace AtlasCommerce.UI.Controllers
 
         // Checkout => ORDER (Pending => Paid akışı başlangıcı)
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateOrderForPayment(
             bool isPickup,
@@ -288,6 +328,11 @@ namespace AtlasCommerce.UI.Controllers
             string cvv)
         {
             var currentUserId = _currentUserService.UserId();
+
+            if (isPickup == false)
+            {
+                return BadRequest("Şuan sadece mağazada teslim seçeneği mevcuttur.");
+            }
 
             var defaultAddress = "Varsayılan Satıcı Adresi";
             var defaultCountry = "Varsayılan Ülke";
@@ -355,11 +400,14 @@ namespace AtlasCommerce.UI.Controllers
                 UserId = currentUserId,
                 Status = enmOrderStatus.PendingPayment,
                 CreatedAt = DateTime.Now,
-                ShippingAddress = isPickup ? defaultAddress : shippingAddress,
-                Country = isPickup ? defaultCountry : country,
-                City = isPickup ? defaultCity : city,
-                District = isPickup ? defaultDistrict : district,
-                ZipCode = isPickup ? defaultZipCode : zipCode,
+
+                // KARGO ENTEGRASYONU OLMADIĞI İÇİN ŞUAN MAĞAZADA TESLİM
+                ShippingAddress = defaultAddress,
+                Country = defaultCountry,
+                City = defaultCity,
+                District = defaultDistrict,
+                ZipCode = defaultZipCode,
+                IsPickup = true,
 
                 OrderNumber = $"ORD-{DateTime.UtcNow:yyyyMMdd}-{new Random().Next(1000, 9999)}",
 
@@ -482,6 +530,37 @@ namespace AtlasCommerce.UI.Controllers
 
                 HttpContext.Session.Remove("CartSession");
 
+                #region ONAY E-POSTASI
+                var user = await _userManager.FindByIdAsync(order.UserId.ToString());
+
+                var subject = "Siparişiniz başarıyla alındı";
+
+                var body = $@"
+                    <div style='font-family:Arial'>
+                        <h2>Teşekkürler {user!.FullName}!</h2>
+
+                        <p>Siparişiniz başarıyla oluşturulmuştur ve ödeme alınmıştır.</p>
+
+                        <h4>Sipariş No: {order.OrderNumber}</h4>
+                        <p>Toplam Tutar: ₺ {order.TotalAmount:N2}</p>
+
+                        <p>Siparişiniz hazırlanma sürecine alınmıştır.</p>
+
+                        <br/>
+
+                        <a href='https://localhost:7103/Order/Details/{order.Id}'>
+                            Siparişimi Görüntüle
+                        </a>
+
+                        <br/><br/>
+
+                        <small>AtlasCommerce</small>
+                    </div>
+                ";
+
+                await _emailService.SendAsync(user!.Email, subject, body);
+                #endregion
+
                 return Ok("Ödemeniz başarıyla işlendi.");
             }
             catch (Exception ex)
@@ -523,7 +602,14 @@ namespace AtlasCommerce.UI.Controllers
             var vm = new OrderDetailVM
             {
                 Id = order.Id,
-                OrderNumber = order.OrderNumber,
+                OrderNumber = order.OrderNumber ?? "-",
+                IsPickup = true, // KARGO ENTEGRASYONU OLMADIĞI İÇİN ŞUAN MAĞAZADA TESLİM
+
+                Address = order.ShippingAddress ?? "-",
+                Country = order.Country ?? "-",
+                City = order.City ?? "-",
+                District = order.District ?? "-",
+                ZipCode = order.ZipCode ?? "-",
 
                 SubTotal = order.SubTotal,
                 TotalAmount = order.TotalAmount,
@@ -576,7 +662,7 @@ namespace AtlasCommerce.UI.Controllers
             if (order == null || order.UserId != currentUserId)
                 return NotFound();
 
-            if (order.Status != enmOrderStatus.Draft)
+            if (order.Status != enmOrderStatus.Draft && order.Status != enmOrderStatus.PendingPayment)
                 return BadRequest("Bu sipariş ödeme için uygun değil.");
 
             order.Status = enmOrderStatus.PendingPayment;
@@ -615,9 +701,9 @@ namespace AtlasCommerce.UI.Controllers
             if (order == null || order.UserId != currentUserId)
                 return NotFound();
 
-            // Sadece taslak sipariş silinebilir
-            if (order.Status != enmOrderStatus.Draft)
-                return BadRequest("Sadece taslak siparişler silinebilir.");
+            // Sadece taslak/ödeme bekleyen sipariş silinebilir
+            if (order.Status != enmOrderStatus.Draft && order.Status != enmOrderStatus.PendingPayment)
+                return BadRequest("Sadece taslak/ödeme bekleyen siparişler silinebilir.");
 
             try
             {
@@ -637,5 +723,104 @@ namespace AtlasCommerce.UI.Controllers
                 return BadRequest("Taslak sipariş silinemedi.");
             }
         }
+
+        // ? TASLAK / ÖDEME BEKLEYEN SİPARİŞİ DÜZENLE
+        //[HttpGet]
+        //[Authorize]
+        //public async Task<IActionResult> Edit(Guid id)
+        //{
+        //    var currentUserId = _currentUserService.UserId();
+
+        //    await LoadProductsToDropdown();
+        //    SetCart();
+
+        //    var order = (await _baseService.GetAllAsync(i => i.Items))
+        //        .FirstOrDefault(x => x.Id == id && x.UserId == currentUserId);
+
+        //    if (order == null)
+        //        return NotFound();
+
+        //    if (order.Status != enmOrderStatus.Draft && order.Status != enmOrderStatus.PendingPayment)
+        //        return BadRequest("Bu sipariş düzenlenemez.");
+
+        //    var settingsEntity = (await _settingsService.GetAllAsync()).FirstOrDefault();
+        //    var settingsVm = _mapper.Map<WebsiteSettingsVM>(settingsEntity);
+
+        //    var vm = new OrderDetailVM
+        //    {
+        //        Id = order.Id,
+        //        OrderNumber = order.OrderNumber,
+        //        IsPickup = order.IsPickup,
+
+        //        Address = order.ShippingAddress,
+        //        Country = order.Country,
+        //        City = order.City,
+        //        District = order.District,
+        //        ZipCode = order.ZipCode,
+
+        //        Items = order.Items.Select(x => new OrderItemVM
+        //        {
+        //            ProductId = x.ProductId,
+        //            ProductName = x.ProductName,
+        //            Barcode = x.Barcode,
+        //            Quantity = x.Quantity,
+        //            UnitPrice = x.UnitPriceInclTax
+        //        }).ToList(),
+
+        //        Settings = settingsVm
+        //    };
+
+        //    return View(vm);
+        //}
+
+        //[HttpPost]
+        //[Authorize]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(OrderDetailVM model)
+        //{
+        //    var currentUserId = _currentUserService.UserId();
+
+        //    var order = (await _baseService.GetAllAsync(i => i.Items))
+        //        .FirstOrDefault(x => x.Id == model.Id && x.UserId == currentUserId);
+
+        //    if (order == null)
+        //        return NotFound();
+
+        //    if (order.Status != enmOrderStatus.Draft &&
+        //        order.Status != enmOrderStatus.PendingPayment)
+        //    {
+        //        return BadRequest("Bu sipariş güncellenemez.");
+        //    }
+
+        //    // Address update
+        //    order.ShippingAddress = model.Address;
+        //    order.Country = model.Country;
+        //    order.City = model.City;
+        //    order.District = model.District;
+        //    order.ZipCode = model.ZipCode;
+
+        //    // ITEM UPDATE (quantity güncelle)
+        //    foreach (var item in model.Items)
+        //    {
+        //        var dbItem = order.Items.FirstOrDefault(x => x.ProductId == item.ProductId);
+        //        if (dbItem != null)
+        //        {
+        //            dbItem.Quantity = item.Quantity;
+        //        }
+        //    }
+
+        //    // RE-CALCULATE
+        //    order.SubTotal = order.Items.Sum(x => x.SubTotal);
+
+        //    var tax = order.Items.Sum(x => x.TaxAmount);
+        //    var otv = order.Items.Sum(x => x.OTVAmount);
+
+        //    order.TotalAmount = order.SubTotal + tax + otv;
+
+        //    await _baseService.UpdateAsync(order);
+        //    await _unitOfWork.Commit();
+
+        //    return RedirectToAction("Detail", new { id = order.Id });
+        //}
     }
 }

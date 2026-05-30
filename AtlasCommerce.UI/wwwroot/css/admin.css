@@ -1034,22 +1034,22 @@ body {
     font-size: 0.875rem;
     line-height: 1.25rem;
 }
-/* Empty message li override */
+
 .todo-list .empty-message {
     display: flex;
-    justify-content: center; /* YATAY */
-    align-items: center; /* DİKEY */
-    width: 100%;
-    min-height: 120px;
+    align-items: center;
+    justify-content: flex-start; /* center değil */
+    gap: 8px;
+    padding: 10px;
+    color: #888;
 }
 
-/* İçerik */
 .todo-list .empty-message-content {
     text-align: center;
     color: #888;
 }
 
-.todo-list .empty-message-content i {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
+    .todo-list .empty-message-content i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
