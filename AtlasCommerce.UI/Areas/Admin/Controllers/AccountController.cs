@@ -74,7 +74,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             var user = await userManager.FindByNameAsync(loginVM.UserName);
             if (user == null)
             {
-                ModelState.AddModelError("", "Kullanıcı bulunamadı.");
+                ModelState.AddModelError("", "User not found.");
                 return View(loginVM);
             }
 
@@ -82,7 +82,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             var roles = await userManager.GetRolesAsync(user);
             if (!roles.Contains("Admin"))
             {
-                ModelState.AddModelError("", "Bu hesapla giriş yapılamaz.");
+                ModelState.AddModelError("", "You cannot sign in with this account.");
                 return View(loginVM);
             }
 
@@ -90,13 +90,13 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
 
             if (!result.Success)
             {
-                ModelState.AddModelError("Error", result.Message ?? "Kullanıcı adı veya şifre hatalıdır.");
+                ModelState.AddModelError("Error", result.Message ?? "Invalid username or password.");
                 return View(loginVM);
             }
 
             if (user.IsActive != true)
             {
-                ModelState.AddModelError("", "Hesabınız pasif durumdadır. Lütfen yönetici ile iletişime geçiniz.");
+                ModelState.AddModelError("", "Your account is inactive. Please contact the administrator.");
                 return View(loginVM);
             }
 

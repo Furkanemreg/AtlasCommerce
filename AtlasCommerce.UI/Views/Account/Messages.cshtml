@@ -2,22 +2,24 @@
 @model UserMessagesVM
 
 @{
-    ViewData["Title"] = "Mesajlarım";
+    ViewData["Title"] = "My Messages";
 }
+
 <style>
     .btn-close {
         filter: invert(1) grayscale(100%) brightness(200%);
         opacity: 1;
     }
 </style>
+
 <div class="container py-5">
 
-    <h3 class="mb-4">📩 Mesajlarım</h3>
+    <h3 class="mb-4">📩 My Messages</h3>
 
     @if (Model.Messages == null || !Model.Messages.Any())
     {
         <div class="alert alert-info">
-            Henüz gönderdiğiniz bir mesaj bulunmuyor.
+            You have not sent any messages yet.
         </div>
     }
     else
@@ -26,13 +28,14 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Konu</th>
-                        <th>Mesaj</th>
-                        <th>Tarih</th>
-                        <th>Durum</th>
+                        <th>Subject</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @foreach (var item in Model.Messages)
                     {
@@ -41,7 +44,6 @@
                             data-topic="@item.Topic"
                             data-message="@item.Message"
                             data-date="@item.CreatedAt.ToString("dd.MM.yyyy HH:mm")"
-                            data-isread="@item.IsRead"
                             data-isread="@item.IsRead"
                             data-reply="@item.AdminReply"
                             data-repliedat="@item.RepliedAt?.ToString("dd.MM.yyyy HH:mm")">
@@ -61,21 +63,22 @@
                             <td>
                                 @if (item.IsRead)
                                 {
-                                    <span class="badge bg-success">Okundu</span>
+                                    <span class="badge bg-success">Read</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-secondary text-white">Okunmadı</span>
+                                    <span class="badge bg-secondary text-white">Unread</span>
                                 }
                             </td>
+
                             <td>
-                                @if(!string.IsNullOrWhiteSpace(item.AdminReply))
+                                @if (!string.IsNullOrWhiteSpace(item.AdminReply))
                                 {
-                                    <span class="badge bg-success">Yanıtlandı</span>
+                                    <span class="badge bg-success">Replied</span>
                                 }
                                 else
                                 {
-                                    <span class="badge bg-danger text-white">Yanıtlanmadı</span>
+                                    <span class="badge bg-danger text-white">Not Replied</span>
                                 }
                             </td>
                         </tr>
@@ -100,14 +103,14 @@
                 <div class="text-muted mb-2" id="modalDate"></div>
 
                 <div class="mb-3">
-                    <strong>Mesaj:</strong>
+                    <strong>Message:</strong>
                     <p id="modalMessage" class="mt-2"></p>
                 </div>
 
                 <hr />
 
                 <div class="mb-3 mt-3">
-                    <strong>Yönetici Yanıtı:</strong>
+                    <strong>Admin Reply:</strong>
                     <p id="modalReply" class="mt-2 text-success"></p>
                     <small class="text-muted" id="modalReplyDate"></small>
                 </div>
@@ -135,7 +138,6 @@
             document.getElementById("modalMessage").innerText = message;
             document.getElementById("modalDate").innerText = date;
 
-            // ADMIN REPLY
             const replyEl = document.getElementById("modalReply");
             const replyDateEl = document.getElementById("modalReplyDate");
 
@@ -146,7 +148,7 @@
 
                 replyDateEl.innerText = repliedAt ?? "";
             } else {
-                replyEl.innerText = "Henüz yanıtlanmadı.";
+                replyEl.innerText = "Not replied yet.";
                 replyEl.classList.remove("text-success");
                 replyEl.classList.add("text-danger");
 

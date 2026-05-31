@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Configuration;
 using NuGet.ProjectModel;
+using AtlasCommerce.Application.Interfaces.Caching;
 
 namespace AtlasCommerce.UI.Areas.Admin.Controllers
 {
@@ -24,6 +25,11 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         private readonly IMapper _mapper;
         private readonly ILogger<SettingController> _logger;
 
+        private readonly ICacheService _cacheService; // generic
+        private readonly ISettingsCacheService _settingsCacheService;
+        private readonly IBannerCacheService _bannerCacheService;
+        private readonly IDropdownCacheService _dropdownCacheService;
+
         public SettingController(
             IBaseService<WebsiteSettings> settingsService,
             IBaseService<WebsiteFeature> featureService,
@@ -31,7 +37,11 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             IBaseService<WebsiteBanner> bannerService,
             IUnitOfWork unitOfWork,
             IMapper mapper,
-            ILogger<SettingController> logger)
+            ILogger<SettingController> logger,
+            ICacheService cacheService,
+            ISettingsCacheService settingsCacheService,
+            IBannerCacheService bannerCacheService,
+            IDropdownCacheService dropdownCacheService)
         {
             _settingsService = settingsService;
             _featureService = featureService;
@@ -40,6 +50,10 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _logger = logger;
+            _cacheService = cacheService;
+            _settingsCacheService = settingsCacheService;
+            _bannerCacheService = bannerCacheService;
+            _dropdownCacheService = dropdownCacheService;
         }
 
         [HttpGet]
@@ -97,12 +111,16 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
                 }
 
                 await _unitOfWork.Commit();
-                TempData["SuccessMessage"] = "Ayarlar başarıyla kaydedildi.";
+
+                // CACHE INVALIDATE
+                await _settingsCacheService.RemoveAsync();
+
+                TempData["SuccessMessage"] = "Settings have been saved successfully.";
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ayarlar kaydedilirken hata oluştu.");
-                TempData["ErrorMessage"] = "Bir hata oluştu.";
+                _logger.LogError(ex, "An error occurred while saving settings.");
+                TempData["ErrorMessage"] = "An error occurred.";
             }
 
             return RedirectToAction("Index");
@@ -112,7 +130,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         public async Task<IActionResult> AddFeature(FeatureVM model)
         {
             if (!ModelState.IsValid)
-                return BadRequest("Bir hata oluştu. Lütfen geçerli bilgiler giriniz.");
+                return BadRequest("An error occurred. Please enter valid information.");
 
             var settingsEntity = (await _settingsService.GetAllAsync()).FirstOrDefault();
 
@@ -126,6 +144,9 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             await _featureService.AddAsync(feature);
             await _unitOfWork.Commit();
 
+            // homepage / dropdown etkilenir
+            await _dropdownCacheService.RemoveAsync();
+
             return RedirectToAction("Index");
         }
 
@@ -135,13 +156,16 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             var feature = await _featureService.GetByIdAsync(request.Id);
             if (feature == null)
             {
-                return Json(new { success = false, message = "Kayıt bulunamadı." });
+                return Json(new { success = false, message = "Record not found." });
             }
 
             await _featureService.DeleteAsync(feature);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = "Kayıt başarıyla silindi." });
+            // homepage / dropdown etkilenir
+            await _dropdownCacheService.RemoveAsync();
+
+            return Json(new { success = true, message = "Record deleted successfully." });
         }
 
         [HttpPost]
@@ -174,6 +198,8 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             await _serviceService.AddAsync(service);
             await _unitOfWork.Commit();
 
+            await _cacheService.RemoveAsync("ui:services");
+
             return RedirectToAction("Index");
         }
 
@@ -182,12 +208,14 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var service = await _serviceService.GetByIdAsync(request.Id);
             if (service == null)
-                return Json(new { success = false, message = "Kayıt bulunamadı." });
+                return Json(new { success = false, message = "Record not found." });
 
             await _serviceService.DeleteAsync(service);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = "Hizmet başarıyla silindi." });
+            await _cacheService.RemoveAsync("ui:services");
+
+            return Json(new { success = true, message = "Service deleted successfully." });
         }
 
 
@@ -221,6 +249,9 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             await _bannerService.AddAsync(banner);
             await _unitOfWork.Commit();
 
+            // CACHE INVALIDATE
+            await _bannerCacheService.RemoveAsync();
+
             return RedirectToAction("Index");
         }
 
@@ -229,12 +260,15 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var banner = await _bannerService.GetByIdAsync(request.Id);
             if (banner == null)
-                return Json(new { success = false, message = "Kayıt bulunamadı." });
+                return Json(new { success = false, message = "Record not found." });
 
             await _bannerService.DeleteAsync(banner);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = "Banner başarıyla silindi." });
+            // CACHE INVALIDATE
+            await _bannerCacheService.RemoveAsync();
+
+            return Json(new { success = true, message = "Banner deleted successfully." });
         }
     }
 }

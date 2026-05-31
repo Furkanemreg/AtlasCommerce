@@ -12,6 +12,7 @@ namespace AtlasCommerce.Application.ViewModels
     public class SaleProductVM
     {
         public Guid Id { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         public required string Title { get; set; }
 

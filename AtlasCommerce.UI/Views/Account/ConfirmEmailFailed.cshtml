@@ -1,7 +1,7 @@
 ﻿@model AtlasCommerce.Application.ViewModels.EmptyVM
 
 @{
-    ViewData["Title"] = "Email Doğrulama Başarısız";
+    ViewData["Title"] = "Email Verification Failed";
     Layout = "_Layout";
 }
 
@@ -15,16 +15,16 @@
     </div>
 
     <h2 style="font-weight:700;color:#1a1a1a;margin-bottom:10px;">
-        Email doğrulama başarısız
+        Email verification failed
     </h2>
 
     <p style="color:#666;font-size:14px;line-height:1.6;margin-bottom:25px;">
-        Link geçersiz veya süresi dolmuş olabilir. Lütfen tekrar kayıt olun veya yeni doğrulama isteyin.
+        The link may be invalid or expired. Please try registering again or request a new verification email.
     </p>
 
     <a href="/Account/Register"
        style="display:inline-block;padding:12px 22px;background:#1a1a1a;color:#fff;border-radius:10px;text-decoration:none;font-weight:600;">
-        Yeniden Kayıt Ol
+        Register Again
     </a>
 
 </div>

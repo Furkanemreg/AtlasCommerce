@@ -108,7 +108,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var unreadMessages = await _baseService.GetAllAsync(i => i.IsRead.Equals(false));
             if (unreadMessages == null || !unreadMessages.Any())
-                return Json(new { success = false, message = "Hiç okunmuş mesaj bulunamadı." });
+                return Json(new { success = false, message = "No read messages found." });
 
             foreach (var message in unreadMessages)
                 message.IsRead = true;
@@ -116,7 +116,11 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             await _baseService.UpdateRangeAsync(unreadMessages);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = string.Format("{0} {1}", unreadMessages.Count, "mesaj okundu olarak güncellendi.") });
+            return Json(new
+            {
+                success = true,
+                message = string.Format("{0} messages have been marked as read.", unreadMessages.Count)
+            });
         }
 
         [HttpGet]
@@ -124,15 +128,18 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var readMessages = await _baseService.GetAllAsync(i => i.IsRead.Equals(true));
             if (readMessages == null || !readMessages.Any())
-                return Json(new { success = false, message = "Hiç okunmamış mesaj bulunamadı." });
+                return Json(new { success = false, message = "No unread messages found." });
 
             foreach (var message in readMessages)
                 message.IsRead = false;
 
             await _baseService.UpdateRangeAsync(readMessages);
             await _unitOfWork.Commit();
-
-            return Json(new { success = true, message = string.Format("{0} {1}", readMessages.Count, "mesaj okunmadı olarak güncellendi.") });
+            return Json(new
+            {
+                success = true,
+                message = string.Format("{0} messages have been marked as unread.", readMessages.Count)
+            });
         }
 
         [HttpPost]
@@ -140,13 +147,17 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var message = await _baseService.GetByIdAsync(id);
             if (message == null)
-                return Json(new { success = false, message = "Seçilen mesaj bulunamadı." });
+                return Json(new { success = false, message = "The selected message could not be found." });
 
             message.IsRead = false;
             await _baseService.UpdateAsync(message);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = string.Format("{0} {1}", message.Topic, "konulu mesaj okunmadı olarak güncellendi.") });
+            return Json(new
+            {
+                success = true,
+                message = string.Format("{0} message has been marked as unread.", message.Topic)
+            });
         }
 
         [HttpPost]
@@ -154,13 +165,17 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var message = await _baseService.GetByIdAsync(id);
             if (message == null)
-                return Json(new { success = false, message = "Seçilen mesaj bulunamadı." });
+                return Json(new { success = false, message = "The selected message could not be found." });
 
             message.IsRead = true;
             await _baseService.UpdateAsync(message);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = string.Format("{0} {1}", message.Topic, "konulu mesaj okundu olarak güncellendi.") });
+            return Json(new
+            {
+                success = true,
+                message = string.Format("{0} message has been marked as read.", message.Topic)
+            });
         }
 
         [HttpPost]
@@ -168,12 +183,16 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
         {
             var message = await _baseService.GetByIdAsync(id);
             if (message == null)
-                return Json(new { success = false, message = "Seçilen mesaj bulunamadı." });
+                return Json(new { success = false, message = "The selected message could not be found." });
 
             await _baseService.DeleteAsync(message);
             await _unitOfWork.Commit();
 
-            return Json(new { success = true, message = string.Format("{0} {1}", message.Topic, "konulu mesaj silindi.") });
+            return Json(new
+            {
+                success = true,
+                message = string.Format("{0} message has been deleted.", message.Topic)
+            });
         }
 
         [HttpGet]
@@ -184,7 +203,7 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
 
             UserMessage message = await _baseService.GetByIdAsync(id);
             if (message == null)
-                throw new Exception("Seçilen mesaj bulunamadı.");
+                return Json(new { success = false, message = "The selected message could not be found." });
 
             message.IsRead = true;
             await _baseService.UpdateAsync(message);
@@ -246,8 +265,8 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
 
             await _emailService.SendAsync(
                 message.EmailAddress,
-                "AtlasCommerce - Mesaj Yanıtı",
-                $"<p>{message.Topic ?? "-"} konulu mesajınıza verilen yanıt:</p><p>{dto.Reply}</p>"
+                "AtlasCommerce - Message Reply",
+                $"<p>Reply to your message with subject: {message.Topic ?? "-"}</p><p>{dto.Reply}</p>"
             );
 
             return Ok();
@@ -261,10 +280,10 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
             var message = await _baseService.GetByIdAsync(id);
 
             if (message == null)
-                return Json(new { success = false, message = "Mesaj bulunamadı." });
+                return Json(new { success = false, message = "Message not found." });
 
-            if(string.IsNullOrWhiteSpace(reply))
-                return Json(new { success = false, message = "Yanıt boş olamaz." });
+            if (string.IsNullOrWhiteSpace(reply))
+                return Json(new { success = false, message = "Reply cannot be empty." });
 
             var user = await _userManager.GetUserAsync(User);
 
@@ -278,11 +297,11 @@ namespace AtlasCommerce.UI.Areas.Admin.Controllers
 
             await _emailService.SendAsync(
                 message.EmailAddress,
-                "AtlasCommerce - Mesaj Yanıtı",
-                $"<p>{message.Topic ?? "-"} konulu mesajınıza verilen yanıt:</p><p>{reply}</p>"
+                "AtlasCommerce - Message Reply",
+                $"<p>Reply to your message with subject: {message.Topic ?? "-"}</p><p>{reply}</p>"
             );
 
-            return Json(new { success = true, message = "Yanıt gönderildi." });
+            return Json(new { success = true, message = "Reply sent successfully." });
         }
     }
 }
