@@ -1,8 +1,10 @@
 ﻿@using AtlasCommerce.Application.ViewModels
 @model CategoryListVM
+
 @{
     ViewData["Title"] = "All Categories";
 }
+
 <section class="category-index">
     <h1 class="category-index-title">All Categories</h1>
 
@@ -16,12 +18,17 @@
             else
             {
                 <img src="~/img/placeholder.jpg" class="card-img-top" alt="@category.Name" style="height:200px; object-fit:cover;">
-            }   
+            }
 
             <div class="category-card-body">
                 <h2>@category.Name</h2>
                 <p>@category.Description</p>
-                <a asp-controller="Categories" asp-action="View" asp-route-id="@category.Id" class="category-card-btn">İncele</a>
+                <a asp-controller="Categories"
+                   asp-action="View"
+                   asp-route-id="@category.Id"
+                   class="category-card-btn">
+                    View
+                </a>
             </div>
         </div>
     }

@@ -1,16 +1,337 @@
-﻿@model AtlasCommerce.Application.ViewModels.EmptyVM
+﻿@using AtlasCommerce.Application.ViewModels
+@model PagedResult<OrderSummaryVM>
 
 @{
+    ViewData["Title"] = "Orders";
     Layout = "_Layout";
-    ViewData["Title"] = "Geliştirme Sürecinde";
+
+    var searchTerm = Model.SearchTerm ?? "";
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = Model.TotalPages;
+
+    int groupSize = 5;
+    int currentGroup = (currentPage - 1) / groupSize;
+    int startPage = currentGroup * groupSize + 1;
+    int endPage = Math.Min(startPage + groupSize - 1, totalPages);
 }
 
+<style>
+    .status-label {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
 
-<section class="under-construction-modern">
-    <div class="uc-card">
-        <div class="uc-icon">🚀</div>
-        <h1>Bu Sayfa Geliştirme Aşamasındadır.</h1>
-        <p>Bu sayfanın geliştirme süreci devam ediyor.</p>
-        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-back">Anasayfaya Dön</a>
+    .status-inactive {
+        background: #e5e7eb;
+        color: #374151;
+    }
+
+    .status-pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-warning {
+        background: #fde68a;
+        color: #92400e;
+    }
+
+    .status-info {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status-success {
+        background: #bbf7d0;
+        color: #166534;
+    }
+
+    .status-danger {
+        background: #fecaca;
+        color: #991b1b;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+
+        <!-- HEADER -->
+        <div class="dashboard-header">
+
+            <div class="table-title text-xl font-semibold">
+                @ViewData["Title"]
+            </div>
+
+            <form method="get" class="custom-search inline-flex">
+                <div class="custom-search">
+                    <input name="searchTerm"
+                           type="text"
+                           placeholder="Enter order number..."
+                           class="table-searchbox"
+                           value="@Model.SearchTerm" />
+
+                    <button type="submit" class="search-btn">
+                        <i class='bx bx-search'></i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-container">
+            <table class="generic-table">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Total</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Items.Any())
+                    {
+                        foreach (var item in Model.Items)
+                        {
+                            <tr>
+                                <!-- ORDER NUMBER -->
+                                <td>
+                                    <div class="user-name">
+                                        #@item.OrderNumber
+                                    </div>
+                                </td>
+
+                                <!-- TOTAL -->
+                                <td>
+                                    <strong>@item.TotalAmount.ToString("C2")</strong>
+                                </td>
+
+                                <!-- ITEMS -->
+                                <td>
+                                    @item.ItemCount
+                                </td>
+
+                                <!-- STATUS -->
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case enmOrderStatus.Draft:
+                                            <span class="status-label status-inactive">Draft</span>
+                                            break;
+
+                                        case enmOrderStatus.PendingPayment:
+                                            <span class="status-label status-pending">Pending Payment</span>
+                                            break;
+
+                                        case enmOrderStatus.Paid:
+                                            <span class="status-label status-active">Paid</span>
+                                            break;
+
+                                        case enmOrderStatus.Preparing:
+                                            <span class="status-label status-warning">Preparing</span>
+                                            break;
+
+                                        case enmOrderStatus.Shipped:
+                                            <span class="status-label status-info">Shipped</span>
+                                            break;
+
+                                        case enmOrderStatus.WaitingInStore:
+                                            <span class="status-label status-info">Waiting In Store</span>
+                                            break;
+
+                                        case enmOrderStatus.Delivered:
+                                            <span class="status-label status-success">Delivered</span>
+                                            break;
+
+                                        case enmOrderStatus.Cancelled:
+                                            <span class="status-label status-danger">Cancelled</span>
+                                            break;
+
+                                        case enmOrderStatus.ReturnRequested:
+                                            <span class="status-label status-warning">Return Requested</span>
+                                            break;
+
+                                        case enmOrderStatus.Returned:
+                                            <span class="status-label status-inactive">Returned</span>
+                                            break;
+
+                                        default:
+                                            <span class="status-label">@item.Status</span>
+                                            break;
+                                    }
+                                </td>
+
+                                <!-- DATE -->
+                                <td>
+                                    @item.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                                </td>
+
+                                <!-- ACTION -->
+                                <td class="action-cell">
+                                    <a href="#" class="action-toggle">
+                                        <i class="bx bx-dots-horizontal-rounded"></i>
+                                    </a>
+                                    <ul class="action-menu">
+                                        <li>
+                                            <a asp-area="Admin"
+                                               asp-controller="Order"
+                                               asp-action="Details"
+                                               asp-route-id="@item.Id"
+                                               class="action-item">
+                                                <i class='bx bx-show'></i> Details
+                                            </a>
+                                        </li>
+
+                                    </ul>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center" style="padding:2rem;color:#999;">
+                                No orders found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; font-size:0.85rem; color:gray;">
+
+            <!-- LEFT: TOTAL COUNT -->
+            <div class="ml-4 mb-2">
+                Total Orders: <strong>@Model.TotalCount</strong>
+            </div>
+
+            <!-- RIGHT: PAGE INFO -->
+            <div class="mr-4 mb-2">
+                Page <strong>@Model.PageNumber</strong> of <strong>@Model.TotalPages</strong>
+            </div>
+        </div>
+        <!-- PAGINATION -->
+        <div class="pagination-wrapper">
+
+            <div class="pagination-left">
+                <span>Page size:</span>
+                <select class="theme-input"
+                        onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@searchTerm'">
+
+                    @foreach (var size in new[] { 10, 25, 50, 100 })
+                    {
+                        <option value="@size"
+                                selected="@(size == Model.PageSize ? "selected" : null)">
+                            @size
+                        </option>
+                    }
+
+                </select>
+            </div>
+
+            <div class="pagination-center">
+                <ul class="pagination">
+
+                    @if (startPage > 1)
+                    {
+                        <li>
+                            <a href='@Url.Action("Index", new { pageNumber = startPage - 1, pageSize, searchTerm })'>
+                                «
+                            </a>
+                        </li>
+                    }
+
+                    @for (int p = startPage; p <= endPage; p++)
+                    {
+                        <li class="@(p == currentPage ? "active" : "")">
+                            <a href='@Url.Action("Index", new { pageNumber = p, pageSize, searchTerm })'>
+                                @p
+                            </a>
+                        </li>
+                    }
+
+                    @if (endPage < totalPages)
+                    {
+                        <li>
+                            <a href='@Url.Action("Index", new { pageNumber = endPage + 1, pageSize, searchTerm })'>
+                                »
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+            </div>
+
+        </div>
+
     </div>
-</section>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menus = Array.from(document.querySelectorAll('.action-menu'));
+            menus.forEach(menu => {
+                menu._origParent = menu.parentElement;
+            });
+
+            function closeAll() {
+                menus.forEach(menu => {
+                    menu.classList.remove('open');
+                    menu.style.position = '';
+                    menu.style.top = '';
+                    menu.style.left = '';
+                    menu.style.zIndex = '';
+                    if (menu.parentElement !== menu._origParent) {
+                        menu._origParent.appendChild(menu);
+                    }
+                });
+            }
+
+            closeAll();
+            document.querySelectorAll('.action-toggle').forEach(toggle => {
+                const menu = toggle.parentElement.querySelector('.action-menu');
+
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (menu.classList.contains('open')) {
+                        return closeAll();
+                    }
+
+                    closeAll();
+
+                    document.body.appendChild(menu);
+
+                    const rect = toggle.getBoundingClientRect();
+                    menu.style.position = 'fixed';
+                    menu.style.top = (rect.top - menu.offsetHeight - 6) + 'px';
+                    menu.style.left = rect.left + 'px';
+                    menu.style.zIndex = 10000;
+
+                    menu.classList.add('open');
+                });
+            });
+
+            document.addEventListener('click', closeAll);
+        });
+    </script>
+}

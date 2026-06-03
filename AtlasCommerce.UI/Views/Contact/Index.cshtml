@@ -4,7 +4,7 @@
 @inject ICurrentUserService _currentUserService
 
 @{
-    ViewData["Title"] = "İletişim";
+    ViewData["Title"] = "Contact";
     var isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
 
     var firstName = _currentUserService.FirstName();
@@ -22,19 +22,19 @@
 }
 
 <div class="contact-page container my-5">
-    <h2 class="text-center mb-4">Bize Ulaşın</h2>
+    <h2 class="text-center mb-4">Contact Us</h2>
 
     <div class="row align-items-stretch" style="min-height: 500px;">
-        <!-- Bilgi Kartları -->
+        <!-- Info Cards -->
         <div class="col-md-6 d-flex flex-column">
             <div class="info-card p-4 rounded bg-white mb-3">
                 <div class="my-4">
-                    <h5>Telefon</h5>
+                    <h5>Phone</h5>
                     <p><a href="tel:@settings_phone">@settings_phone</a></p>
                 </div>
 
                 <div class="my-4">
-                    <h5>E‑Posta Adresi</h5>
+                    <h5>Email Address</h5>
                     <p>
                         <a href="@settings_mailto">@settings_email</a><br>
                     </p>
@@ -49,96 +49,93 @@
                         allowfullscreen
                         referrerpolicy="no-referrer-when-downgrade"
                         src="@settings_address_iframe_src">
-            </iframe>
+                </iframe>
             </div>
         </div>
 
-        <!-- İletişim Formu -->
+        <!-- Contact Form -->
         <div class="col-md-6">
             @if (isAuthenticated)
             {
                 <form asp-controller="Contact" asp-action="SendMessageAsync" method="post" class="contact-form p-4 rounded bg-white">
-                    <div class="contact-form p-4 rounded bg-white">
-                        <div class="mb-3">
-                            <label class="form-label">Ad</label>
-                            <input class="form-control" value="@firstName" disabled />
-                        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Soyad</label>
-                            <input class="form-control" value="@lastName" disabled />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Telefon</label>
-                            <input class="form-control" value="@phoneNumber" disabled />
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">E-Posta</label>
-                            <input class="form-control" value="@emailAddress" disabled />
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Topic" class="form-label">Konu *</label>
-                            <input asp-for="Topic" class="form-control" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Message" class="form-label">Mesaj *</label>
-                            <textarea asp-for="Message" class="form-control"></textarea>
-                        </div>
-
-                        <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
-                            <i class="ri-send-plane-line"></i> Gönder
-                        </button>
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input class="form-control" value="@firstName" disabled />
                     </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input class="form-control" value="@lastName" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input class="form-control" value="@phoneNumber" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input class="form-control" value="@emailAddress" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Topic" class="form-label">Subject *</label>
+                        <input asp-for="Topic" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Message" class="form-label">Message *</label>
+                        <textarea asp-for="Message" class="form-control"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
+                        <i class="ri-send-plane-line"></i> Send
+                    </button>
                 </form>
             }
             else
             {
                 <form asp-controller="Contact" asp-action="SendMessageAsync" method="post" class="contact-form p-4 rounded bg-white">
+
                     <div class="mb-3">
-                        <label asp-for="Name" class="form-label">Ad</label>
-                        <input asp-for="Name" class="form-control" placeholder="Ad" autocomplete="off" maxlength="30" value="@firstName" />
+                        <label asp-for="Name" class="form-label">First Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="First Name" autocomplete="off" maxlength="30" value="@firstName" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Surname" class="form-label">Soyad</label>
-                        <input asp-for="Surname" class="form-control" placeholder="Soyad" autocomplete="off" maxlength="30" value="@lastName" />
+                        <label asp-for="Surname" class="form-label">Last Name</label>
+                        <input asp-for="Surname" class="form-control" placeholder="Last Name" autocomplete="off" maxlength="30" value="@lastName" />
                         <span asp-validation-for="Surname" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="PhoneNumber" class="form-label">Telefon Numarası</label>
-                        <input asp-for="PhoneNumber" class="form-control" placeholder="Telefon Numarası" autocomplete="off" maxlength="11" value="@phoneNumber" />
+                        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" autocomplete="off" maxlength="11" value="@phoneNumber" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="EmailAddress" class="form-label">E-Posta Adresi *</label>
-                        <input asp-for="EmailAddress" class="form-control" placeholder="E-posta Adresi" autocomplete="off" maxlength="50" value="@emailAddress" />
+                        <label asp-for="EmailAddress" class="form-label">Email Address *</label>
+                        <input asp-for="EmailAddress" class="form-control" placeholder="Email Address" autocomplete="off" maxlength="50" value="@emailAddress" />
                         <span asp-validation-for="EmailAddress" class="text-danger"></span>
                     </div>
 
-
-
-
                     <div class="mb-3">
-                        <label asp-for="Topic" class="form-label">Konu *</label>
-                        <input asp-for="Topic" class="form-control" placeholder="Konu" maxlength="100" />
+                        <label asp-for="Topic" class="form-label">Subject *</label>
+                        <input asp-for="Topic" class="form-control" placeholder="Subject" maxlength="100" />
                         <span asp-validation-for="Topic" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Message" class="form-label">Mesajınız *</label>
+                        <label asp-for="Message" class="form-label">Your Message *</label>
                         <textarea asp-for="Message" class="form-control" rows="5" maxlength="500"></textarea>
                         <span asp-validation-for="Message" class="text-danger"></span>
                     </div>
 
                     <button type="submit" class="btn w-100" style="background-color: #3C91E6; color: #fff;">
-                        <i class="ri-send-plane-line"></i> Gönder
+                        <i class="ri-send-plane-line"></i> Send
                     </button>
                 </form>
             }

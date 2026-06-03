@@ -5,6 +5,7 @@ using AtlasCommerce.Domain.Entities;
 using AtlasCommerce.UI.Controllers.Base;
 using AtlasCommerce.UI.Controllers.Products;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
@@ -144,6 +145,7 @@ namespace AtlasCommerce.UI.Controllers
         }
         #endregion
 
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var currentUserId = _currentUserService.UserId();

@@ -1,54 +1,57 @@
 ﻿@model AtlasCommerce.Application.ViewModels.EmptyVM
 
 @{
-    ViewData["Title"] = "Gizlilik Politikası";
+    ViewData["Title"] = "Privacy Policy";
 
     var emailAddress = Model?.Settings?.EmailAddress;
     var mailto = "mailto:" + Model?.Settings?.EmailAddress;
 }
+
 <style>
-    h4{
+    h4 {
         color: #dc3545;
     }
 </style>
+
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h1 class="fw-bold text-3xl text-uppercase">Gizlilik Politikası</h1><br />
-            <p class="text-muted">Kişisel verilerinizin gizliliği ve güvenliği bizim için önemlidir.</p>
+            <h1 class="fw-bold text-3xl text-uppercase">Privacy Policy</h1><br />
+            <p class="text-muted">The privacy and security of your personal data is important to us.</p>
         </div>
 
         <div class="bg-white rounded shadow-sm p-4">
-            <h4 class="fw-bold mb-3">1. Toplanan Bilgiler</h4>
-            <p>Web sitemizi ziyaret ettiğinizde, sizinle ilgili bazı kişisel bilgiler (İsim, E-posta, IP adresi gibi) toplanabilir. Bu bilgiler, sadece hizmet kalitesini artırmak ve iletişim amacıyla kullanılır.</p>
+            <h4 class="fw-bold mb-3">1. Collected Information</h4>
+            <p>When you visit our website, certain personal information (such as Name, Email, IP address) may be collected. This information is used solely to improve service quality and for communication purposes.</p>
 
-            <h4 class="fw-bold mt-4 mb-3">2. Bilgilerin Kullanımı</h4>
-            <p>Topladığımız bilgiler şu amaçlarla kullanılabilir:</p>
+            <h4 class="fw-bold mt-4 mb-3">2. Use of Information</h4>
+            <p>The information we collect may be used for the following purposes:</p>
             <ul>
-                <li>Hizmet sunmak ve taleplerinizi karşılamak</li>
-                <li>Müşteri desteği sağlamak</li>
-                <li>Sitemizi geliştirmek ve kullanıcı deneyimini artırmak</li>
-                <li>Yasal yükümlülüklere uymak</li>
+                <li>To provide services and fulfill your requests</li>
+                <li>To offer customer support</li>
+                <li>To improve our website and user experience</li>
+                <li>To comply with legal obligations</li>
             </ul>
 
-            <h4 class="fw-bold mt-4 mb-3">3. Bilgi Paylaşımı</h4>
-            <p>Kişisel bilgileriniz hiçbir koşulda üçüncü şahıslarla paylaşılmaz, satılmaz veya kiralanmaz. Yalnızca yasal zorunluluk durumunda resmi makamlarla paylaşılır.</p>
+            <h4 class="fw-bold mt-4 mb-3">3. Information Sharing</h4>
+            <p>Your personal information is never shared, sold, or rented to third parties. It is only shared with official authorities when legally required.</p>
 
-            <h4 class="fw-bold mt-4 mb-3">4. Çerezler (Cookies)</h4>
-            <p>Web sitemiz, kullanıcı deneyimini geliştirmek için çerezler kullanabilir. Tarayıcı ayarlarınızdan çerezleri devre dışı bırakabilir veya silebilirsiniz.</p>
+            <h4 class="fw-bold mt-4 mb-3">4. Cookies</h4>
+            <p>Our website may use cookies to improve user experience. You can disable or delete cookies through your browser settings.</p>
 
-            <h4 class="fw-bold mt-4 mb-3">5. Güvenlik</h4>
-            <p>Kişisel verilerinizin güvenliği bizim için önceliklidir. Verileriniz modern güvenlik protokolleriyle korunmaktadır.</p>
+            <h4 class="fw-bold mt-4 mb-3">5. Security</h4>
+            <p>The security of your personal data is our priority. Your data is protected using modern security protocols.</p>
 
-            <h4 class="fw-bold mt-4 mb-3">6. Haklarınız</h4>
-            <p>Kişisel verilerinize erişme, düzeltme, silme ve işlemeye itiraz etme hakkına sahipsiniz. Talepleriniz için bizimle iletişime geçebilirsiniz.</p>
+            <h4 class="fw-bold mt-4 mb-3">6. Your Rights</h4>
+            <p>You have the right to access, correct, delete, and object to the processing of your personal data. You can contact us for your requests.</p>
 
-            <h4 class="fw-bold mt-4 mb-3">7. İletişim</h4>
-            <p>Bu gizlilik politikasıyla ilgili sorularınız için aşağıdaki e-posta adresinden bize ulaşabilirsiniz:
-                <a href="@mailto" style="text-decoration: none; list-style:none;"><strong>@emailAddress</strong></a>
+            <h4 class="fw-bold mt-4 mb-3">7. Contact</h4>
+            <p>
+                For questions regarding this privacy policy, you can contact us via email:
+                <a href="@mailto" style="text-decoration: none;"><strong>@emailAddress</strong></a>
             </p><br />
 
-            <p class="text-muted mt-5"><small>Güncelleme tarihi: 01.08.2025</small></p>
+            <p class="text-muted mt-5"><small>Last Updated: 01.06.2025</small></p>
         </div>
     </div>
 </section>

@@ -1,6 +1,6 @@
 ﻿@using AtlasCommerce.Application.ViewModels
 @{
-    ViewData["Title"] = "Sistem Kullanıcıları - Ekle/Düzenle";
+    ViewData["Title"] = "System Users - Add/Edit";
     Layout = "_Layout";
     var vm = Model ?? new AppUserVM();
 }
@@ -13,14 +13,14 @@
 
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Sistem Kullanıcısı Tanımlama</h2>
+                <h2 class="text-base/7 font-semibold theme-label">System User Definition</h2>
                 <p class="mt-1 text-sm/6 text-gray-600"></p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-4">
-                        <label asp-for="UserName" class="block text-sm/6 font-medium theme-label">Kullanıcı Adı</label>
+                        <label asp-for="UserName" class="block text-sm/6 font-medium theme-label">User Name</label>
                         <div class="mt-2">
-                            <input asp-for="UserName" type="text" placeholder="Kullanıcı Adı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="UserName" type="text" placeholder="User Name" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="UserName" class="text-red-600 p-2"></span>
                         </div>
                     </div>
@@ -28,9 +28,9 @@
                     @if (Model?.UserName == null)
                     {
                         <div class="sm:col-span-4">
-                            <label asp-for="Password" class="block text-sm font-medium theme-label">Şifre</label>
+                            <label asp-for="Password" class="block text-sm font-medium theme-label">Password</label>
                             <div class="mt-2 relative">
-                                <input id="passwordInput" asp-for="Password" type="password" placeholder="Şifre" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base pr-10 sm:text-sm" />
+                                <input id="passwordInput" asp-for="Password" type="password" placeholder="Password" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base pr-10 sm:text-sm" />
                                 <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-500" tabindex="-1">
                                     <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -43,7 +43,7 @@
                     }
 
                     <div class="sm:col-span-4">
-                        <label asp-for="Roles" class="block text-sm/6 font-medium theme-label">Kullanıcı Rolü</label>
+                        <label asp-for="Roles" class="block text-sm/6 font-medium theme-label">User Role</label>
                         <div class="mt-2">
                             <select asp-for="UserRole" asp-items="ViewBag.RoleList" class=" theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6"></select>
                             <span asp-validation-for="Roles" class="text-red-600 p-2"></span>
@@ -53,14 +53,14 @@
                     <div class="sm:col-span-4">
                         <div class="flex items-center space-x-6">
                             <label asp-for="IsActive" class="block text-sm/6 font-medium theme-label">
-                                Durum
+                                Status
                             </label>
                             <input type="hidden" name="IsActive" id="IsActiveHidden" value="@Model.IsActive.ToString().ToLower()" />
                             <a href="javascript:void(0);"
                                id="statusToggleBtn"
                                class="status-input space-x-5 @(Model.IsActive ? "status-active" : "status-inactive")"
                                onclick="toggleStatus()">
-                                @(Model.IsActive ? "Aktif" : "Pasif")
+                                @(Model.IsActive ? "Active" : "Inactive")
                             </a>
                         </div>
                     </div>
@@ -68,38 +68,38 @@
             </div>
 
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Kişisel Bilgiler</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Personal Information</h2>
                 <p class="mt-1 text-sm/6 text-gray-600"></p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-3">
-                        <label asp-for="FirstName" class="block text-sm/6 font-medium theme-label">Adı</label>
+                        <label asp-for="FirstName" class="block text-sm/6 font-medium theme-label">First Name</label>
                         <div class="mt-2">
-                            <input asp-for="FirstName" type="text" placeholder="Adı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="FirstName" type="text" placeholder="First Name" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="FirstName" class="text-red-600"></span>
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label asp-for="LastName" class="block text-sm/6 font-medium theme-label">Soyadı</label>
+                        <label asp-for="LastName" class="block text-sm/6 font-medium theme-label">Last Name</label>
                         <div class="mt-2">
-                            <input asp-for="LastName" type="text" placeholder="Soyadı" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="LastName" type="text" placeholder="Last Name" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="LastName" class="text-red-600"></span>
                         </div>
                     </div>
 
                     <div class="sm:col-span-4">
-                        <label asp-for="Email" class="block text-sm/6 font-medium theme-label">E-Posta Adresi</label>
+                        <label asp-for="Email" class="block text-sm/6 font-medium theme-label">Email Address</label>
                         <div class="mt-2">
-                            <input asp-for="Email" type="email" placeholder="E-Posta Adresi" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="Email" type="email" placeholder="Email Address" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="Email" class="text-red-600"></span>
                         </div>
                     </div>
 
                     <div class="sm:col-span-4">
-                        <label asp-for="PhoneNumber" class="block text-sm/6 font-medium theme-label">Telefon Numarası</label>
+                        <label asp-for="PhoneNumber" class="block text-sm/6 font-medium theme-label">Phone Number</label>
                         <div class="mt-2">
-                            <input asp-for="PhoneNumber" type="number" placeholder="Telefon Numarası" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="PhoneNumber" type="number" placeholder="Phone Number" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="PhoneNumber" class="text-red-600"></span>
                         </div>
                     </div>
@@ -107,20 +107,20 @@
             </div>
 
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Kayıt Bilgileri</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Record Information</h2>
                 <p class="mt-1 text-sm/6 text-gray-600"></p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-3">
-                        <label asp-for="CreatedUser.UserName" class="block text-sm/6 font-medium theme-label">Oluşturan Kullanıcı</label>
+                        <label asp-for="CreatedUser.UserName" class="block text-sm/6 font-medium theme-label">Created By</label>
                         <div class="mt-2">
-                            <input asp-for="CreatedUser.UserName" type="text" disabled placeholder="Oluşturan Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="CreatedUser.UserName" type="text" disabled placeholder="Created By" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="CreatedUser.UserName" class="text-red-600"></span>
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Oluşturulma Tarihi</label>
+                        <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Created Date</label>
                         <div class="mt-2">
                             <input type="text" name="CreatedAt" disabled value="@(Model.CreatedAt?.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="CreatedAt" class="text-red-600"></span>
@@ -130,15 +130,15 @@
                     @if (Model.UpdatedUser != null && !string.IsNullOrEmpty(Model.UpdatedUser.UserName))
                     {
                         <div class="sm:col-span-3">
-                            <label asp-for="UpdatedUser.UserName" class="block text-sm/6 font-medium theme-label">Son Güncelleyen Kullanıcı</label>
+                            <label asp-for="UpdatedUser.UserName" class="block text-sm/6 font-medium theme-label">Last Updated By</label>
                             <div class="mt-2">
-                                <input asp-for="UpdatedUser.UserName" type="text" disabled placeholder="Son Güncelleyen Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <input asp-for="UpdatedUser.UserName" type="text" disabled placeholder="Last Updated By" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                                 <span asp-validation-for="UpdatedUser.UserName" class="text-red-600"></span>
                             </div>
                         </div>
 
                         <div class="sm:col-span-3">
-                            <label asp-for="UpdatedAt" class="block text-sm/6 font-medium theme-label">Son Güncelleme Tarihi</label>
+                            <label asp-for="UpdatedAt" class="block text-sm/6 font-medium theme-label">Last Updated Date</label>
                             <div class="mt-2">
                                 <input type="text" name="UpdatedAt" disabled value="@(Model.UpdatedAt?.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                                 <span asp-validation-for="UpdatedAt" class="text-red-600"></span>
@@ -149,8 +149,8 @@
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
-                <a asp-area="Admin" asp-controller="Account" asp-action="Index" class="text-sm/6 font-semibold theme-label">İptal</a>
-                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Kaydet</button>
+                <a asp-area="Admin" asp-controller="Account" asp-action="Index" class="text-sm/6 font-semibold theme-label">Cancel</a>
+                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Save</button>
             </div>
         </div>
     </form>
@@ -183,23 +183,23 @@
                 var form = this;
                 var formData = $(form).serialize();
 
-                showConfirmationModal('Kullanıcıyı kaydetmek istediğinizden emin misiniz?', function () {
+                showConfirmationModal('Are you sure you want to save the user?', function () {
                     $.ajax({
                         url: $(form).attr('action'),
                         type: 'POST',
                         data: formData,
                         success: function (response) {
                             if (response.success) {
-                                toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                                toastr.success(response.message || 'Record saved successfully.');
                                 setTimeout(function () {
                                     window.location.href = '/Admin/Account/Index';
                                 }, 3000);
                             } else {
-                                toastr.error(response.message || 'Bir hata oluştu');
+                                toastr.error(response.message || 'An error occurred.');
                             }
                         },
                         error: function () {
-                            toastr.error('Bir hata oluştu');
+                            toastr.error('An error occurred.');
                         }
                     });
                 });

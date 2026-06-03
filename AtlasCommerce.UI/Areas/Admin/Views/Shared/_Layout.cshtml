@@ -70,51 +70,51 @@
             <li class="@(currentController == "Dashboard" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
                     <i class='bx bxs-dashboard'></i>
-                    <span class="text">Ana Sayfa</span>
+                    <span class="text">Dashboard</span>
                 </a>
             </li>
             <li class="@(currentController == "Category" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Category" asp-action="Index">
                     <i class='bx  bx-barcode'></i>
-                    <span class="text">Kategoriler</span>
+                    <span class="text">Categories</span>
                 </a>
             </li>
             <li class="@(currentController == "Product" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Product" asp-action="Index">
                     <i class='bx  bx-basket'></i>
-                    <span class="text">Ürünler</span>
+                    <span class="text">Products</span>
                 </a>
             </li>
             <li class="@(currentController == "Message" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Message" asp-action="Index">
                     <i class='bx bxs-message-dots'></i>
-                    <span class="text">Mesajlar</span>
+                    <span class="text">Messages</span>
                 </a>
             </li>
             <li class="@(currentController == "Order" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Order" asp-action="Index">
                     <i class='bx  bx-package'></i>
-                    <span class="text">Siparişler</span>
+                    <span class="text">Orders</span>
                 </a>
             </li>
             <li class="@(currentController == "Payment" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Payment" asp-action="Index">
                     <i class='bx  bx-wallet'></i>
-                    <span class="text">Ödemeler</span>
+                    <span class="text">Payments</span>
                 </a>
             </li>
 
             <li class="@(currentController == "Users" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Users" asp-action="Index">
                     <i class='bx bxs-group'></i>
-                    <span class="text">Kullanıcılar</span>
+                    <span class="text">Users</span>
                 </a>
             </li>
 
             <li class="@(currentController == "Account" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Account" asp-action="Index">
                     <i class='bx bxs-group'></i>
-                    <span class="text">Sistem Kullanıcıları</span>
+                    <span class="text">System Users</span>
                 </a>
             </li>
         </ul>
@@ -122,13 +122,13 @@
             <li class="@(currentController == "Setting" ? "active" : "")">
                 <a asp-area="Admin" asp-controller="Setting" asp-action="Index">
                     <i class='bx bxs-cog'></i>
-                    <span class="text">Ayarlar</span>
+                    <span class="text">Settings</span>
                 </a>
             </li>
             <li>
                 <a asp-area="Admin" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="/" class="logout">
                     <i class='bx bxs-log-out-circle'></i>
-                    <span class="text">Çıkış Yap</span>
+                    <span class="text">Logout</span>
                 </a>
             </li>
         </ul>
@@ -167,14 +167,14 @@
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmModalLabel">Onay</h5>
+                        <h5 class="modal-title" id="confirmModalLabel">Confirmation</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
                     </div>
                     <div class="modal-body" id="confirmModalBody">
                     </div>
                     <div class="modal-footer">
-                        <button type="button" id="confirmModalYesBtn" class="modal-btn">Evet</button>
-                        <button type="button" class="modal-btn modal-dismis-btn" data-bs-dismiss="modal">Hayır</button>
+                        <button type="button" id="confirmModalYesBtn" class="modal-btn">Yes</button>
+                        <button type="button" class="modal-btn modal-dismis-btn" data-bs-dismiss="modal">NO</button>
                     </div>
                 </div>
             </div>

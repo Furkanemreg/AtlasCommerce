@@ -2,49 +2,49 @@
 
 public enum enmColors
 {
-    [Description("Beyaz")]
+    [Description("White")]
     White = 0,
 
-    [Description("Kırmızı")]
+    [Description("Red")]
     Red = 1,
 
-    [Description("Mavi")]
+    [Description("Blue")]
     Blue = 2,
 
-    [Description("Yeşil")]
+    [Description("Green")]
     Green = 3,
 
-    [Description("Sarı")]
-    Yellow= 4,
+    [Description("Yellow")]
+    Yellow = 4,
 
-    [Description("Turuncu")]
+    [Description("Orange")]
     Orange = 5,
 
-    [Description("Mor")]
+    [Description("Purple")]
     Purple = 6,
 
-    [Description("Pembe")]
+    [Description("Pink")]
     Pink = 7,
 
-    [Description("Kahverengi")]
+    [Description("Brown")]
     Brown = 8,
 
-    [Description("Siyah")]
+    [Description("Black")]
     Black = 9,
 
-    [Description("Gri")]
+    [Description("Gray")]
     Gray = 10,
 
-    [Description("Gümüş")]
+    [Description("Silver")]
     Silver = 11,
 
-    [Description("Bronz")]
+    [Description("Bronze")]
     Bronze = 12,
 
-    [Description("Şeffaf")]
+    [Description("Transparent")]
     Transparent = 13,
 
-    [Description("Birden Fazla Renk")]
+    [Description("MultiColor")]
     MultiColor = 14
 }
 

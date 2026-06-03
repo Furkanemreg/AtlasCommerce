@@ -1,7 +1,7 @@
 ﻿@using AtlasCommerce.Application.ViewModels
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Kategori Düzenle";
+    ViewData["Title"] = "Edit Category";
 }
 
 @model CategoryVM
@@ -13,22 +13,22 @@
 
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Kategori Tanımlama</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Category Definition</h2>
                 <p class="mt-1 text-sm/6 text-gray-600"></p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-4">
-                        <label asp-for="Name" class="block text-sm/6 font-medium theme-label">Kategori</label>
+                        <label asp-for="Name" class="block text-sm/6 font-medium theme-label">Category</label>
                         <div class="mt-2">
-                            <input asp-for="Name" type="text" placeholder="Kategori" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="Name" type="text" placeholder="Category" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="Name" class="text-red-600 p-2"></span>
                         </div>
                     </div>
 
                     <div class="sm:col-span-4">
-                        <label asp-for="Description" class="block text-sm/6 font-medium theme-label">Açıklama</label>
+                        <label asp-for="Description" class="block text-sm/6 font-medium theme-label">Description</label>
                         <div class="mt-2">
-                            <input asp-for="Description" type="text" placeholder="Açıklama" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="Description" type="text" placeholder="Description" autocomplete="off" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="Description" class="text-red-600"></span>
                         </div>
                     </div>
@@ -36,14 +36,14 @@
                     <div class="sm:col-span-4">
                         <div class="flex items-center space-x-6">
                             <label asp-for="IsActive" class="block text-sm/6 font-medium theme-label">
-                                Durum
+                                Status
                             </label>
                             <input type="hidden" name="IsActive" id="IsActiveHidden" value="@Model.IsActive.ToString().ToLower()" />
                             <a href="javascript:void(0);"
                                id="statusToggleBtn"
                                class="status-input space-x-5 @(Model.IsActive ? "status-active" : "status-inactive")"
                                onclick="toggleStatus()">
-                                @(Model.IsActive ? "Aktif" : "Pasif")
+                                @(Model.IsActive ? "Actvie" : "Passive")
                             </a>
                         </div>
                     </div>
@@ -51,14 +51,14 @@
                     <div class="sm:col-span-4">
                         <div class="flex items-center space-x-6">
                             <label asp-for="ShowInDropDown" class="block text-sm/6 font-medium theme-label">
-                                Menüde Göster
+                                Show in Menu
                             </label>
                             <input type="hidden" name="ShowInDropDown" id="showInDropDownHidden" value="@Model.ShowInDropDown.ToString().ToLower()" />
                             <a href="javascript:void(0);"
                                id="showInDropDownToggleBtn"
                                class="status-input space-x-5 @(Model.ShowInDropDown ? "status-active" : "status-inactive")"
                                onclick="toggleShowInDropDown()">
-                                @(Model.ShowInDropDown ? "Evet" : "Hayır")
+                                @(Model.ShowInDropDown ? "Yes" : "No")
                             </a>
                         </div>
                     </div>
@@ -67,14 +67,15 @@
                         <div class="flex items-center space-x-6">
                             <small class="info-text">
                                 <i class='bx bx-info-circle'></i>
-                                Seçili kategoriler kullanıcı ekranında ana menüde listelir. <br />
+                                Selected categories are listed in the main menu on the user screen. <br />
                             </small>
                         </div>
                     </div>
                 </div>
             </div>
+
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Kategori Görseli</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Category Image</h2>
                 <p class="mt-1 text-sm/6 text-gray-600"></p>
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-4">
@@ -91,10 +92,10 @@
                                     <div class="flex flex-col items-center justify-center pt-5 pb-6 z-10">
                                         <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" …>…</svg>
                                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                                            <span class="font-semibold">Kategori Görseli Eklemek İçin Tıkla</span> Ya da Sürükle ve Bırak
+                                            <span class="font-semibold">Click to add category image</span> or drag and drop
                                         </p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400">
-                                            Kategori Görseli (SVG, PNG, JPG)
+                                            Category Image (SVG, PNG, JPG)
                                         </p>
                                     </div>
                                 }
@@ -106,21 +107,21 @@
             </div>
 
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Kayıt Bilgileri</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Record Information</h2>
                 <p class="mt-1 text-sm/6 text-gray-600"></p>
 
                 <input type="hidden" asp-for="CreatedBy" />
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-3">
-                        <label asp-for="CreatedUser.UserName" class="block text-sm/6 font-medium theme-label">Oluşturan Kullanıcı</label>
+                        <label asp-for="CreatedUser.UserName" class="block text-sm/6 font-medium theme-label">Created By User</label>
                         <div class="mt-2">
-                            <input asp-for="CreatedUser.UserName" type="text" disabled placeholder="Oluşturan Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                            <input asp-for="CreatedUser.UserName" type="text" disabled placeholder="Created By User" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="CreatedUser.UserName" class="text-red-600"></span>
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Oluşturulma Tarihi</label>
+                        <label asp-for="CreatedAt" class="block text-sm/6 font-medium theme-label">Creation Date</label>
                         <div class="mt-2">
                             <input type="text" name="CreatedAt" disabled value="@(Model.CreatedAt.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                             <span asp-validation-for="CreatedAt" class="text-red-600"></span>
@@ -130,15 +131,15 @@
                     @if (Model.UpdatedUser != null && !string.IsNullOrEmpty(Model.UpdatedUser.UserName))
                     {
                         <div class="sm:col-span-3">
-                            <label asp-for="UpdatedUser.UserName" class="block text-sm/6 font-medium theme-label">Son Güncelleyen Kullanıcı</label>
+                            <label asp-for="UpdatedUser.UserName" class="block text-sm/6 font-medium theme-label">Last Updated by User</label>
                             <div class="mt-2">
-                                <input asp-for="UpdatedUser.UserName" type="text" disabled placeholder="Son Güncelleyen Kullanıcı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
+                                <input asp-for="UpdatedUser.UserName" type="text" disabled placeholder="Last Updated by User" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                                 <span asp-validation-for="UpdatedUser.UserName" class="text-red-600"></span>
                             </div>
                         </div>
 
                         <div class="sm:col-span-3">
-                            <label asp-for="UpdatedAt" class="block text-sm/6 font-medium theme-label">Son Güncelleme Tarihi</label>
+                            <label asp-for="UpdatedAt" class="block text-sm/6 font-medium theme-label">Last Update Date</label>
                             <div class="mt-2">
                                 <input type="text" name="UpdatedAt" disabled value="@(Model.UpdatedAt?.ToString("dd.MM.yyyy HH.mm.ss") ?? String.Empty)" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm/6" />
                                 <span asp-validation-for="UpdatedAt" class="text-red-600"></span>
@@ -149,8 +150,8 @@
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
-                <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="text-sm/6 font-semibold theme-label">İptal</a>
-                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Kaydet</button>
+                <a asp-area="Admin" asp-controller="Category" asp-action="Index" class="text-sm/6 font-semibold theme-label">Cancel</a>
+                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Save</button>
             </div>
         </div>
     </form>
@@ -239,12 +240,12 @@
             if (ShowInDropDown) {
                 showInDropDownBtn.classList.remove('status-active');
                 showInDropDownBtn.classList.add('status-inactive');
-                showInDropDownBtn.textContent = 'Hayır';
+                showInDropDownBtn.textContent = 'No';
                 showInDropDownHiddenInput.value = 'false';
             } else {
                 showInDropDownBtn.classList.remove('status-inactive');
                 showInDropDownBtn.classList.add('status-active');
-                showInDropDownBtn.textContent = 'Evet';
+                showInDropDownBtn.textContent = 'Yes';
                 showInDropDownHiddenInput.value = 'true';
             }
         }
@@ -257,7 +258,7 @@
                 var token = $('input[name="__RequestVerificationToken"]', formEl).val();
                 formData.set("__RequestVerificationToken", token);
 
-                showConfirmationModal('Kategoriyi kaydetmek istediğinizden emin misiniz?', function () {
+                showConfirmationModal('Are you sure you want to save the category?', function () {
                     $.ajax({
                         url: formEl.action,
                         type: 'POST',
@@ -269,17 +270,17 @@
                         },
                         success: function (response) {
                           if (response.success) {
-                            toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                            toastr.success(response.message || 'Saved successfully.');
                             setTimeout(function () {
                               window.location.href = '/Admin/Category/Index';
                             }, 3000);
                           } else {
-                            toastr.error(response.message || 'Bir hata oluştu');
+                            toastr.error(response.message || 'An error occured.');
                           }
                         },
                         error: function (xhr) {
-                          console.error('Hata kodu:', xhr.status, 'Gönderilen token:', token);
-                          toastr.error('Bir hata oluştu (kod ' + xhr.status + ')');
+                            console.error('Erro Code:', xhr.status, 'Sent token:', token);
+                            toastr.error('An error occured. (Code ' + xhr.status + ')');
                         }
                     });
                 });

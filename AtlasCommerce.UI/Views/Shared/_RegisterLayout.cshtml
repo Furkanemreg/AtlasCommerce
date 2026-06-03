@@ -4,7 +4,7 @@
     var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
     var logoPath = Model?.Settings?.LogoPath;
     
-    var title = "Kayıt Ol";
+    var title = "Sign Up";
     if (!string.IsNullOrEmpty(Model?.Settings?.BrandName)) title += $" - {Model.Settings.BrandName}";
 }
 
@@ -20,8 +20,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-
     @RenderBody()
-
 </body>
 </html>

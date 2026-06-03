@@ -2,7 +2,7 @@
 @model AtlasCommerce.Application.ViewModels.OrderDetailVM
 
 @{
-    ViewData["Title"] = "Sipariş Detayı";
+    ViewData["Title"] = "Order Details";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -476,7 +476,7 @@
             </svg>
         </div>
 
-        <h1 class="od-title mt-3">Sipariş Detayı</h1>
+        <h1 class="od-title mt-3">Order Details</h1>
 
         <div class="od-actions">
             @if (Model.Status == enmOrderStatus.Draft || Model.Status == enmOrderStatus.PendingPayment)
@@ -504,7 +504,7 @@
                             <rect x="2" y="5" width="20" height="14" rx="2" ry="2" />
                             <line x1="2" y1="10" x2="22" y2="10" />
                         </svg>
-                        Öde
+                        Pay
                     </button>
                 </form>
 
@@ -520,7 +520,7 @@
                         <path d="M14 11v6" />
                         <path d="M9 6V4h6v2" />
                     </svg>
-                    Sil
+                    Delete
                 </button>
             }
 
@@ -529,14 +529,14 @@
                      stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="15 18 9 12 15 6" />
                 </svg>
-                Siparişlerime Dön
+                Return to My Orders
             </a>
         </div>
     </div>
 
     <!-- Sipariş Bilgileri -->
     <div class="od-card">
-        <div class="od-card-label">Teslimat Yöntemi</div>
+        <div class="od-card-label">Delivery Method</div>
         <div class="od-info-grid">
             <div>
                 @if (Model.IsPickup)
@@ -550,7 +550,7 @@
                         </svg>
                     </span>
 
-                    <span class="ms-2 span-pickup">Mağazada Teslim</span>
+                    <span class="ms-2 span-pickup">In-Store Pickup</span>
                 }
                 else
                 {
@@ -564,25 +564,25 @@
                         </svg>
                     </span>
 
-                    <span class="ms-2 span-delivery">Adrese teslim</span>
+                    <span class="ms-2 span-delivery">Home Delivery</span>
                 }
             </div>
         </div>
     </div>
 
     <div class="od-card">
-        <div class="od-card-label">Sipariş Bilgileri</div>
+        <div class="od-card-label">Order Informations</div>
         <div class="od-info-grid">
             <div>
-                <div class="od-info-key">Sipariş Numarası</div>
+                <div class="od-info-key">Order Number</div>
                 <div class="od-info-val" style="font-family:'Syne',sans-serif;">#@Model.OrderNumber</div>
             </div>
             <div>
-                <div class="od-info-key">Sipariş Tarihi</div>
+                <div class="od-info-key">Order Date</div>
                 <div class="od-info-val">@Model.CreatedAt.ToString("dd.MM.yyyy") — @Model.CreatedAt.ToString("HH:mm")</div>
             </div>
             <div>
-                <div class="od-info-key">Durum</div>
+                <div class="od-info-key">Status</div>
                 @{
                     var statusClass = Model.Status switch
                     {
@@ -607,15 +607,15 @@
 
     <!-- Ürünler -->
     <div class="od-card">
-        <div class="od-card-label">Ürünler</div>
+        <div class="od-card-label">Products</div>
         @foreach (var item in Model.Items)
         {
             <div class="item-row">
                 <div>
                     <p class="item-name">@item.ProductName</p>
-                    <p class="item-meta">Ürün Kodu: @item.Barcode</p>
+                    <p class="item-meta">Product Code: @item.Barcode</p>
                 </div>
-                <div class="item-unit">@item.Quantity adet × ₺ @item.UnitPrice.ToString("N2")</div>
+                <div class="item-unit">@item.Quantity pcs × ₺ @item.UnitPrice.ToString("N2")</div>
                 <div class="item-total">₺ @item.TotalPrice.ToString("N2")</div>
             </div>
         }
@@ -625,25 +625,25 @@
     @if (Model.Payment != null)
     {
         <div class="od-card">
-            <div class="od-card-label">Ödeme Bilgileri</div>
+            <div class="od-card-label">Payment Details</div>
             <div class="pay-grid">
                 <div>
-                    <div class="od-info-key">Tutar</div>
+                    <div class="od-info-key">Amount</div>
                     <div class="od-info-val">₺ @Model.Payment.Amount.ToString("N2")</div>
                 </div>
                 <div>
-                    <div class="od-info-key">Durum</div>
+                    <div class="od-info-key">Status</div>
                     <div class="od-info-val">@EnumHelper.GetEnumDescription(Model.Payment.Status)</div>
                 </div>
                 @if (!string.IsNullOrEmpty(Model.Payment.CardBrand))
                 {
                     <div>
-                        <div class="od-info-key">Kart</div>
+                        <div class="od-info-key">Card</div>
                         <div class="od-info-val">@Model.Payment.CardBrand (@Model.Payment.CardNumber)</div>
                     </div>
                 }
                 <div>
-                    <div class="od-info-key">Oluşturulma Tarihi</div>
+                    <div class="od-info-key">Created Date</div>
                     <div class="od-info-val">
                         @Model.Payment.CreatedAt.ToString("dd.MM.yyyy") - <span class="text-muted">@Model.Payment.CreatedAt.ToString("HH:mm")</span>
                     </div>
@@ -651,7 +651,7 @@
                 @if (Model.Payment.PaidAt.HasValue && Model.Payment.PaidAt != DateTime.MinValue)
                 {
                     <div>
-                        <div class="od-info-key">Ödeme Tarihi</div>
+                        <div class="od-info-key">Payment Date</div>
                         <div class="od-info-val">
                             @Model.Payment.PaidAt.Value.ToString("dd.MM.yyyy") - <span class="text-muted">@Model.Payment.PaidAt.Value.ToString("HH:mm")</span>
                         </div>
@@ -660,12 +660,13 @@
             </div>
         </div>
     }
+    
     <!-- Adres Bilgileri -->
     <div class="od-card">
-        <div class="od-card-label">Teslimat Bilgileri</div>
+        <div class="od-card-label">Delivery Informations</div>
 
         <div class="od-row">
-            <span class="od-key">Teslimat Yöntemi</span>
+            <span class="od-key">Delivery Method</span>
 
             <div class="od-value flex-center">
                 @if (Model.IsPickup)
@@ -678,7 +679,7 @@
                             <path d="M9 21v-6h6v6" />
                         </svg>
                     </span>
-                    <span class="ml-2 span-pickup">Mağazada Teslim</span>
+                    <span class="ml-2 span-pickup">In-Store Pickup</span>
                 }
                 else
                 {
@@ -691,33 +692,33 @@
                             <circle cx="17.5" cy="18.5" r="1.5" />
                         </svg>
                     </span>
-                    <span class="ml-2 span-delivery">Adrese teslim</span>
+                    <span class="ml-2 span-delivery">Home Delivery</span>
                 }
             </div>
         </div>
         
         <div class="od-row">
-            <span class="od-key">Ülke</span>
+            <span class="od-key">Country</span>
             <span class="od-value">@Model.Country</span>
         </div>
 
         <div class="od-row">
-            <span class="od-key">Şehir</span>
+            <span class="od-key">City</span>
             <span class="od-value">@Model.City</span>
         </div>
 
         <div class="od-row">
-            <span class="od-key">İlçe</span>
+            <span class="od-key">District</span>
             <span class="od-value">@Model.District</span>
         </div>
 
         <div class="od-row">
-            <span class="od-key">Posta Kodu</span>
+            <span class="od-key">Postal Code</span>
             <span class="od-value">@Model.ZipCode</span>
         </div>
 
         <div class="od-row full">
-            <span class="od-key">Açık Adres</span>
+            <span class="od-key">Full Address</span>
             <span class="od-value">@Model.Address</span>
         </div>
     </div>
@@ -726,18 +727,18 @@
     <div class="od-card">
         <div class="od-card-label">Sipariş Özeti</div>
         <div class="summary-row">
-            <span>Ara Toplam</span>
+            <span>Subtotal</span>
             <span class="val">₺ @Model.SubTotal.ToString("N2")</span>
         </div>
         @if (Model.TotalTAX > 0)
         {
             <div class="summary-row">
-                <span>Vergiler</span>
+                <span>Taxes</span>
                 <span class="val">₺ @Model.TotalTAX.ToString("N2")</span>
             </div>
         }
         <div class="summary-row grand">
-            <span>Genel Toplam</span>
+            <span>Grand Total</span>
             <span class="val">₺ @Model.TotalAmount.ToString("N2")</span>
         </div>
     </div>
@@ -751,24 +752,24 @@
         </div>
 
         <div class="del-modal-title">
-            Bu siparişi silmek istediğinizden emin misiniz ?
+            Are you sure you want to delete this order?
         </div>
 
         <div class="del-modal-text">
-            Bu işlem geri alınamaz.
+            This action cannot be undone.
         </div>
 
         <div class="del-modal-actions">
             <button type="button"
                     class="del-cancel-btn"
                     onclick="closeDeleteModal()">
-                Vazgeç
+                Cancel
             </button>
 
             <button type="button"
                     class="del-confirm-btn"
                     onclick="confirmDelete()">
-                Sil
+                Delete
             </button>
         </div>
     </div>
@@ -807,7 +808,7 @@
             });
 
             if (response.ok) {
-                toastr.success(response.message || 'Siparişiniz silinmiştir.');
+                toastr.success(response.message || 'Your order has been deleted.');
                 setTimeout(function () {
                     window.location.href = '/Order/Index';
                 }, 3000);
@@ -817,11 +818,10 @@
 
             const errorText = await response.text();
 
-            toastr.error(errorText || 'Sipariş silinirken bir hata oluştu.');
+            toastr.error(errorText || 'An error occurred while deleting the order.');
 
         } catch {
-
-            toastr.error('Sipariş silinirken bir hata oluştu.');
+            toastr.error('An error occurred while deleting the order.');
         }
     }
 

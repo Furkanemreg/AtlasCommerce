@@ -1,0 +1,445 @@
+﻿@using AtlasCommerce.Application.ViewModels
+@model OrderDetailsVM
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = $"Order #{Model.OrderNumber}";
+}
+
+<style>
+    .dashboard-wrapper {
+        padding: 20px;
+        background: #f6f7fb;
+        min-height: 100vh;
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .table-title {
+        font-size: 22px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .status-label {
+        padding: 6px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .status-info {
+        background: #e0f2fe;
+        color: #0284c7;
+    }
+
+    .status-success {
+        background: #dcfce7;
+        color: #16a34a;
+    }
+
+    .status-warning {
+        background: #fef3c7;
+        color: #d97706;
+    }
+
+    .status-danger {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .status-inactive {
+        background: #e5e7eb;
+        color: #6b7280;
+    }
+
+    .metrics-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+    }
+
+    .metric-card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #eee;
+    }
+
+    .metric-card div {
+        font-size: 12px;
+        color: #6b7280;
+    }
+
+    .metric-card h3 {
+        margin-top: 6px;
+        font-size: 18px;
+        font-weight: 700;
+        color: #111827;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-top: 15px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        border: 1px solid #eee;
+    }
+
+    .generic-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .generic-table th {
+        text-align: left;
+        font-size: 12px;
+        color: #6b7280;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .generic-table td {
+        padding: 10px;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 13px;
+        color: #111827;
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .action-cell {
+        position: relative;
+    }
+
+    .action-toggle {
+        cursor: pointer;
+        color: #6b7280;
+    }
+
+    .table-container h4 {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        color: #111827;
+    }
+
+    .table-container p {
+        font-size: 13px;
+        color: #4b5563;
+        margin: 3px 0;
+    }
+
+    .action-btn {
+        width: 100%;
+        padding: 14px 12px;
+        border: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .action-btn i {
+        font-size: 18px;
+    }
+
+    .action-btn.prepare {
+        background: #f59e0b;
+        color: white;
+    }
+
+    .action-btn.ready {
+        background: #3b82f6;
+        color: white;
+    }
+
+    .action-btn.delivered {
+        background: #22c55e;
+        color: white;
+    }
+
+    .action-btn:not(:disabled):hover {
+        transform: translateY(-1px);
+        filter: brightness(0.95);
+    }
+
+    .action-btn:disabled {
+        background: #e5e7eb !important;
+        color: #9ca3af !important;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .action-btn:disabled i {
+        color: #9ca3af !important;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+
+        <!-- HEADER -->
+        <div class="dashboard-header">
+
+            <div class="table-title text-xl font-semibold">
+                Order #@Model.OrderNumber
+            </div>
+
+            <span class="status-label status-info">
+                @Model.Status
+            </span>
+
+        </div>
+
+        <!-- SUMMARY CARDS -->
+        <div class="metrics-row" style="display:flex; gap:12px; margin-top:15px;">
+
+            <div class="metric-card">
+                <div>Total Amount</div>
+                <h3>@Model.TotalAmount.ToString("C2")</h3>
+            </div>
+
+            <div class="metric-card">
+                <div>Sub Total</div>
+                <h3>@Model.SubTotal.ToString("C2")</h3>
+            </div>
+
+            <div class="metric-card">
+                <div>Shipping</div>
+                <h3>@Model.ShippingFee.ToString("C2")</h3>
+            </div>
+
+            <div class="metric-card">
+                <div>Items</div>
+                <h3>@Model.Items.Count</h3>
+            </div>
+
+        </div>
+
+        <!-- ORDER INFO -->
+        <div class="table-container" style="margin-top:20px; padding:15px;">
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+                <div>
+                    <h4>Shipping Address</h4>
+                    <p>@Model.ShippingAddress</p>
+                    <p>@Model.District - @Model.City / @Model.Country</p>
+                    <p>@Model.ZipCode</p>
+                </div>
+
+                <div>
+                    <h4>Order Info</h4>
+                    <p><strong>Platform:</strong> @Model.SalesChannel</p>
+                    <p><strong>Payment ID:</strong> @Model.PaymentId</p>
+                    <p><strong>Paid At:</strong> @(Model.PaidAt?.ToString("dd.MM.yyyy HH:mm") ?? "-")</p>
+                    <p><strong>Pickup:</strong> @(Model.IsPickup ? "Yes" : "No")</p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ITEMS -->
+        <div class="table-container" style="margin-top:20px;">
+
+            <div class="table-title" style="margin-bottom:10px;">
+                Order Items
+            </div>
+
+            <table class="generic-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Barcode</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <div class="user-name">
+                                    @item.ProductName
+                                </div>
+                            </td>
+
+                            <td>@item.Barcode</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.UnitPriceInclTax.ToString("C2")</td>
+                            <td>
+                                <strong>@item.TotalPrice.ToString("C2")</strong>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+
+        <!-- PAYMENTS -->
+        @if (Model.Payments.Any())
+        {
+            <div class="table-container" style="margin-top:20px;">
+
+                <div class="table-title">Payments</div>
+
+                <table class="generic-table">
+                    <thead>
+                        <tr>
+                            <th>Provider</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var p in Model.Payments)
+                        {
+                            <tr>
+                                <td>@p.PaymentProvider</td>
+                                <td>@p.Amount.ToString("C2")</td>
+                                <td>@p.Status</td>
+                                <td>@p.PaidAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        }
+
+        <!-- RETURNS -->
+        @if (Model.Returns.Any())
+        {
+            <div class="table-container" style="margin-top:20px;">
+
+                <div class="table-title">Returns</div>
+
+                <table class="generic-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Reason</th>
+                            <th>Refund</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var r in Model.Returns)
+                        {
+                            <tr>
+                                <td>@r.Status</td>
+                                <td>@r.Reason</td>
+                                <td>@r.RefundAmount.ToString("C2")</td>
+                                <td>@r.RequestedAt?.ToString("dd.MM.yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        }
+
+        @if (Model.Status != enmOrderStatus.Cancelled &&
+        Model.Status != enmOrderStatus.Delivered)
+        {
+            <div class="table-container"
+                 style="margin-top:20px; display:flex; gap:12px; width:100%;">
+
+                <!-- PREPARE -->
+                <button type="button"
+                        class="action-btn prepare"
+                        onclick="changeStatus('@Model.Id', '@enmOrderStatus.Preparing')"
+                @(Model.Status == enmOrderStatus.Paid ? "" : "disabled")>
+
+                    <i class="bx bx-package"></i>
+                    <span>Prepare Order</span>
+
+                </button>
+
+                <!-- READY -->
+                <button type="button"
+                        class="action-btn ready"
+                        onclick="changeStatus('@Model.Id', '@enmOrderStatus.WaitingInStore')"
+                @(Model.Status == enmOrderStatus.Preparing ? "" : "disabled")>
+
+                    <i class="bx bx-store"></i>
+                    <span>Ready to Pickup</span>
+
+                </button>
+
+                <!-- DELIVERED -->
+                <button type="button"
+                        class="action-btn delivered"
+                        onclick="changeStatus('@Model.Id', '@enmOrderStatus.Delivered')"
+                @(Model.Status == enmOrderStatus.WaitingInStore ? "" : "disabled")>
+
+                    <i class="bx bx-check-circle"></i>
+                    <span>Delivered</span>
+
+                </button>
+
+            </div>
+        }
+    </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<script>
+    function changeStatus(orderId, status) {
+
+        $.ajax({
+            url: '/Admin/Order/ChangeStatus',
+            type: 'POST',
+            data: {
+                orderId: orderId,
+                status: status,
+                __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function (res) {
+
+                toastr.success(res.message);
+
+                setTimeout(() => {
+                    location.reload();
+                }, 3000);
+            },
+            error: function (xhr) {
+
+                let msg = xhr.responseText || "Something went wrong. Please try again.";
+                toastr.error(msg);
+            }
+        });
+    }
+</script>

@@ -7,7 +7,7 @@
 
 @{
     Layout = "_SettingsLayout";
-    ViewData["Title"] = "Ayarlar";
+    ViewData["Title"] = "Settings";
     var _websiteFeatures = await _featureService.GetAllAsync();
     var _websiteServices = await _serviceService.GetAllAsync();
     var _websiteBanners = await _bannerService.GetAllAsync();
@@ -21,36 +21,36 @@
 
         <div class="space-y-12">
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Genel Ayarlar</h2>
-                <p class="mt-1 text-sm/6 text-gray-600">Websiteniz için temel ayarları buradan yapabilirsiniz.</p>
+                <h2 class="text-base/7 font-semibold theme-label">General Settings</h2>
+                <p class="mt-1 text-sm/6 text-gray-600">You can configure basic website settings here.</p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
 
                     <div class="sm:col-span-4">
-                        <label asp-for="BrandName" class="block text-sm/6 font-medium theme-label">Marka Adı</label>
+                        <label asp-for="BrandName" class="block text-sm/6 font-medium theme-label">Brand Name</label>
                         <div class="mt-2">
-                            <input asp-for="BrandName" type="text" placeholder="Marka Adı" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                            <input asp-for="BrandName" type="text" placeholder="Brand Name" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label asp-for="PhoneNumber" class="block text-sm/6 font-medium theme-label">Telefon</label>
+                        <label asp-for="PhoneNumber" class="block text-sm/6 font-medium theme-label">Phone Number</label>
                         <div class="mt-2">
-                            <input asp-for="PhoneNumber" type="text" placeholder="Telefon" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                            <input asp-for="PhoneNumber" type="text" placeholder="Phone Number" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label asp-for="EmailAddress" class="block text-sm/6 font-medium theme-label">E-Posta</label>
+                        <label asp-for="EmailAddress" class="block text-sm/6 font-medium theme-label">e-Mail Address</label>
                         <div class="mt-2">
-                            <input asp-for="EmailAddress" type="email" placeholder="E-Posta" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
+                            <input asp-for="EmailAddress" type="email" placeholder="e-Mail Address" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
 
                     <div class="sm:col-span-6">
-                        <label asp-for="Address" class="block text-sm/6 font-medium theme-label">Açık Adres</label>
+                        <label asp-for="Address" class="block text-sm/6 font-medium theme-label">Full Address</label>
                         <div class="mt-2">
-                            <textarea asp-for="Address" rows="3" placeholder="Açık Adres" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm"></textarea>
+                            <textarea asp-for="Address" rows="3" placeholder="Full Address" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm"></textarea>
                         </div>
                     </div>
 
@@ -58,31 +58,31 @@
                         <div class="flex items-center space-x-6">
                             <small class="info-text">
                                 <i class='bx bx-info-circle'></i>
-                                Mağazada teslim siparişlerde teslimat adresi olarak kullanılacaktır.
+                                This will be used as the delivery address for in-store pickup orders.
                             </small>
                         </div>
                     </div>
 
                     <div class="sm:col-span-3">
-                        <label asp-for="Country" class="block text-sm/6 font-medium theme-label">Ülke</label>
+                        <label asp-for="Country" class="block text-sm/6 font-medium theme-label">Country</label>
                         <div class="mt-2">
                             <input asp-for="Country" type="text" placeholder="Türkiye" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
                     <div class="sm:col-span-3">
-                        <label asp-for="City" class="block text-sm/6 font-medium theme-label">İl</label>
+                        <label asp-for="City" class="block text-sm/6 font-medium theme-label">City</label>
                         <div class="mt-2">
                             <input asp-for="City" type="text" placeholder="İstanbul" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
                     <div class="sm:col-span-3">
-                        <label asp-for="District" class="block text-sm/6 font-medium theme-label">İlçe</label>
+                        <label asp-for="District" class="block text-sm/6 font-medium theme-label">District</label>
                         <div class="mt-2">
                             <input asp-for="District" type="text" placeholder="Kağıthane" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
                     </div>
                     <div class="sm:col-span-3">
-                        <label asp-for="ZipCode" class="block text-sm/6 font-medium theme-label">Posta Kodu</label>
+                        <label asp-for="ZipCode" class="block text-sm/6 font-medium theme-label">Zip Code</label>
                         <div class="mt-2">
                             <input asp-for="ZipCode" type="text" placeholder="34408" class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                         </div>
@@ -103,35 +103,35 @@
             </div>
 
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Hakkımızda</h2>
-                <p class="mt-1 text-sm/6 text-gray-600">Hakkımızda sayfasının ana paragrafını ve alt cümlelerini buradan yönetebilirsiniz.</p>
+                <h2 class="text-base/7 font-semibold theme-label">About Us</h2>
+                <p class="mt-1 text-sm/6 text-gray-600">You can manage the main paragraph and sub-clauses of the About Us page from here.</p>
 
                 <div class="sm:col-span-4">
                     <div class="flex items-center space-x-6">
                         <small class="info-text">
                             <i class='bx bx-info-circle'></i>
-                            Cümlelere HTML Tag'leri ekleyebilirsiniz. (Örn. <code>&lt;strong&gt;<strong>FURKAN EMRE GİNYOL</strong>&lt;/strong&gt;</code>)
+                            You can add HTML tags to sentences. (Ex. <code>&lt;strong&gt;<strong>FURKAN EMRE GİNYOL</strong>&lt;/strong&gt;</code>)
                         </small>
                     </div>
                 </div>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-6">
-                        <label asp-for="AboutParagraph" class="block text-sm/6 font-medium theme-label">Hakkımızda - Ana Paragraf</label>
+                        <label asp-for="AboutParagraph" class="block text-sm/6 font-medium theme-label">About Us - Main Paragraph</label>
                         <input asp-for="AboutParagraph" type="text" 
                                 placeholder="AtlasCommerce is a modern and integrated e-commerce platform developed for Istanbul Atlas University."
                                 class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                     </div>
 
                     <div class="sm:col-span-6">
-                        <label asp-for="AboutAltSentence1" class="block text-sm/6 font-medium theme-label">Hakkımızda - Alt Cümle 1</label>
+                        <label asp-for="AboutAltSentence1" class="block text-sm/6 font-medium theme-label">About Us - Sub Sentence 1</label>
                         <input asp-for="AboutAltSentence1" type="text"
                                placeholder="The platform enables online product management, ordering, and user operations within a single system."
                                class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
                     </div>
 
                     <div class="sm:col-span-6">
-                        <label asp-for="AboutAltSentence2" class="block text-sm/6 font-medium theme-label">Hakkımızda - Alt Cümle 2</label>
+                        <label asp-for="AboutAltSentence2" class="block text-sm/6 font-medium theme-label">About Us - Sub Sentence 2</label>
                         <input asp-for="AboutAltSentence2" type="text" 
                                 placeholder="It provides a secure and user-friendly digital commerce experience for both customers and administrators."
                                 class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
@@ -140,8 +140,8 @@
             </div>
 
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">İletişim ve Sosyal Medya</h2>
-                <p class="mt-1 text-sm/6 text-gray-600">Sosyal medya linkleri ve footer ayarlarını buradan yönetebilirsiniz.</p>
+                <h2 class="text-base/7 font-semibold theme-label">Contact & Social Media</h2>
+                <p class="mt-1 text-sm/6 text-gray-600">You can manage social media links and footer settings from here.</p>
 
                 <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
                     <div class="sm:col-span-6">
@@ -169,14 +169,14 @@
 
             <!-- Features -->
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Özellik Sekmeleri</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Feature Tabs</h2>
                 <p class="mt-1 text-sm/6 text-gray-600">
                     <i class="ri-error-warning-line"></i>
-                    Sitenizde ikon + başlık + açıklama olarak gösterilecek özellikleri buradan yönetebilirsiniz.
+                    You can manage the icons, titles, and descriptions that will be displayed on your site from here.
                 </p>
                 <p class="mt-1 text-sm/6 text-gray-600">
                     <i class="ri-error-warning-line"></i>
-                    <a href="https://remixicon.com/" style="color: #337ab7;" target="_blank">Sitenizde kullanabileceğiniz ikonlara erişmek için tıklayın.</a>
+                    <a href="https://remixicon.com/" style="color: #337ab7;" target="_blank">Click here to access icons you can use on your website.</a>
                 </p>
 
                 <!-- Feature List -->
@@ -191,29 +191,29 @@
                                         <i class="@feature.IconHtml" style="font-size: 1.5rem;"></i>
                                         <strong class="ml-1">@feature.Title</strong> - @feature.Text
                                     </span>
-                                    <button type="button" class="delete-feature text-red-600 text-sm">Sil</button>
+                                    <button type="button" class="delete-feature text-red-600 text-sm">Delete</button>
                                 </li>
                             }
                         </ul>
                     }
                     else
                     {
-                        <p class="text-gray-500 text-sm">Henüz özellik sekmesi eklenmedi.</p>
+                        <p class="text-gray-500 text-sm">No feature tabs have been added yet.</p>
                     }
                 </div>
 
                 <button type="button" id="btnAddFeature"
                         class="mt-4 px-4 py-2 rounded-md bg-green-600 text-white">
-                    Yeni Sekme Ekle
+                    Add New Feature Tab
                 </button>
             </div>
 
 
             <!-- Services -->
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Hizmetlerimiz Sekmeleri</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Our Services Tabs</h2>
                 <p class="mt-1 text-sm/6 text-gray-600">
-                    Sitenizin hizmetlerimiz sayfasında görüntülenecek hizmet kartlarını bu alandan yönetebilirsiniz.
+                    You can manage the service cards displayed on your “Our Services” page from this section.
                 </p>
 
                 <!-- Service List -->
@@ -232,29 +232,29 @@
                                         <strong>@service.Title</strong>
                                         <p>@service.Text</p>
                                     </span>
-                                    <button type="button" class="delete-service text-red-600 text-sm">Sil</button>
+                                    <button type="button" class="delete-service text-red-600 text-sm">Delete</button>
                                 </li>
                             }
                         </ul>
                     }
                     else
                     {
-                        <p class="text-gray-500 text-sm">Henüz hizmet sekmesi eklenmedi.</p>
+                        <p class="text-gray-500 text-sm">No service tabs have been added yet.</p>
                     }
                 </div>
 
                 <button type="button" id="btnAddService"
                         class="mt-4 px-4 py-2 rounded-md bg-green-600 text-white">
-                    Yeni Hizmet Ekle
+                    Add New Service Tab
                 </button>
             </div>
 
 
             <!-- Banners -->
             <div class="border-b border-gray-900/10 pb-12">
-                <h2 class="text-base/7 font-semibold theme-label">Banner Ayarları</h2>
+                <h2 class="text-base/7 font-semibold theme-label">Banner Settings</h2>
                 <p class="mt-1 text-sm/6 text-gray-600">
-                    Sitenizin açılış sayfasında görüntülenecek kartları bu alandan yönetebilirsiniz.
+                    You can manage the cards (banners) that will be displayed on your website's homepage from this section.
                 </p>
 
                 <!-- Banner List -->
@@ -273,26 +273,26 @@
                                         <strong>@banner.Title</strong>
                                         <p>@banner.Text</p>
                                     </span>
-                                    <button type="button" class="delete-banner text-red-600 text-sm">Sil</button>
+                                    <button type="button" class="delete-banner text-red-600 text-sm">Delete</button>
                                 </li>
                             }
                         </ul>
                     }
                     else
                     {
-                        <p class="text-gray-500 text-sm">Henüz bir banner eklenmedi.</p>
+                        <p class="text-gray-500 text-sm">No banners have been added yet.</p>
                     }
                 </div>
 
                 <button type="button" id="btnAddBanner"
                         class="mt-4 px-4 py-2 rounded-md bg-green-600 text-white">
-                    Yeni Banner Ekle
+                    Add New Banner
                 </button>
             </div>
 
             <div class="mt-6 flex items-center justify-end gap-x-6">
-                <a asp-controller="Home" asp-action="Index" class="text-sm/6 font-semibold theme-label">İptal</a>
-                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Kaydet</button>
+                <a asp-controller="Home" asp-action="Index" class="text-sm/6 font-semibold theme-label">Cancel</a>
+                <button type="submit" class="primary-btn rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2">Save</button>
             </div>
         </div>
     </form>
@@ -301,72 +301,80 @@
 <!-- Feature Modal -->
 <div id="featureModal" class="fixed inset-0 hidden bg-black bg-opacity-50 items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Yeni Özellik Sekmesi</h3>
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">New Feature Tab</h3>
         <form method="post" asp-controller="Setting" asp-action="AddFeature">
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">İkon HTML</label>
+                <label class="block text-sm font-semibold mb-1">Icon HTML</label>
                 <input type="text" name="IconHtml" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
-                <small class="text-gray-500">Sadece sınıf adını ve tasarımla ilgili şeyleri yazın <br />(örn: <code>ri-tools-line text-primary</code>).</small>
+                <small class="text-gray-500">
+                    Only write class names and styling-related values <br />
+                    (e.g. <code>ri-tools-line text-primary</code>).
+                </small>
             </div>
+
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Başlık</label>
+                <label class="block text-sm font-semibold mb-1">Title</label>
                 <input type="text" name="Title" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
             </div>
+
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Açıklama</label>
+                <label class="block text-sm font-semibold mb-1">Description</label>
                 <textarea name="Text" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50"></textarea>
             </div>
+
             <div class="flex justify-end space-x-2">
-                <button type="button" id="cancelFeatureModal" class="px-4 py-2 bg-gray-200 rounded-md">İptal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Kaydet</button>
+                <button type="button" id="cancelFeatureModal" class="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
             </div>
         </form>
     </div>
 </div>
+
 <!-- Service Modal -->
 <div id="serviceModal" class="fixed inset-0 hidden bg-black bg-opacity-50 items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Yeni Özellik Sekmesi</h3>
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">New Feature Tab</h3>
         <form method="post" enctype="multipart/form-data" asp-controller="Setting" asp-action="AddService">
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Resim</label>
+                <label class="block text-sm font-semibold mb-1">Image</label>
                 <input type="file" name="ImageFile" accept="image/*" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Başlık</label>
+                <label class="block text-sm font-semibold mb-1">Title</label>
                 <input type="text" name="Title" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Açıklama</label>
+                <label class="block text-sm font-semibold mb-1">Description</label>
                 <textarea name="Text" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50"></textarea>
             </div>
             <div class="flex justify-end space-x-2">
-                <button type="button" id="cancelServiceModal" class="px-4 py-2 bg-gray-200 rounded-md">İptal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Kaydet</button>
+                <button type="button" id="cancelServiceModal" class="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
             </div>
         </form>
     </div>
 </div>
+
 <!-- Banner Modal -->
 <div id="bannerModal" class="fixed inset-0 hidden bg-black bg-opacity-50 items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Yeni Banner Sekmesi</h3>
+        <h3 class="text-lg font-semibold text-gray-700 mb-4">New Banner Tab</h3>
         <form method="post" enctype="multipart/form-data" asp-controller="Setting" asp-action="AddBanner">
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Resim</label>
+                <label class="block text-sm font-semibold mb-1">Image</label>
                 <input type="file" name="ImageFile" accept="image/*" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Başlık</label>
+                <label class="block text-sm font-semibold mb-1">Title</label>
                 <input type="text" name="Title" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-semibold mb-1">Açıklama</label>
+                <label class="block text-sm font-semibold mb-1">Description</label>
                 <textarea name="Text" class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50"></textarea>
             </div>
             <div class="flex justify-end space-x-2">
-                <button type="button" id="cancelBannerModal" class="px-4 py-2 bg-gray-200 rounded-md">İptal</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Kaydet</button>
+                <button type="button" id="cancelBannerModal" class="px-4 py-2 bg-gray-200 rounded-md">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Save</button>
             </div>
         </form>
     </div>
@@ -375,17 +383,17 @@
 <!-- Confirm Delete Modal -->
 <div id="confirmDeleteModal" class="fixed inset-0 hidden bg-black bg-opacity-50 items-center justify-center z-50">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm text-center">
-        <h3 class="text-lg font-semibold text-gray-800 mb-3">Silme Onayı</h3>
+        <h3 class="text-lg font-semibold text-gray-800 mb-3">Delete Confirmation</h3>
         <p class="text-gray-600 mb-6">
-            Bu kaydı kalıcı olarak silmek üzeresiniz. <br />
-            Devam etmek istiyor musunuz?
+            You are about to permanently delete this record. <br />
+            Do you want to continue?
         </p>
         <div class="flex justify-center space-x-3">
             <button id="cancelDelete" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">
-                İptal
+                Cancel
             </button>
             <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                Evet
+                Yes
             </button>
         </div>
     </div>
@@ -482,12 +490,11 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("Kayıt silinirken bir hata oluştu: ", error);
-                    toastr.error("Kayıt silinirken bir hata oluştu.");
+                    console.error("An error occurred while deleting the record: ", error);
+                    toastr.error("An error occurred while deleting the record.");
                 }
             });
         });        
-        
 
         /* Website Services */
         let serviceToDelete = null;
@@ -525,12 +532,11 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("Kayıt silinirken bir hata oluştu: ", error);
-                    toastr.error("Kayıt silinirken bir hata oluştu.");
+                    console.error("An error occurred while deleting the record: ", error);
+                    toastr.error("An error occurred while deleting the record.");
                 }
             });
         });      
-        
 
         /* Website Banners */
         let bannerToDelete = null;
@@ -568,13 +574,10 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("Kayıt silinirken bir hata oluştu: ", error);
-                    toastr.error("Kayıt silinirken bir hata oluştu.");
+                    console.error("An error occurred while deleting the record: ", error);
+                    toastr.error("An error occurred while deleting the record.");
                 }
             });
         });
-
-
-
     });
 </script>

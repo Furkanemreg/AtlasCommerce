@@ -1,6 +1,6 @@
 ﻿@using AtlasCommerce.Application.ViewModels
 @{
-    ViewData["Title"] = "Ürünler";
+    ViewData["Title"] = "Products";
     Layout = "_Layout";
 
     var searchTerm = Model.SearchTerm ?? "";
@@ -25,7 +25,7 @@
                 <div class="custom-search">
                     <input name="searchTerm"
                            type="text"
-                           placeholder="Arama Yap"
+                           placeholder="Search..."
                            class="table-searchbox"
                            value="@Model.SearchTerm" />
                     <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
@@ -35,7 +35,7 @@
 
             <div class="dashboard-actions">
                 <a class="btn primary-btn" asp-area="Admin" asp-controller="Product" asp-action="Edit">
-                    <i class='bx  bx-plus'></i>     Yeni Ürün
+                    <i class='bx  bx-plus'></i> New Product
                 </a>
             </div>
         </div>
@@ -44,14 +44,14 @@
             <table class="generic-table">
                 <thead>
                     <tr>
-                        <th>Fotograf</th>
+                        <th>Image</th>
                         <th>Barcode</th>
-                        <th>Ürün / Kategori</th>
-                        <th>Satış Fiyatı</th>
-                        <th>İndirim</th>
-                        <th>Oluşturan Kullanıcı</th>
-                        <th>Oluşturulma Tarihi</th>
-                        <th>Durum</th>
+                        <th>Product / Category</th>
+                        <th>Sale price</th>
+                        <th>Discount (%)</th>
+                        <th>Created By User</th>
+                        <th>Creation Date</th>
+                        <th>Status</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -64,7 +64,7 @@
                                 <td>
                                     @if (!string.IsNullOrEmpty(item.ImageDataUri))
                                     {
-                                        <img src="@item.ImageDataUri" class="rounded-lg" style="width:50px; height:40px;" alt="Kategori Görseli" />
+                                        <img src="@item.ImageDataUri" class="rounded-lg" style="width:50px; height:40px;" alt="Category Image" />
                                     }
                                 </td>
                                 <td>@(item.Barcode ?? "-")</td>
@@ -86,11 +86,11 @@
                                 <td>
                                     @if (item.IsActive)
                                     {
-                                        <span class="status-label status-active">Aktif</span>
+                                        <span class="status-label status-active">Actice</span>
                                     }
                                     else
                                     {
-                                        <span class="status-label status-inactive">Pasif</span>
+                                        <span class="status-label status-inactive">Passive</span>
                                     }
                                 </td>
                                 <td class="action-cell">
@@ -100,7 +100,7 @@
                                     <ul class="action-menu">
                                         <li>
                                             <a asp-area="Admin" asp-controller="Product" asp-action="Edit" asp-route-id="@item.ProductId" class="action-item">
-                                                <i class='bx  bx-pencil'></i> Düzenle
+                                                <i class='bx  bx-pencil'></i> Edit
                                             </a>
                                         </li>
                                         <li>
@@ -109,7 +109,7 @@
                                                     data-id="@item.ProductId"
                                                     data-product="@item.ProductName"
                                                     data-url="@Url.Action("Delete", "Product", new { area = "Admin", id = item.ProductId })">
-                                                <i class='bx bx-trash'></i> Sil
+                                                <i class='bx bx-trash'></i> Delete
                                             </button>
                                         </li>
                                     </ul>
@@ -120,7 +120,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">Veri bulunamadı.</td>
+                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">No data found.</td>
                         </tr>
                     }
                 </tbody>
@@ -233,7 +233,7 @@
                 var id = $(this).data('id');
                 var product = $(this).data('product');
 
-                showConfirmationModal(`'${product}' ürününü silmek istediğinizden emin misiniz?`,
+                showConfirmationModal(`Are you sure you want to delete the '${product}' product ?`,
                     function () { $.ajax({
                             url: '/Admin/Product/Delete',
                             type: 'POST',
@@ -243,9 +243,9 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                                    toastr.success(response.message || 'Saved successfully.');
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                                 setTimeout(function () {
                                     location.reload();
@@ -253,7 +253,7 @@
                             },
                             error: function (xhr, status, error) {
                                 console.error(error);
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                                 location.reload();
                             }
                         });

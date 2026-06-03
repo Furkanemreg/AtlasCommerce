@@ -4,22 +4,20 @@
 @inject IBaseService<WebsiteFeature> _featureService
 
 @{
-    ViewData["Title"] = "Hakkımızda";
+    ViewData["Title"] = "About";
 
     var _websiteFeatures = await _featureService.GetAllAsync();
 }
 
-
 <section class="py-5 about-us-section bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h1 class="fw-bold text-3xl text-uppercase">Hakkımızda</h1>
+            <h1 class="fw-bold text-3xl text-uppercase">About Us</h1>
             <p class="text-muted">@Model?.Settings?.BrandName</p>
         </div>
 
         <div class="row align-items-center mb-5">
             <div class="col-lg-6 mb-4 mb-lg-0">
-                @* <img src="@Model?.Settings?.LogoPath" class="img-fluid rounded shadow" /> *@
                 <img src="@Model?.Settings?.LogoPath" class="rounded shadow" style="width: 90%; " />
             </div>
 

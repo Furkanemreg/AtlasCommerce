@@ -34,6 +34,7 @@ namespace AtlasCommerce.UI.Controllers
         private readonly ISettingsCacheService _settingsCacheService; 
         private readonly IBannerCacheService _bannerCacheService;
         private readonly IHomeCacheService _homeCacheService;
+        private readonly IRecommendationService _recommendationService;
 
         public HomeController(IBaseService<Category> categoryService, 
             IBaseService<Product> productService, 
@@ -47,7 +48,8 @@ namespace AtlasCommerce.UI.Controllers
             IDropdownCacheService dropdownCacheService,
             ISettingsCacheService settingsCacheService,
             IBannerCacheService bannerCacheService,
-            IHomeCacheService homeCacheService)
+            IHomeCacheService homeCacheService,
+            IRecommendationService recommendationService)
         {
             _logger = logger;
             _categoryService = categoryService;
@@ -62,6 +64,7 @@ namespace AtlasCommerce.UI.Controllers
             _settingsCacheService = settingsCacheService;
             _bannerCacheService = bannerCacheService;
             _homeCacheService = homeCacheService;
+            _recommendationService = recommendationService;
         }
 
         #region CACHING / Common Areas
@@ -176,6 +179,7 @@ namespace AtlasCommerce.UI.Controllers
 
         public async Task<IActionResult> Index()
         {
+            var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             await SetCart();
 
             var cached = await _homeCacheService.GetHomeAsync();
@@ -184,6 +188,16 @@ namespace AtlasCommerce.UI.Controllers
             {
                 cached.Settings ??= await GetSettingsCached();
                 cached.Banners ??= await GetBannersCached();
+
+                // Akýllý Ürün Öneri Sistemi
+                if (Guid.TryParse(userIdStr, out var uID))
+                {
+                    cached.RecommendedProducts = await _recommendationService.GetForUserAsync(uID);
+                }
+                else
+                {
+                    cached.RecommendedProducts = await _recommendationService.GetForAnonymousAsync();
+                }
 
                 ViewBag.CategoryWithProducts = cached.CategoryWithProducts;
 
@@ -277,6 +291,18 @@ namespace AtlasCommerce.UI.Controllers
 
             pageVm.Settings = await GetSettingsCached();
             pageVm.Banners = await GetBannersCached();
+
+            // Akýllý Ürün Öneri Sistemi
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (Guid.TryParse(userId, out var uid))
+            {
+                pageVm.RecommendedProducts = await _recommendationService.GetForUserAsync(uid);
+            }
+            else
+            {
+                pageVm.RecommendedProducts = await _recommendationService.GetForAnonymousAsync();
+            }
 
             await _homeCacheService.SetHomeAsync(pageVm, TimeSpan.FromHours(2));
 
