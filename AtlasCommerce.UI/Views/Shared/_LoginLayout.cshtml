@@ -3,8 +3,8 @@
 @{
     var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
     var logoPath = Model?.Settings?.LogoPath;
-    
-    var title = "Kullanıcı Girişi";
+
+    var title = "User Login";
     if (!string.IsNullOrEmpty(Model?.Settings?.BrandName)) title += $" - {Model.Settings.BrandName}";
 }
 

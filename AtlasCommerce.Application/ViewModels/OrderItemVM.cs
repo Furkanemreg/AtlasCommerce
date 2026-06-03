@@ -14,8 +14,10 @@ namespace AtlasCommerce.Application.ViewModels
 
         public string ProductName { get; set; } = null!;
         public string Barcode { get; set; }
+        public string? ImageUrl { get; set; }
 
         public decimal UnitPrice { get; set; }
+        public decimal UnitPriceInclTax { get; set; }
         public int Quantity { get; set; }
 
         public decimal SubTotal { get; set; }

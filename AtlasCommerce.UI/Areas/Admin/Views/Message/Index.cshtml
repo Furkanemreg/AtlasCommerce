@@ -2,7 +2,7 @@
 @model FilteredResult<AtlasCommerce.Application.ViewModels.MessageVM>
 
 @{
-    ViewData["Title"] = "Mesajlar";
+    ViewData["Title"] = "Messages";
     Layout = "_Layout";
 
     var searchTerm = Model.SearchTerm ?? "";
@@ -15,6 +15,7 @@
     int endPage = Math.Min(startPage + groupSize - 1, totalPages);
     int messageType = Model.MessageType;
 }
+
 <style>
     .message-read {
         background-color: #f5fff5 !important;
@@ -32,13 +33,13 @@
 <div class="dashboard-wrapper">
     <div class="dashboard-container">
         <div class="dashboard-header">
-            <div class="table-title text-xl font-semibold">Mesajlar</div>
+            <div class="table-title text-xl font-semibold">Messages</div>
 
             <form method="get" class="custom-search inline-flex">
                 <div class="custom-search">
                     <input name="searchTerm"
                            type="text"
-                           placeholder="Arama Yap"
+                           placeholder="Search"
                            class="table-searchbox"
                            value="@Model.SearchTerm" />
                     <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
@@ -47,39 +48,39 @@
 
             <div class="dashboard-actions">
                 <div class="flex flex-wrap gap-2 p-2 dark rounded-2xl shadow">
-                    <a class="flex items-center justify-center px-3 py-2 text-white rounded-xl transition filter-btn btn-show-readed-messages" style="border: 1px solid var(--dark);" 
-                        title="Tüm Mesajlar (Silinmemiş)" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
+                    <a class="flex items-center justify-center px-3 py-2 text-white rounded-xl transition filter-btn btn-show-readed-messages" style="border: 1px solid var(--dark);"
+                        title="All Messages (Not Deleted)" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
                         <i class='bx bx-list-ul' style="color: var(--dark);"></i>
                     </a>
 
                     <a class="flex items-center justify-center px-3 py-2 bg-green-300 text-white rounded-xl hover:bg-green-500 transition filter-btn btn-show-replied-messages"
-                        title="Yanıtlanmış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 4 })'>
+                        title="Show replied messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 4 })'>
                         <i class="bx bx-message-check"></i>
                     </a>
                     <a class="flex items-center justify-center px-3 py-2 bg-red-300 text-white rounded-xl hover:bg-red-500 transition filter-btn btn-show-unreplied-messages"
-                        title="Yanıtlanmamış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 5 })'>
+                        title="Show unanswered messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 5 })'>
                         <i class="bx bx-message-x"></i>
                     </a>
 
                     <a class="flex items-center justify-center px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition filter-btn btn-show-deleted-messages"
-                        title="Silinmiş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
+                        title="Show deleted messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
                         <i class="bx bx-trash"></i>
                     </a>
 
-                    <a class="flex items-center justify-center px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition filter-btn btn-show-unreaded-messages" 
-                        title="Sadece okunmamış mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
+                    <a class="flex items-center justify-center px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition filter-btn btn-show-unreaded-messages"
+                        title="Show only unread messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
                         <i class="bx bx-envelope"></i>
                     </a>
 
-                    <a class="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition filter-btn btn-show-readed-messages" 
-                        title="Sadece okunmuş mesajları göster" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
+                    <a class="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition filter-btn btn-show-readed-messages"
+                        title="Show only read messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
                         <i class="bx bx-envelope-open"></i>
                     </a>
 
-                    <button type="button" class="flex items-center justify-center px-3 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition filter-btn btn-mark-all-as-unread" title="Tümünü okunmadı olarak işaretle">
+                    <button type="button" class="flex items-center justify-center px-3 py-2 bg-gray-500 text-white rounded-xl hover:bg-gray-600 transition filter-btn btn-mark-all-as-unread" title="Mark all as unread">
                         <i class="bx bx-envelope"></i>
                     </button>
-                    <button type="button" class="flex items-center justify-center px-3 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition filter-btn btn-mark-all-as-read" title="Tümünü okundu olarak işaretle">
+                    <button type="button" class="flex items-center justify-center px-3 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600 transition filter-btn btn-mark-all-as-read" title="Mark all as read">
                         <i class="bx bx-envelope-open"></i>
                     </button>
                 </div>
@@ -91,13 +92,13 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Gönderen</th>
-                        <th>Telefon Numarası</th>
-                        <th>E-Posta Adresi</th>
-                        <th>Konu</th>
-                        <th>Oluşturulma Tarihi</th>
-                        <th>Durum</th>
-                        <th>İşlem</th>
+                        <th>Sender</th>
+                        <th>Phone Number</th>
+                        <th>e-Mail Address</th>
+                        <th>Topic</th>
+                        <th>Creation Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -119,11 +120,11 @@
                                 <td>
                                     @if (!string.IsNullOrWhiteSpace(item.AdminReply))
                                     {
-                                        <span class="status-label status-active">Yanıtlandı</span>
+                                        <span class="status-label status-active">Replied</span>
                                     }
                                     else
                                     {
-                                        <span class="status-label status-inactive">Yanıtlanmadı</span>
+                                        <span class="status-label status-inactive">Not Replied</span>
                                     }
                                 </td>
                                 <td class="action-cell">
@@ -133,26 +134,26 @@
                                     <ul class="action-menu">
                                         <li>
                                             <a asp-area="Admin" asp-controller="Message" asp-action="View" asp-route-id="@item.Id" class="action-item">
-                                                <i class='bx  bx-pencil'></i> Görüntüle
+                                                <i class='bx  bx-pencil'></i> View
                                             </a>
                                         </li>
                                         <li>
                                             @if (item.IsRead)
                                             {
                                                 <a class="action-item btn-mark-as-unread" data-id="@item.Id" data-topic="@item.Topic">
-                                                    <i class="bx bx-envelope-open"></i> Okunmadı olarak işaretle
+                                                    <i class="bx bx-envelope-open"></i> Mark as unread
                                                 </a>
                                             }
                                             else
                                             {
                                                 <a class="action-item btn-mark-as-read" data-id="@item.Id" data-topic="@item.Topic">
-                                                    <i class="bx bx-envelope"></i> Okundu olarak işaretle
+                                                    <i class="bx bx-envelope"></i> Mark as read
                                                 </a>
                                             }
                                         </li>
                                         <li>
                                             <a class="action-item btn-delete-message" data-id="@item.Id" data-topic="@item.Topic">
-                                                <i class='bx bx-trash'></i> Sil
+                                                <i class='bx bx-trash'></i> Delete
                                             </a>
                                         </li>
                                     </ul>
@@ -163,7 +164,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">Veri bulunamadı.</td>
+                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">No data found.</td>
                         </tr>
                     }
                 </tbody>
@@ -171,7 +172,7 @@
         </div>
         <div class="pagination-wrapper">
             <div class="pagination-left">
-                <span>Sayfa başına kayıt sayısı:</span>
+            <span>Records per page:</span>
                 <select class="theme-input" onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@Model.SearchTerm'">
                     @foreach (var size in new[] { 10, 25, 50, 100 })
                     {
@@ -273,7 +274,7 @@
         $(document).ready(function() {
             // Tümünü okundu olarak işaretle
             $('.btn-mark-all-as-read').on('click', function () {
-                showConfirmationModal("Tüm mesajları okundu olarak işaretlemek istediğinizden emin misiniz?",
+                showConfirmationModal("Are you sure you want to mark all messages as read ?",
                     function () {
                         $.ajax({
                             url: "/Admin/Message/MarkAllAsRead",
@@ -283,16 +284,16 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Tüm mesajlar okundu olarak işaretlendi.');
+                                    toastr.success(response.message || 'All messages are marked as read.');
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                                 setTimeout(function () {
                                     location.reload();
                                 }, 3000);
                             },
                             error: function () {
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }
@@ -301,7 +302,7 @@
 
             // Tümünü okunmadı olarak işaretle
             $('.btn-mark-all-as-unread').on('click', function () {
-                showConfirmationModal("Tüm mesajları okunmadı olarak işaretlemek istediğinizden emin misiniz?",
+                showConfirmationModal("Are you sure you want to mark all messages as unread ?",
                     function () {
                         $.ajax({
                             url: "/Admin/Message/MarkAllAsUnread",
@@ -311,16 +312,16 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Tüm mesajlar okunmadı olarak işaretlendi.');
+                                    toastr.success(response.message || 'All messages are marked as unread.');
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                                 setTimeout(function () {
                                     location.reload();
                                 }, 3000);
                             },
                             error: function () {
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }
@@ -332,7 +333,7 @@
                 var id = $(this).data('id');
                 var topic = $(this).data('topic');
 
-                var confirmationMessage = `'${topic}' konulu mesajı okunmadı olarak işaretlemek istediğinizden emin misiniz?`;
+                var confirmationMessage = `Are you sure you want to mark the message about '${topic}' as unread ?`;
 
                 showConfirmationModal(confirmationMessage,
                     function () {
@@ -345,16 +346,16 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Mesaj okunmadı olarak işaretlendi.');
+                                    toastr.success(response.message || 'Message marked as unread.');
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                                 setTimeout(function () {
                                     location.reload();
                                 }, 3000);
                             },
                             error: function () {
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }
@@ -366,7 +367,7 @@
                 var id = $(this).data('id');
                 var topic = $(this).data('topic');
 
-                var confirmationMessage = `'${topic}' konulu mesajı okundu olarak işaretlemek istediğinizden emin misiniz?`;
+                var confirmationMessage = `Are you sure you want to mark the message about '${topic}' as read ?`;
 
                 showConfirmationModal(confirmationMessage,
                     function () {
@@ -379,16 +380,16 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Mesaj okundu olarak işaretlendi.');
+                                    toastr.success(response.message || 'Message marked as read.');
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                                 setTimeout(function () {
                                     location.reload();
                                 }, 3000);
                             },
                             error: function () {
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }
@@ -400,7 +401,7 @@
                 var id = $(this).data('id');
                 var topic = $(this).data('topic');
 
-                var confirmationMessage = `'${topic}' konulu mesajı silmek istediğinizden emin misiniz?`;
+                var confirmationMessage = `Are you sure you want to delete the message about '${topic}' ?`;
 
                 showConfirmationModal(confirmationMessage,
                     function () {
@@ -413,16 +414,16 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Mesaj başarıyla silindi.');
+                                    toastr.success(response.message || 'Message deleted successfully.');
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                                 setTimeout(function () {
                                     location.reload();
                                 }, 3000);
                             },
                             error: function () {
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }

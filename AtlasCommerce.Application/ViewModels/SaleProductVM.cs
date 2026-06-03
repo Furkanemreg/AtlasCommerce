@@ -70,6 +70,7 @@ namespace AtlasCommerce.Application.ViewModels
             }
         }
 
+        public double? RecommendationScore { get; set; }
         public WebsiteSettingsVM? Settings { get; set; }
     }
 }

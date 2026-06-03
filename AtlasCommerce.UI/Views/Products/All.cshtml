@@ -4,7 +4,7 @@
 
 @{
     Layout = "_Layout";
-    ViewData["Title"] = "Tüm Ürünler";
+    ViewData["Title"] = "All Products";
 
     var settings = Model?.Settings as WebsiteSettingsVM;
 
@@ -34,17 +34,18 @@
         background-color: #a32632 !important;
     }
 </style>
+
 <div class="bg-white">
     <div>
         <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex items-baseline justify-between border-b border-gray-200 pt-24 pb-6">
-                <h1 class="text-4xl font-bold tracking-tight text-gray-900">Tüm Ürünler</h1>
+                <h1 class="text-4xl font-bold tracking-tight text-gray-900">All Products</h1>
 
                 <div class="flex items-center">
                     <div class="relative inline-block text-left">
                         <div>
                             <button id="menu-button" type="button" aria-expanded="false" aria-haspopup="true" class="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
-                                Sıralama
+                                Sorting
                                 <svg viewBox="0 0 20 20" fill="currentColor" data-slot="icon" aria-hidden="true" class="-mr-1 ml-1 size-5 shrink-0 text-gray-400 group-hover:text-gray-500">
                                     <path d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" fill-rule="evenodd" />
                                 </svg>
@@ -66,7 +67,7 @@
                                             SelectedColors = Model.Filter?.SelectedColors,
                                             SelectedCategoryIds = Model.Filter?.SelectedCategories
                                         })">
-                                    En Yeni
+                                    Newest
                                 </a>
                                 <a id="menu-item-1"
                                    role="menuitem"
@@ -80,7 +81,7 @@
                                             mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
                                             SelectedColors = Model.Filter?.SelectedColors,
                                             SelectedCategoryIds = Model.Filter?.SelectedCategories
-                                        })">Artan Fiyat</a>
+                                        })">Price: Low to High</a>
 
                                 <a id="menu-item-2"
                                    role="menuitem"
@@ -94,7 +95,7 @@
                                             mixLength = Model.Filter?.MinLength, maxLength = Model.Filter?.MaxLength,
                                             SelectedColors = Model.Filter?.SelectedColors,
                                             SelectedCategoryIds = Model.Filter?.SelectedCategories
-                                        })">Azalan Fiyat</a>
+                                        })">Price: High to Low</a>
                             </div>
                         </div>
                     </div>
@@ -120,7 +121,7 @@
                                         aria-controls="price-filter-section-price"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Fiyat Aralığı (₺)</span>
+                                    <span class="font-medium text-gray-900">Price Range (₺)</span>
                                     <span class="ml-6 flex items-center">
                                         <!-- Expand icon (+) başta gizli -->
                                         <svg id="price-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
@@ -171,7 +172,7 @@
                                         aria-controls="width-filter-section-width"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Genişlik (cm)</span>
+                                    <span class="font-medium text-gray-900">Width (cm)</span>
                                     <span class="ml-6 flex items-center">
                                         <!-- Expand icon (+) başta gizli -->
                                         <svg id="width-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
@@ -222,7 +223,7 @@
                                         aria-controls="height-filter-section-height"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Yükseklik (cm)</span>
+                                    <span class="font-medium text-gray-900">Height (cm)</span>
                                     <span class="ml-6 flex items-center">
                                         <!-- Expand icon (+) başta gizli -->
                                         <svg id="height-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
@@ -273,7 +274,7 @@
                                         aria-controls="weight-filter-section-weight"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Ağırlık (kg)</span>
+                                    <span class="font-medium text-gray-900">Weight (kg)</span>
                                     <span class="ml-6 flex items-center">
                                         <!-- Expand icon (+) başta gizli -->
                                         <svg id="weight-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
@@ -324,7 +325,7 @@
                                         aria-controls="length-filter-section-length"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Derinlik (cm)</span>
+                                    <span class="font-medium text-gray-900">Depth (cm)</span>
                                     <span class="ml-6 flex items-center">
                                         <!-- Expand icon (+) başta gizli -->
                                         <svg id="length-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
@@ -374,7 +375,7 @@
                                         aria-controls="category-filter-section"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Kategori</span>
+                                    <span class="font-medium text-gray-900">Category</span>
                                     <span class="ml-6 flex items-center">
                                         <svg id="category-icon-expand" class="size-5 hidden" viewBox="0 0 20 20" fill="currentColor">
                                             <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
@@ -416,7 +417,7 @@
                                         aria-controls="color-filter-section-color"
                                         aria-expanded="true"
                                         class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                                    <span class="font-medium text-gray-900">Renk</span>
+                                    <span class="font-medium text-gray-900">Color</span>
                                     <span class="ml-6 flex items-center">
                                         <!-- Expand icon (+) başta gizli -->
                                         <svg id="color-icon-expand" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" class="size-5 hidden">
@@ -444,7 +445,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-mobile-color-white" class="min-w-0 flex-1 text-gray-500">Beyaz</label>
+                                        <label for="filter-mobile-color-white" class="min-w-0 flex-1 text-gray-500">White</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -458,7 +459,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-mobile-color-red" class="min-w-0 flex-1 text-gray-500">Kırmızı</label>
+                                        <label for="filter-mobile-color-red" class="min-w-0 flex-1 text-gray-500">Red</label>
                                     </div>
                                     <div class="flex gap-3">
                                         <div class="flex h-5 shrink-0 items-center">
@@ -471,7 +472,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-mobile-blue" class="min-w-0 flex-1 text-gray-500">Mavi</label>
+                                        <label for="filter-mobile-blue" class="min-w-0 flex-1 text-gray-500">Blue</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -485,7 +486,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Yeşil</label>
+                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Green</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -499,7 +500,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Sarı</label>
+                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Yellow</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -513,7 +514,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Turuncu</label>
+                                        <label for="filter-color-green" class="min-w-0 flex-1 text-gray-500">Orange</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -527,7 +528,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-purple" class="min-w-0 flex-1 text-gray-500">Mor</label>
+                                        <label for="filter-color-purple" class="min-w-0 flex-1 text-gray-500">Purple</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -541,7 +542,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-purple" class="min-w-0 flex-1 text-gray-500">Pembe</label>
+                                        <label for="filter-color-purple" class="min-w-0 flex-1 text-gray-500">Pink</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -555,7 +556,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-brown" class="min-w-0 flex-1 text-gray-500">Kahverengi</label>
+                                        <label for="filter-color-brown" class="min-w-0 flex-1 text-gray-500">Brown</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -569,7 +570,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-brown" class="min-w-0 flex-1 text-gray-500">Bronz</label>
+                                        <label for="filter-color-brown" class="min-w-0 flex-1 text-gray-500">Bronze</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -583,7 +584,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Gri</label>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Gray</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -597,7 +598,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Gümüş</label>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Silver</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -611,7 +612,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Siyah</label>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Black</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -625,7 +626,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Şeffaf</label>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Transparent</label>
                                     </div>
 
                                     <div class="flex gap-3">
@@ -639,7 +640,7 @@
                                                 </svg>
                                             </div>
                                         </div>
-                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Birden Fazla Renk</label>
+                                        <label for="filter-color-black" class="min-w-0 flex-1 text-gray-500">Multi Color</label>
                                     </div>
 
                                 </div>
@@ -652,17 +653,15 @@
                                     type="submit"
                                     class="w-1/2 rounded-md px-4 py-2 text-white font-medium"
                                     style="background-color: #dc3545;">
-                                Ara
+                                Search
                             </button>
                             <a id="btnReset"
                                href="@Url.Action("All")"
                                class="w-1/2 text-center rounded-md px-4 py-2 text-white font-medium"
                                style="background-color: #6c757d;">
-                                Sıfırla
+                                Reser
                             </a>
-
                         </div>
-
 
                     </form>
 
@@ -720,17 +719,17 @@
                                                 </a>
 
                                                 <div class="flex justify-center mt-2 mb-2">
-                                                    <a href="@($"https://wa.me/{phoneNumber}?text={Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {product.Title} ürünü hakkında bilgi almak istiyorum.")}")"
+                                                    <a href="@($"https://wa.me/{phoneNumber}?text={Uri.EscapeDataString($"Hello, I’m contacting you from your website. I would like to get information about {product.Title}.")}")"
                                                        target="_blank" rel="noopener"
                                                        class="w-full max-w-[160px] px-4 py-2 text-sm font-semibold text-white text-center rounded-md transition bg-green-600 hover:bg-green-700">
-                                                        <i class="fab fa-whatsapp"></i> Bilgi Al
+                                                        <i class="fab fa-whatsapp"></i> Get Information
                                                     </a>
                                                 </div>
                                                 <div class="flex justify-center mt-2 mb-2">
                                                     <button class="btnAddToCart w-full max-w-[160px] px-4 py-2 text-sm font-semibold text-white text-center rounded-md transition"
                                                             data-product-id="@product.Id"
                                                             style="background-color: #7b1fa2;">
-                                                        <i class="fas fa-shopping-cart me-1"></i> Sepete Ekle
+                                                        <i class="fas fa-shopping-cart me-1"></i> Add to Cart
                                                     </button>
                                                 </div>
                                             </div>
@@ -741,7 +740,7 @@
                                 @if (Model?.Products != null)
                                 {
                                     <div class="text-sm text-gray-600 mb-2 mt-4 ml-4">
-                                        @Model.TotalRecords kayıt arasından @Model.Products.Count kayıt gösteriliyor
+                                        Showing @Model.Products.Count of @Model.TotalRecords records
                                     </div>
                                 }
 
@@ -829,26 +828,6 @@
     </div>
 </div>
 
-<div class="card" style="border-top-left-radius:0">
-    <div class="card-body">
-        <!-- Modal -->
-        <div class="modal fade" id="comingSoonModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Pek Yakında! 🚀</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
-                        <p>E-Ticaret modülümüz çok yakında hizmetinizde olacaktır.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
 <script>
     function changePageSize(select) {
         const pageSize = select.value;
@@ -1408,15 +1387,15 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            toastr.success("Ürün sepete eklendi.");
+                            toastr.success("Product added to cart.");
                             if (data.cartCount !== undefined) {
                                 document.getElementById("cartItemCount").textContent = data.cartCount;
                             }
                         } else {
-                            toastr.error("Sepete eklenirken hata oluştu.");
+                            toastr.error("An error occurred while adding product to the cart.");
                         }
                     })
-                    .catch(() => toastr.error("Sunucu hatası oluştu."));
+                    .catch(() => toastr.error("Server error occurred."));
             });
         });
 

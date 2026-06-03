@@ -1,7 +1,7 @@
 ﻿@model AtlasCommerce.Application.ViewModels.ServicePageVM
 
 @{
-    ViewData["Title"] = "Hizmetlerimiz";
+    ViewData["Title"] = "Services";
 }
 <style>
     .montaj-card {
@@ -11,66 +11,9 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="text-center mb-5">
-            <h1 class="fw-bold text-3xl">HİZMETLERİMİZ</h1>
-            <p class="text-muted">@Model?.Settings?.BrandName olarak sunduğumuz profesyonel çözümler</p>
+            <h1 class="fw-bold text-3xl">OUR SERVICES</h1>
+            <p class="text-muted">Professional solutions provided by @Model?.Settings?.BrandName</p>
         </div>
-@* 
-        <div class="row g-4">
-            <!-- Kart 1 -->
-            <div class="col-md-6">
-                <div class="bg-white rounded shadow-sm h-100 overflow-hidden d-flex flex-column">
-                    <img src="~/img/services/parts.png" alt="Yedek Parçalar" class="img-fluid w-100" style="height: 300px; object-fit: fill;">
-                    <div class="p-4 flex-grow-1 d-flex flex-column">
-                        <h5 class="fw-bold mb-2">Endüstriyel Buzdolabı Yedek Parçaları</h5>
-                        <p>Kapı contaları, menteşeler, kilitler, raflar, motor ve soğutma ekipmanlarının satışı ve montajını gerçekleştiriyoruz.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 2 -->
-            <div class="col-md-6">
-                <div class="bg-white rounded shadow-sm h-100 overflow-hidden d-flex flex-column">
-                    <img src="~/img/services/servis.jpg" alt="Servis" class="img-fluid w-100" style="height: 300px; object-fit: initial">
-                    <div class="p-4 flex-grow-1 d-flex flex-column">
-                        <h5 class="fw-bold mb-2">Endüstriyel Buzdolabı Yerinde Servis</h5>
-                        <p>Arıza tespiti, keşif, tamir ve periyodik bakım hizmetleri sunuyoruz. Dolaplarınızın verimli çalışmasını sağlamak için sürpriz arızaların önüne geçiyoruz.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 3 -->
-            <div class="col-md-6">
-                <div class="bg-white rounded shadow-sm h-100 overflow-hidden d-flex flex-column">
-                    <img src="~/img/services/repair.jpeg" alt="Montaj ve Demontaj" class="img-fluid w-100" style="height: 600px; object-fit: initial;">
-                    <div class="p-4 flex-grow-1 d-flex flex-column">
-                        <h5 class="fw-bold mb-2">Montaj & Demontaj</h5>
-                        <p>Yeni endüstriyel mutfak kurulumlarında montaj/kurulum işlemleri, mevcut sistemlerde demontaj (söküm) hizmeti sunuyoruz.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 4 -->
-            <div class="col-md-6">
-                <div class="bg-white rounded shadow-sm h-100 overflow-hidden d-flex flex-column">
-                    <img src="~/img/banner-4.jpeg" alt="Soğuk Hava Deposu" class="img-fluid w-100" style="height: 300px; object-fit: fill">
-                    <div class="p-4 flex-grow-1 d-flex flex-column">
-                        <h5 class="fw-bold mb-2">Soğuk Hava Deposu Servisi</h5>
-                        <p>Soğuk hava depolarınızın arıza, tamir, bakım işlemleri ile yedek parça ve aksesuar satış/montaj hizmeti sunuyoruz.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kart 5 -->
-            <div class="col-md-12">
-                <div class="bg-white rounded shadow-sm h-100 overflow-hidden d-flex flex-column">
-                    <img src="~/img/banner-1.jpeg" alt="İmalat" class="img-fluid w-100" style="height: 300px; object-fit: initial;">
-                    <div class="p-4 flex-grow-1 d-flex flex-column">
-                        <h5 class="fw-bold mb-2">Endüstriyel Mutfak Ekipmanları İmalatı</h5>
-                        <p>304 ve 430 kalite paslanmaz saç çeşitleriyle, isteğe özel imalat hizmeti sunuyoruz.</p>
-                    </div>
-                </div>
-            </div>
-        </div> *@
 
         <div class="row g-4 justify-content-center">
             @if (Model != null && Model?.Items != null && Model?.Items?.Count > 0)

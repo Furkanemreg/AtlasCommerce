@@ -1,120 +1,194 @@
 ﻿@using AtlasCommerce.Application.ViewModels
+@using AtlasCommerce.UI.Helpers
 @{
-    ViewData["Title"] = $"Yönetim Paneli - {Model?.Settings?.BrandName}";
+    ViewData["Title"] = $"Administration Panel - {Model?.Settings?.BrandName}";
     Layout = "_Layout";
 }
 
 @model DashboardVM
 
+<style>
+    .table-data {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+    }
+
+    .table-data .card {
+        width: 100%;
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .table-data table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .todo-list {
+        flex: 1;
+    }
+
+    .view-all {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .status {
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+    }
+
+    .status.completed {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status.pending {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status.process {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+
+    .status.canceled {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+
+    .todo {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .todo-list {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    .empty-message {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        gap: 8px;
+        color: #999;
+    }
+
+    .empty-message i {
+        font-size: 34px;
+        line-height: 1;
+    }
+</style>
+
 <!-- MAIN -->
 <main>
     <div class="head-title">
         <div class="left">
-            <h1>Yönetim Paneli</h1>
+            <h1>Administration Panel</h1>
             <ul class="breadcrumb">
-                <li>
-					<a href="#">Yönetim Paneli</a>
-				</li>
-				<li><i class='bx bx-chevron-right'></i></li>
 				<li>
 					<a asp-controller="Home" asp-action="Index">Atlas Commerce</a>
 				</li>
+
+                <li><i class='bx bx-chevron-right'></i></li>
+
+                <li>
+                    <a href="#">Administration Panel</a>
+				</li>
             </ul>
         </div>
-        <a href="#" class="btn-download">
-			<i class='bx bxs-cloud-download'></i>
-			<span class="text">PDF İndir</span>
-		</a>
+        <a asp-area="Admin"
+           asp-controller="Dashboard"
+           asp-action="DownloadDashboardPdf"
+           class="btn-download">
+            <i class='bx bxs-cloud-download'></i>
+            <span class="text">Download PDF</span>
+        </a>
     </div>
 
     <ul class="box-info">
         <li>
             <i class='bx bxs-calendar-check'></i>
             <span class="text">
-                <h3>0</h3> @* Modelden Gelecek *@
-                <p>Toplam Sipariş</p>
+                <h3>@Model!.TotalOrderCount!.ToString("n2")</h3>
+                <p>Total Orders</p>
             </span>
         </li>
         <li>
-            <i class='bx  bx-basket'></i>
+            <i class='bx bx-basket'></i>
             <span class="text">
-                <h3>@Model.TotalProductCount</h3> @* Modelden Gelecek *@
-                <p>Toplam Ürün</p>
+                <h3>@Model!.TotalProductCount!.ToString("n2")</h3>
+                <p>Total Products</p>
             </span>
         </li>
         <li>
             <i class='bx bxs-dollar-circle'></i>
             <span class="text">
-                <h3>0.00 ₺</h3> @* Modelden Gelecek *@
-                <p>Toplam Satış</p>
+                <h3>@Model!.TotalSales!.ToString("n2") ₺</h3>
+                <p>Total Sales</p>
             </span>
         </li>
     </ul>
 
-
-    <div class="table-data">
+    @* <div class="table-data">
         <div class="order">
             <div class="head">
-                <h3>Son Siparişler</h3>
-                <i class='bx bx-search'></i>
-                <i class='bx bx-filter'></i>
+                <h3>Recent Orders</h3>
             </div>
             <table>
                 <thead>
                     <tr>
-                        <th>Kullanıcı</th>
-                        <th>Sipariş Tarihi</th>
-                        <th>Durum</th>
+                        <th>User</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @* <tr>
-						<td>
-							<img src="img/people.png">
-							<p>John Doe</p>
-						</td>
-						<td>01-10-2021</td>
-						<td><span class="status completed">Completed</span></td>
-					</tr>
-					<tr>
-						<td>
-							<img src="img/people.png">
-							<p>John Doe</p>
-						</td>
-						<td>01-10-2021</td>
-						<td><span class="status pending">Pending</span></td>
-					</tr>
-					<tr>
-						<td>
-							<img src="img/people.png">
-							<p>John Doe</p>
-						</td>
-						<td>01-10-2021</td>
-						<td><span class="status process">Process</span></td>
-					</tr>
-					<tr>
-						<td>
-							<img src="img/people.png">
-							<p>John Doe</p>
-						</td>
-						<td>01-10-2021</td>
-						<td><span class="status canceled">Canceled</span></td>
-					</tr>
-					<tr>
-						<td>
-							<img src="img/people.png">
-							<p>John Doe</p>
-						</td>
-						<td>01-10-2021</td>
-						<td><span class="status completed">Completed</span></td>
-					</tr> *@
+                    @if (Model.RecentOrders != null && Model.RecentOrders.Count > 0)
+                    {
+                        foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td>
+                                    <p>@order.FullName</p>
+                                </td>
+                                <td>
+                                    @order.CreatedAt.ToString("dd.MM.yyyy")
+                                </td>
+                                <td>
+                                    <span class="status @order.Status @order.StatusCssClass">
+                                        @order.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3">No recent orders</td>
+                        </tr>
+                    }
                 </tbody>
             </table>
         </div>
         <div class="todo">
             <div class="head">
-                <h3>Mesajlar</h3>
-                @* <i class='bx bx-search'></i> *@
+                <h3>Messages</h3>
             </div>
             <ul class="todo-list">
                 @if (Model.DashboardMessages != null && Model.DashboardMessages.Count > 0)
@@ -128,9 +202,6 @@
                                 <a href="#" class="btnViewMessage" data-id="@message.MessageId">
                                     <i class='bx bx-show' style="cursor: pointer;color: var(--dark);"></i>
                                 </a>
-                                @* <a asp-controller="Message" asp-action="View" asp-route-id="@message.MessageId">
-									<i class='bx bx-show' style="cursor: pointer;color: var(--dark);"></i>
-								</a> *@
                             </li>
                         }
                         else
@@ -148,46 +219,149 @@
                 {
                     <li class="empty-message">
                         <div style="color: #888;">
-                            <p><i class='bx bx-message-square-x me-2'></i>Yanıtlanmamış mesajınız bulunmuyor.</p>
+                            <p><i class='bx bx-message-square-x me-2'></i>No unanswered messages</p>
                         </div>
                     </li>
                 }
             </ul>
             <div class="view-all-messages" style="margin-top: 15px; text-align: center;">
                 <a asp-area="Admin" asp-controller="Message" asp-action="Index" class=" btn primary-btn">
-                    Tümünü Görüntüle
+                    View All
+                </a>
+            </div>
+        </div>
+    </div> *@
+
+    <div class="table-data">
+
+        <!-- RECENT ORDERS -->
+        <div class="card order">
+            <div class="head">
+                <h3>Recent Orders</h3>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Order Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.RecentOrders != null && Model.RecentOrders.Count > 0)
+                    {
+                        foreach (var order in Model.RecentOrders)
+                        {
+                            <tr onclick="window.location='/Admin/Order/Details/@order.OrderId'" style="cursor:pointer;">
+                                <td>
+                                    <p>@order.FullName</p>
+                                </td>
+
+                                <td>
+                                    @order.CreatedAt.ToString("dd.MM.yyyy")
+                                </td>
+
+                                <td>
+                                    <span class="status @order.StatusCssClass">
+                                        @order.Status
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="3">No recent orders</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div class="view-all">
+                <a asp-area="Admin"
+                   asp-controller="Order"
+                   asp-action="Index"
+                   class="btn primary-btn">
+                    View All Orders
+                </a>
+            </div>
+        </div>
+
+        <!-- MESSAGES -->
+        <div class="card todo">
+            <div class="head">
+                <h3>Messages</h3>
+            </div>
+
+            <ul class="todo-list">
+
+                @if (Model.DashboardMessages != null && Model.DashboardMessages.Count > 0)
+                {
+                    foreach (var message in Model.DashboardMessages)
+                    {
+                        <li class="@(message.IsRead ? "completed" : "not-completed")">
+                            <p>@message.FirstName @message.LastName - @message.Topic</p>
+
+                            <a href="#"
+                               class="btnViewMessage"
+                               data-id="@message.MessageId">
+                                <i class='bx bx-show'></i>
+                            </a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="empty-message">
+                        <i class='bx bx-message-square-x'></i>
+                        <span>No unanswered messages</span>
+                    </li>
+                }
+
+            </ul>
+
+            <div class="view-all">
+                <a asp-area="Admin"
+                   asp-controller="Message"
+                   asp-action="Index"
+                   class="btn primary-btn">
+                    View All Messages
                 </a>
             </div>
         </div>
     </div>
+
 </main>
 
 <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header" style="background-color: #337ab7; color: white;">
-                <h5 class="modal-title" id="messageModalLabel">Mesaj Detayı</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                <h5 class="modal-title" id="messageModalLabel">Message Detail</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p class="mb-2"><strong>Ad Soyad:</strong> <span id="modalFullName" style="word-break: break-word;"></span></p>
-                <p class="mb-2"><strong>Email Adresi:</strong> <span id="modalEmailAddress" style="word-break: break-word;"></span></p>
-                <p class="mb-2"><strong>Mesaj Tarihi:</strong> <span id="modalMessageDate" style="word-break: break-word;"></span></p>
-                <p class="mb-2"><strong>Konu:</strong> <span id="modalTopic" style="word-break: break-word;"></span></p>
-                <p class="mb-2" style="margin-bottom: 0;"><strong>Mesaj:</strong> <span id="modalContent" style="white-space: pre-wrap; word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Full Name:</strong> <span id="modalFullName" style="word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>e-Mail Address:</strong> <span id="modalEmailAddress" style="word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Message Date:</strong> <span id="modalMessageDate" style="word-break: break-word;"></span></p>
+                <p class="mb-2"><strong>Topic:</strong> <span id="modalTopic" style="word-break: break-word;"></span></p>
+                <p class="mb-2" style="margin-bottom: 0;"><strong>Message:</strong> <span id="modalContent" style="white-space: pre-wrap; word-break: break-word;"></span></p>
             </div>
 
             <div class="modal-footer flex-column align-items-stretch">
 
                 <div class="w-100 mb-2">
-                    <label class="form-label"><strong>Yanıt</strong></label>
-                    <textarea id="modalReplyInput" class="form-control" rows="3" placeholder="Yanıtınız..."></textarea>
+                    <label class="form-label"><strong>Reply</strong></label>
+                    <textarea id="modalReplyInput" class="form-control" rows="3" placeholder="Your Reply..."></textarea>
                 </div>
 
                 <div class="d-flex justify-content-end gap-2 w-100">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                     <button type="button" class="btn btn-primary" id="btnSendReply">
-                        Yanıtla
+                        Send Reply
                     </button>
                 </div>
 
@@ -211,7 +385,7 @@
 
 				try {
 					const response = await fetch(`/Message/ViewMessage?id=${id}`);
-					if (!response.ok) throw new Error("Mesaj yüklenemedi.");
+                    if (!response.ok) throw new Error("Message could not be loaded.");
 
                     const data = await response.json();
 
@@ -224,7 +398,7 @@
                     messageModal.show();
 
                 } catch (error) {
-                    alert("Hata: " + error.message);
+                    console.error("Error: " + error.message);
                 }
             });
         });
@@ -234,7 +408,7 @@
             const reply = document.getElementById("modalReplyInput").value;
 
             if (!reply || reply.trim() === "") {
-                toastr.error("Mesaj yanıtı boş olamaz.");
+                toastr.error("Message replies cannot be empty.");
                 return;
             }
 
@@ -251,12 +425,12 @@
             });
 
             if (response.ok) {
-                toastr.success("Mesaj yanıtınız gönderildi.");
+                toastr.success("Your reply to the message has been sent.");
                 document.getElementById("modalReplyInput").value = "";
                 messageModal.hide();
                 location.reload();
             } else {
-                toastr.error("Yanıt gönderilemedi.");
+                toastr.error("The response could not be sent.");
             }
         });
     });

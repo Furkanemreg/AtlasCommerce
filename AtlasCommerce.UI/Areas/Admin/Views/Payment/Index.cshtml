@@ -1,16 +1,205 @@
-﻿@model AtlasCommerce.Application.ViewModels.EmptyVM
+﻿@using AtlasCommerce.Application.ViewModels
+@model PaymentListVM
 
 @{
+    ViewData["Title"] = "Payments";
     Layout = "_Layout";
-    ViewData["Title"] = "Geliştirme Sürecinde";
 }
 
+<style>
+    .status-label {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+    }
 
-<section class="under-construction-modern">
-    <div class="uc-card">
-        <div class="uc-icon">🚀</div>
-        <h1>Bu Sayfa Geliştirme Aşamasındadır.</h1>
-        <p>Bu sayfanın geliştirme süreci devam ediyor.</p>
-        <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn-back">Anasayfaya Dön</a>
+    .status-pendingpayment {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .status-paid {
+        background: #d1fae5;
+        color: #065f46;
+    }
+
+    .status-failed {
+        background: #fecaca;
+        color: #991b1b;
+    }
+</style>
+
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+
+        <!-- HEADER -->
+        <div class="dashboard-header">
+
+            <div class="table-title text-xl font-semibold">
+                @ViewData["Title"]
+            </div>
+
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-container">
+            <table class="generic-table">
+                <thead>
+                    <tr>
+                        <th>Order</th>
+                        <th>Amount</th>
+                        <th>Order Total</th>
+                        <th>Status</th>
+                        <th>Card</th>
+                        <th>Date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Payments.Any())
+                    {
+                        foreach (var p in Model.Payments)
+                        {
+                            <tr>
+                                <!-- ORDER -->
+                                <td>
+                                    <div class="user-name">
+                                        #@p.OrderNumber
+                                    </div>
+                                </td>
+
+                                <!-- AMOUNT -->
+                                <td>
+                                    <strong>@p.Amount.ToString("C2")</strong>
+                                </td>
+
+                                <!-- ORDER TOTAL -->
+                                <td>
+                                    @p.OrderTotal.ToString("C2")
+                                </td>
+
+                                <!-- STATUS -->
+                                <td>
+                                    <span class="status-label status-@p.Status.ToString().ToLower()">
+                                        @p.Status
+                                    </span>
+                                </td>
+
+                                <!-- CARD -->
+                                <td>
+                                    @p.CardBrand - @p.CardNumber
+                                </td>
+
+                                <!-- DATE -->
+                                <td>
+                                    @p.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                                </td>
+
+                                <!-- ACTION -->
+                                <td class="action-cell">
+                                    <a href="#" class="action-toggle">
+                                        <i class="bx bx-dots-horizontal-rounded"></i>
+                                    </a>
+
+                                    <ul class="action-menu">
+                                        <li>
+                                            <a asp-area="Admin"
+                                               asp-controller="Payment"
+                                               asp-action="Detail"
+                                               asp-route-id="@p.Id"
+                                               class="action-item">
+                                                <i class='bx bx-show'></i> Payment Details
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a asp-area="Admin"
+                                               asp-controller="Order"
+                                               asp-action="Details"
+                                               asp-route-id="@p.OrderId"
+                                               class="action-item">
+                                                <i class='bx bx-package'></i> View Order
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center" style="padding:2rem;color:#999;">
+                                No payments found.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- FOOTER INFO -->
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px; font-size:0.85rem; color:gray;">
+            <div class="ml-4 mb-2">
+                Total Payments: <strong>@Model.Payments.Count</strong>
+            </div>
+        </div>
+
     </div>
-</section>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menus = Array.from(document.querySelectorAll('.action-menu'));
+            menus.forEach(menu => menu._origParent = menu.parentElement);
+
+            function closeAll() {
+                menus.forEach(menu => {
+                    menu.classList.remove('open');
+                    menu.style.position = '';
+                    menu.style.top = '';
+                    menu.style.left = '';
+                    menu.style.zIndex = '';
+                    if (menu.parentElement !== menu._origParent) {
+                        menu._origParent.appendChild(menu);
+                    }
+                });
+            }
+
+            closeAll();
+
+            document.querySelectorAll('.action-toggle').forEach(toggle => {
+                const menu = toggle.parentElement.querySelector('.action-menu');
+
+                toggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+
+                    if (menu.classList.contains('open')) {
+                        return closeAll();
+                    }
+
+                    closeAll();
+
+                    document.body.appendChild(menu);
+
+                    const rect = toggle.getBoundingClientRect();
+                    menu.style.position = 'fixed';
+                    menu.style.top = (rect.top - menu.offsetHeight - 6) + 'px';
+                    menu.style.left = rect.left + 'px';
+                    menu.style.zIndex = 10000;
+
+                    menu.classList.add('open');
+                });
+            });
+
+            document.addEventListener('click', closeAll);
+        });
+    </script>
+}

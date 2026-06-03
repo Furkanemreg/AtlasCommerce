@@ -17,78 +17,78 @@ public enum enmPlatform
 
 public enum enmOrderStatus
 {
-    [Description("Taslak / Kaydedildi")]
+    [Description("Draft")]
     Draft = 0,
 
-    [Description("Ödeme Bekleniyor")]
+    [Description("Pending Payment")]
     PendingPayment = 1,
 
-    [Description("Ödendi")]
+    [Description("Paid")]
     Paid = 2,
 
-    [Description("Hazırlanıyor")]
+    [Description("Preparing")]
     Preparing = 3,
 
-    [Description("Kargoya Verildi")]
+    [Description("Shipped")]
     Shipped = 4,
 
-    [Description("Mağazada Alım Bekliyor")] // Mağazada Teslim için.
+    [Description("Waiting In Store")] // Mağazada Teslim için.
     WaitingInStore = 5,
 
-    [Description("Teslim Edildi")]
+    [Description("Delivered")]
     Delivered = 6,
 
-    [Description("İptal Edildi")]
+    [Description("Cancelled")]
     Cancelled = 7,
 
-    [Description("İade Talebi")]
+    [Description("Return Requested")]
     ReturnRequested = 8,
 
-    [Description("İade Edildi")]
+    [Description("Returned")]
     Returned = 9
 }
 
 public enum enmPaymentStatus
 {
-    [Description("Ödeme Bekleniyor")]
+    [Description("Pending")]
     Pending = 0,
 
-    [Description("Ödeme Onaylandı")]
+    [Description("Authorized")]
     Authorized = 1,
 
-    [Description("Ödeme Tamamlandı")]
+    [Description("Paid")]
     Paid = 2,
 
-    [Description("Ödeme Başarısız")]
+    [Description("Failed")]
     Failed = 3,
 
-    [Description("İptal Edildi")]
+    [Description("Cancelled")]
     Cancelled = 4,
 
-    [Description("İade Edildi")]
+    [Description("Refunded")]
     Refunded = 5,
 
-    [Description("Kısmi İade")]
+    [Description("Partially Refunded")]
     PartiallyRefunded = 6
 }
 
 public enum enmReturnStatus
 {
-    [Description("İade Yok")]
+    [Description("None")]
     None = 0,
 
-    [Description("İade Talep Edildi")]
+    [Description("Requested")]
     Requested = 1,
 
-    [Description("İade Onaylandı")]
+    [Description("Approved")]
     Approved = 2,
 
-    [Description("İade Reddedildi")]
+    [Description("Rejected")]
     Rejected = 3,
 
-    [Description("Ürün Teslim Alındı")]
+    [Description("Received")]
     Received = 4,
 
-    [Description("Para İadesi Yapıldı")]
+    [Description("Refunded")]
     Refunded = 5
 }

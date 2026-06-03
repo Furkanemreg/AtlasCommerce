@@ -20,6 +20,9 @@ namespace AtlasCommerce.Application.ViewModels
 
         public List<SaleProductVM>? SelectedProducts { get; set; }
 
+        // RECOMMENDATION SYSTEM OUTPUT
+        public List<SaleProductVM>? RecommendedProducts { get; set; }
+        
         public WebsiteSettingsVM? Settings { get; set; }
         public List<BannerVM>? Banners { get; set; }
     }

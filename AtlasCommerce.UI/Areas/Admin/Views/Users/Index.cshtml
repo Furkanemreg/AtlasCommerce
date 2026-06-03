@@ -2,7 +2,7 @@
 @model PagedResult<AtlasCommerce.Application.ViewModels.AppUserVM>
 
 @{
-    ViewData["Title"] = "Kullanıcılar";
+    ViewData["Title"] = "Users";
     Layout = "_Layout";
 
     var searchTerm = Model.SearchTerm ?? "";
@@ -19,13 +19,13 @@
 <div class="dashboard-wrapper">
     <div class="dashboard-container">
         <div class="dashboard-header">
-            <div class="table-title text-xl font-semibold">Kullanıcılar</div>
+            <div class="table-title text-xl font-semibold">Users</div>
 
             <form method="get" class="custom-search inline-flex">
                 <div class="custom-search">
                     <input name="searchTerm"
                            type="text"
-                           placeholder="Arama Yap"
+                           placeholder="Search"
                            class="table-searchbox"
                            value="@Model.SearchTerm" />
                     <button type="submit" class="search-btn"><i class='bx bx-search'></i></button>
@@ -38,13 +38,13 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th>Kullanıcı Adı</th>
-                        <th>Adı Soyadı</th>
-                        <th>Telefon</th>
-                        <th>Oluşturan Kullanıcı</th>
-                        <th>Oluşturulma Tarihi</th>
-                        <th>Durum</th>
-                        <th>İşlem</th>
+                        <th>User Name</th>
+                        <th>Full Name</th>
+                        <th>Phone Number</th>
+                        <th>Created by User</th>
+                        <th>Creation Date</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,11 +72,11 @@
                                 <td>
                                     @if (item.IsActive)
                                     {
-                                        <span class="status-label status-active">Aktif</span>
+                                        <span class="status-label status-active">Active</span>
                                     }
                                     else
                                     {
-                                        <span class="status-label status-inactive">Pasif</span>
+                                        <span class="status-label status-inactive">Passive</span>
                                     }
                                 </td>
                                 <td class="action-cell">
@@ -89,14 +89,14 @@
                                             {
                                                 <button type="button" class="action-item btn-deactivate" data-id="@item.Id" data-username="@item.UserName"
                                                         data-url="@Url.Action("DeactivateUserAsync", "Users", new { area = "Admin", id = item.Id })">
-                                                    <i class='bx bx-lock'></i> Erişimi Durdur
+                                                    <i class='bx bx-lock'></i> Deactivate User
                                                 </button>
                                             }
                                             else
                                             {
                                                 <button type="button" class="action-item btn-activate" data-id="@item.Id" data-username="@item.UserName"
                                                         data-url="@Url.Action("ActivateUserAsync", "Users", new { area = "Admin", id = item.Id })">
-                                                    <i class='bx bx-key'></i> Erişim Ver
+                                                    <i class='bx bx-key'></i> Activate User
                                                 </button>
                                             }
                                         </li>
@@ -108,7 +108,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">Veri bulunamadı.</td>
+                            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">No data found.</td>
                         </tr>
                     }
                 </tbody>
@@ -221,7 +221,7 @@
                 var username = $(this).data('username');
                 var url = $(this).data('url');
 
-                showConfirmationModal(`'${username}' kullanıcısının erişimini durdurmak istediğinizden emin misiniz?`,
+                showConfirmationModal(`Are you sure you want to block access for the user '${username}' ?`,
                     function () { 
                         $.ajax({
                             url: url,
@@ -232,17 +232,17 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Kullanıcı erişimi durduruldu.');
+                                    toastr.success(response.message || 'User has been deactivated.');
                                     setTimeout(function () {
                                         location.reload();
                                     }, 3000);
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu.');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                             },
                             error: function (xhr, status, error) {
                                 console.error(error);
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }
@@ -254,7 +254,7 @@
                 var username = $(this).data('username');
                 var url = $(this).data('url');
 
-                showConfirmationModal(`'${username}' kullanıcısına erişim vermek istediğinizden emin misiniz?`,
+                showConfirmationModal(`Are you sure you want to grant access to the user '${username}' ?`,
                     function () {
                         $.ajax({
                             url: url,
@@ -265,17 +265,17 @@
                             },
                             success: function (response) {
                                 if (response.success) {
-                                    toastr.success(response.message || 'Kayıt başarıyla kaydedildi');
+                                    toastr.success(response.message || 'User has been activated.');
                                     setTimeout(function () {
                                         location.reload();
                                     }, 3000);
                                 } else {
-                                    toastr.error(response.message || 'Bir hata oluştu');
+                                    toastr.error(response.message || 'An error occured.');
                                 }
                             },
                             error: function (xhr, status, error) {
                                 console.error(error);
-                                toastr.error('Bir hata oluştu. Lütfen tekrar deneyin.');
+                                toastr.error('An error occured. Please try again.');
                             }
                         });
                     }

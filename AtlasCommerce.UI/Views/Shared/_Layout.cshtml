@@ -53,7 +53,7 @@
             <div class="nav-search d-none d-md-flex position-relative" style="width: 280px;">
                 <input id="mainSearchInput"
                        type="text"
-                       placeholder="Ürünlerde Ara..."
+                       placeholder="Search products..."
                        class="form-control pe-5"
                        style="color: gray;" />
                 <i id="mainSearchIcon"
@@ -110,19 +110,19 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountMenu">
                                 <li>
                                     <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Profile">
-                                        <i class="ri-user-3-line me-1"></i> Hesabım
+                                        <i class="ri-user-3-line me-1"></i> My Account
                                     </a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item dropdown-item-options" asp-controller="Account" asp-action="Settings">
-                                        <i class="ri-settings-3-line me-1"></i> Ayarlar
+                                        <i class="ri-settings-3-line me-1"></i> Settings
                                     </a>
                                 </li>
                                 <li><hr class="dropdown-divider" style="color: #343a40;" /></li>
                                 <li>
                                     <form asp-controller="Account" asp-action="Logout" method="post" class="m-0">
                                         <button type="submit" class="dropdown-item text-danger dropdown-item-options">
-                                            <i class="ri-logout-box-line me-1"></i> Çıkış Yap
+                                            <i class="ri-logout-box-line me-1"></i> Logout
                                         </button>
                                     </form>
                                 </li>
@@ -131,8 +131,8 @@
                     }
                     else
                     {
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Giriş Yap</a>
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Kayıt Ol</a>
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-sm btn-outline-custom me-2">Login</a>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-sm btn-custom">Sign Up</a>
                     }
                 </div>
 
@@ -141,7 +141,7 @@
                     <button type="button"
                             id="cacheStatusBtn"
                             class="btn btn-sm btn-light position-relative"
-                            title="Cache Durumu">
+                            title="Cache Status">
                         <i class="fas fa-database"></i>
 
                         <!-- küçük aktif indicator -->
@@ -151,20 +151,20 @@
 
                     <!-- Tooltip -->
                     <span class="absolute top-full right-0 mt-2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-900 text-white text-xs px-3 py-2 rounded shadow w-64 z-50">
-                        Sayfa verileri performans için önbellekten yüklenir.<br /><br />
-                        Güncellemeler cache temizlenene kadar görünmeyebilir.<br /><br />
-                        <b>Cache temizleme</b> ile veriler yeniden oluşturulur.
+                        Page data is loaded from cache for performance.<br /><br />
+                        Updates may not be visible until the cache is cleared.<br /><br />
+                        With <b>Clear Cache</b>, data is regenerated.
                     </span>
 
                     <div id="cachePanel"
                          class="position-absolute bg-white shadow rounded p-2 d-none"
                          style="right:0; top:40px; min-width:180px; z-index:9999;">
 
-                        <div class="small text-muted mb-2">Cache Yönetimi</div>
+                        <div class="small text-muted mb-2">Cache Management</div>
 
                         <button id="clearCacheBtn"
                                 class="btn btn-sm btn-danger w-100">
-                            Önbelleği Temizle
+                            Clear Cache
                         </button>
                     </div>
                 </div>
@@ -209,18 +209,18 @@
             </div>
 
             <div class="footer-links">
-                <h4 style="color: #CFE8FF;">Hızlı Bağlantılar</h4>
+                <h4 style="color: #CFE8FF;">Quick Links</h4>
                 <ul>
-                    <li><a href="/">Anasayfa</a></li>
-                    <li><a asp-controller="Home" asp-action="About">Hakkımızda</a></li>
-                    <li><a asp-controller="Home" asp-action="Services">Hizmetlerimiz</a></li>
-                    <li><a asp-controller="Home" asp-action="Privacy">Gizlilik Politikası</a></li>
-                    <li><a asp-controller="Contact" asp-action="Index">İletişim</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a asp-controller="Home" asp-action="About">About Us</a></li>
+                    <li><a asp-controller="Home" asp-action="Services">Our Services</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></li>
+                    <li><a asp-controller="Contact" asp-action="Index">Contact</a></li>
                 </ul>
             </div>
 
             <div class="footer-contact">
-                <h4 style="color: #CFE8FF;">Bize Ulaşın</h4>
+                <h4 style="color: #CFE8FF;">Contact Us</h4>
                 <ul>
                     <li><i class="ri-map-pin-line"></i> @settings?.Address</li>
                     <li><i class="ri-phone-line"></i> @settings?.PhoneNumber</li>
@@ -252,7 +252,7 @@
 
             <!-- Tooltip -->
             <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
-                Bize Ulaşın
+                Contact Us
             </span>
         </a>
     </div>
@@ -265,7 +265,7 @@
 
             <!-- Tooltip -->
             <span class="absolute right-14 top-1/2 -translate-y-1/2 scale-0 group-hover:scale-100 transition duration-200 bg-gray-800 text-white text-xs px-2 py-1 rounded shadow">
-                WhatsApp İle İletişime Geç
+                Contact via WhatsApp
             </span>
         </a>
     </div>
@@ -305,7 +305,7 @@
             });
 
             if (res.ok) {
-                toastr.success("Önbellek temizlendi. Sayfa yenileniyor...");
+                toastr.success("Cache cleared. Refreshing page...");
                 document.querySelector(".bg-success").classList.remove("bg-success");
                 document.querySelector(".bg-success")?.classList.add("bg-danger");
 
@@ -313,7 +313,7 @@
                     location.reload();
                 }, 3000);
             } else {
-                toastr.error("Önbellek temizlenemedi.");
+                toastr.error("Failed to clear cache.");
             }
         });
     </script>

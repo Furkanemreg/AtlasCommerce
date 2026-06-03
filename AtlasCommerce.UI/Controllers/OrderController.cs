@@ -105,12 +105,32 @@ namespace AtlasCommerce.UI.Controllers
 
             return key;
         }
+        private async Task<List<CartItemVM>> GetCart()
+        {
+            var cartKey = GetCartKey();
+
+            var result = await _cartCacheService.GetAsync(cartKey);
+
+            return result;
+        }
         private async Task SetCart()
         {
             var cart =
                 await _cartCacheService.GetAsync(GetCartKey());
 
             ViewBag.CartItemCount = cart.Sum(x => x.Quantity);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ClearCart()
+        {
+            await _cartCacheService.RemoveAsync(
+                GetCartKey());
+
+            return Json(new
+            {
+                success = true
+            });
         }
         private async Task LoadProductsToDropdown()
         {
@@ -204,7 +224,8 @@ namespace AtlasCommerce.UI.Controllers
 
             return $"**** **** **** {last4}";
         }
-        
+
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var currentUserId = _currentUserService.UserId();
@@ -243,6 +264,7 @@ namespace AtlasCommerce.UI.Controllers
             return View(vm);
         }
 
+        [Authorize]
         public async Task<IActionResult> Success()
         {
             await LoadProductsToDropdown();
@@ -251,24 +273,13 @@ namespace AtlasCommerce.UI.Controllers
             return View();
         }
 
-        // GET CART FROM THE SESSION
-        private List<CartItemVM> GetCart()
-        {
-            var sessionCart = HttpContext.Session.GetString("CartSession");
-
-            if (string.IsNullOrEmpty(sessionCart))
-                return new List<CartItemVM>();
-
-            return JsonConvert.DeserializeObject<List<CartItemVM>>(sessionCart)!;
-        }
-
         // Save Order (DRAFT)
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> SaveDraft()
         {
             var currentUserId = _currentUserService.UserId();
-            var cart = GetCart();
+            var cart = await GetCart();
 
             if (!cart.Any()) 
                 return Json(new { success = false, message = "There are no products in your cart." });
@@ -448,7 +459,7 @@ namespace AtlasCommerce.UI.Controllers
             _memoryCache.Set(cacheKey, true, TimeSpan.FromMinutes(5));
 
             // 3) GET CART
-            var cart = GetCart();
+            var cart = await GetCart();
             if (!cart.Any())
                 return RedirectToAction("Index", "Cart");
 
@@ -553,6 +564,7 @@ namespace AtlasCommerce.UI.Controllers
 
         // PAYMENT successfull => Update ORDER
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CompletePayment(Guid paymentId)
         {
@@ -585,10 +597,13 @@ namespace AtlasCommerce.UI.Controllers
                     return NotFound("Order not found.");
 
                 order.Status = enmOrderStatus.Paid;
+                order.PaymentId = paymentId.ToString();
+                order.PaidAt = DateTime.Now;
 
                 await _baseService.UpdateAsync(order);
                 await _unitOfWork.Commit();
 
+                await ClearCart();
                 HttpContext.Session.Remove("CartSession");
 
                 #region ONAY E-POSTASI
@@ -643,6 +658,7 @@ namespace AtlasCommerce.UI.Controllers
         }
 
         // Order DETAILS
+        [Authorize]
         public async Task<IActionResult> Detail(Guid id)
         {
             await LoadProductsToDropdown();
@@ -721,6 +737,7 @@ namespace AtlasCommerce.UI.Controllers
 
         // PAYMENT OF THE "DRAFT" ORDER
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> StartPayment(Guid orderId)
         {
@@ -760,6 +777,7 @@ namespace AtlasCommerce.UI.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteDraft(Guid orderId)
         {

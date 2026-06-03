@@ -494,10 +494,10 @@
             <div class="cart-title-icon">
                 <i class="fas fa-shopping-cart" style="color:#fff; font-size:14px;"></i>
             </div>
-            Sepetim
+            My Cart
             @if (Model != null && Model.Items.Any())
             {
-                <span class="cart-count-badge" id="itemBadge">@Model.Items.Sum(x => x.Quantity) ürün</span>
+                <span class="cart-count-badge" id="itemBadge">@Model.Items.Sum(x => x.Quantity) items</span>
             }
         </h1>
 
@@ -505,7 +505,7 @@
         {
             <button class="clear-cart-btn" id="clearCartBtn">
                 <i class="fas fa-trash-alt"></i>
-                Sepeti Temizle
+                Clear Cart
             </button>
         }
     </div>
@@ -516,9 +516,9 @@
         <div class="items-panel">
             <div class="empty-state">
                 <div class="empty-icon"><i class="fas fa-shopping-cart"></i></div>
-                <h3>Sepetiniz boş</h3>
-                <p>Ürünleri keşfetmek için alışverişe devam edebilirsiniz.</p>
-                <a asp-controller="Products" asp-action="All" class="shop-now-btn">Alışverişe Başla</a>
+                <h3>Your cart is empty</h3>
+                <p>You can continue shopping to discover products.</p>
+                <a asp-controller="Products" asp-action="All" class="shop-now-btn">Start Shopping</a>
             </div>
         </div>
     }
@@ -534,7 +534,7 @@
 
                         <div>
                             <p class="item-name">@item.Title</p>
-                            <p class="item-meta">Ürün No: @item.ProductCode</p>
+                            <p class="item-meta">Product No: @item.ProductCode</p>
                         </div>
 
                         <div class="qty-control">
@@ -549,15 +549,15 @@
                             <span class="item-price-total" id="rowTotal-@item.ProductId">
                                 ₺ @((item.PriceIncludingTaxes * item.Quantity).ToString("N2"))
                             </span>
-                            <span class="item-price-unit">₺ @item.PriceIncludingTaxes.ToString("N2") / adet</span>
+                            <span class="item-price-unit">₺ @item.PriceIncludingTaxes.ToString("N2") / each</span>
                         </div>
 
                         <div style="display:flex; gap:4px;">
                             <a asp-controller="Products" asp-action="View" asp-route-id="@item.ProductId"
-                               class="view-btn" title="Görüntüle">
+                               class="view-btn" title="View">
                                 <i class="fas fa-eye" style="font-size:13px;"></i>
                             </a>
-                            <button class="del-btn remove-item-btn" data-product-id="@item.ProductId" title="Sil">
+                            <button class="del-btn remove-item-btn" data-product-id="@item.ProductId" title="Delete">
                                 <i class="fas fa-trash" style="font-size:13px;"></i>
                             </button>
                         </div>
@@ -568,10 +568,10 @@
             <!-- Summary Panel -->
             <div class="summary-panel">
                 <div class="summary-card">
-                    <div class="summary-label">Sipariş Özeti</div>
+                    <div class="summary-label">Order Summary</div>
 
                     <div class="summary-row">
-                        <span>Ara Toplam</span>
+                        <span>Subtotal</span>
                         <span class="val" id="cartSubtotal">₺ @Model.BaseTotal.ToString("N2")</span>
                     </div>
 
@@ -579,7 +579,7 @@
                     {
                         <div class="summary-row">
                             <span>
-                                Vergiler
+                                Taxes
                                 <i class="fas fa-circle-info tax-info-icon"
                                    data-bs-toggle="modal"
                                    data-bs-target="#taxDetailModal"></i>
@@ -589,23 +589,10 @@
                     }
 
                     <div class="summary-row grand-total">
-                        <span>Genel Toplam</span>
+                        <span>Total</span>
                         <span class="val" id="cartGrandTotal">₺ @Model.TotalAmount.ToString("N2")</span>
                     </div>
                 </div>
-
-                @* <form asp-controller="Order" asp-action="SaveDraft" method="post" style="display:inline;">
-                    <button type="submit" class="draft-btn">
-                        <i class="fas fa-file"></i>
-                        Taslak Olarak Kaydet
-                    </button>
-                </form>
-
-                <a asp-controller="Checkout" asp-action="Index" class="checkout-btn">
-                    <i class="fas fa-credit-card"></i>
-                    Siparişi Tamamla
-                </a> *@
-
 
                 <form id="saveDraftForm"
                       asp-controller="Order"
@@ -615,18 +602,18 @@
 
                     <button type="button" class="draft-btn" onclick="handleSaveDraft()">
                         <i class="fas fa-file"></i>
-                        Taslak Olarak Kaydet
+                        Save as Draft
                     </button>
                 </form>
 
                 <button type="button" onclick="handleCheckout()" class="checkout-btn">
                     <i class="fas fa-credit-card"></i>
-                    Siparişi Tamamla
+                    Checkout
                 </button>
 
                 <a asp-controller="Home" asp-action="Index" class="continue-link">
                     <i class="fas fa-chevron-left" style="font-size:10px;"></i>
-                    Alışverişe devam et
+                    Continue Shopping
                 </a>
             </div>
         </div>
@@ -639,17 +626,17 @@
         <div class="modal-content" style="border-radius:16px; border:none; overflow:hidden;">
             <div class="modal-header border-0 pb-0">
                 <h5 class="modal-title mb-2" style="font-family:'Syne',sans-serif; font-size:16px; font-weight:600;">
-                    Ürünü sil
+                    Delete Item
                 </h5>
                 <button type="button" class="btn-close btn-close-white mb-1" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" style="font-size:13.5px; color:#555;">
-                Bu ürünü sepetten kaldırmak istediğinize emin misiniz?
+                Are you sure you want to remove this item from your cart?
             </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteBtn" style="border-radius:8px;">
-                    Sil
+                    Delete
                 </button>
             </div>
         </div>
@@ -662,7 +649,7 @@
         <div class="modal-content" style="border-radius:16px; border:none; overflow:hidden;">
             <div class="modal-header border-0" style="background:#185FA5;">
                 <h5 class="modal-title text-white" style="font-family:'Syne',sans-serif; font-size:15px; font-weight:600;">
-                    Vergi Detayları
+                    Tax Details
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -670,20 +657,20 @@
                 @if (Model?.TotalVAT > 0)
                 {
                     <div class="d-flex justify-content-between mb-2" style="font-size:13.5px;">
-                        <span>KDV</span>
+                        <span>VAT</span>
                         <strong id="vatTotalInfo">₺ @Model.TotalVAT.ToString("N2")</strong>
                     </div>
                 }
                 @if (Model?.TotalOTV > 0)
                 {
                     <div class="d-flex justify-content-between mb-2" style="font-size:13.5px;">
-                        <span>ÖTV</span>
+                        <span>Special Consumption Tax</span>
                         <strong id="otvTotalInfo">₺ @Model.TotalOTV.ToString("N2")</strong>
                     </div>
                 }
                 <hr class="my-2" />
                 <div class="d-flex justify-content-between" style="font-size:13.5px;">
-                    <span>Toplam Vergi</span>
+                    <span>Total Tax</span>
                     <strong id="taxTotalInfo">₺ @(Model?.TotalTAX.ToString("N2"))</strong>
                 </div>
             </div>
@@ -697,38 +684,38 @@
         <div class="modal-content" style="border-radius:16px; border:none; overflow:hidden;">
             <div class="modal-header border-0 pb-0 d-flex align-items-center">
                 <h5 class="modal-title mb-2" style="font-family:'Syne',sans-serif; font-size:16px; font-weight:600;">
-                    Sepeti Temizle
+                    Clear Cart
                 </h5>
                 <button type="button" class="btn-close btn-close-white mb-1" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" style="font-size:13.5px; color:#555;">
-                Tüm ürünleri sepetten kaldırmak istediğinize emin misiniz?
+                Are you sure you want to remove all items from your cart?
             </div>
             <div class="modal-footer border-0 pt-0">
-                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">İptal</button>
+                <button type="button" class="btn btn-sm btn-light" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-sm btn-danger" id="confirmClearCartBtn" style="border-radius:8px;">
-                    Temizle
+                    Clear
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Please login in order to continue. -->
+<!-- Login Required Modal -->
 <div class="auth-backdrop" id="authModal">
     <div class="auth-modal">
-        <div class="auth-title">Giriş Gerekli</div>
+        <div class="auth-title">Login Required</div>
         <div class="auth-text">
-            Bu işlemi yapabilmek için giriş yapmanız gerekiyor.
+            You need to log in to perform this action.
         </div>
 
         <div class="auth-actions">
             <a href="/Account/Login?returnUrl=@Context.Request.Path" class="auth-login-btn">
-                Giriş Yap
+                Login
             </a>
 
             <button type="button" onclick="closeAuthModal()" class="auth-close-btn">
-                Kapat
+                Close
             </button>
         </div>
     </div>
@@ -877,9 +864,9 @@
                 <div class="items-panel">
                     <div class="empty-state">
                         <div class="empty-icon"><i class="fas fa-shopping-cart"></i></div>
-                        <h3>Sepetiniz boş</h3>
-                        <p>Ürünleri keşfetmek için alışverişe devam edebilirsiniz.</p>
-                        <a href="/" class="shop-now-btn">Alışverişe Başla</a>
+                        <h3>Your cart is empty</h3>
+                        <p>You can continue shopping to discover products.</p>
+                        <a href="/" class="shop-now-btn">Start Shopping</a>
                     </div>
                 </div>
             `);

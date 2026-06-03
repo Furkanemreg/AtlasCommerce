@@ -3,6 +3,9 @@ using AtlasCommerce.Application;
 using AtlasCommerce.Application.Interfaces;
 using AtlasCommerce.Persistance;
 using Microsoft.AspNetCore.Identity;
+using QuestPDF.Infrastructure;
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 var builder = WebApplication.CreateBuilder(args);
 

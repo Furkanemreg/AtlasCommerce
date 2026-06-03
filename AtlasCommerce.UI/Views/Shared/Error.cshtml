@@ -1,7 +1,7 @@
 ﻿@model ErrorViewModel
 @{
     Layout = null;
-    ViewData["Title"] = "Hata";
+    ViewData["Title"] = "Error";
 }
 
 <head>
@@ -18,7 +18,7 @@
     <div id="notfound">
         <div class="notfound">
             <div class="notfound-404"></div>
-            <h1>HATA</h1>
+            <h1>ERROR</h1>
 
             @if (Model.Message != null)
             {
@@ -27,10 +27,10 @@
             }
             else
             {
-                <h2>Bir şeyler ters gitti.</h2>
-                <p>Rahatsızlıktan dolayı özür dileriz, yaşadığınız hatayla ilgileniyoruz.</p>
+                <h2>Something went wrong.</h2>
+                <p>Sorry for the inconvenience, we are working on the issue.</p>
             }
-            <a href="/">Anasayfaya dön</a>
+            <a href="/">Back to Home</a>
 
         </div>
     </div>

@@ -2,7 +2,7 @@
 @model AtlasCommerce.Application.ViewModels.PaymentListVM
 
 @{
-    ViewData["Title"] = "Ödemelerim";
+    ViewData["Title"] = "Payments";
 }
 
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -231,8 +231,8 @@
                     <line x1="1" y1="10" x2="23" y2="10" />
                 </svg>
             </div>
-            Ödemelerim
-            <span class="ol-count-badge">@Model.Payments.Count Ödeme</span>
+            My Payments
+            <span class="ol-count-badge">@Model.Payments.Count Payments</span>
         </h1>
     </div>
 
@@ -240,11 +240,11 @@
         <table class="ol-table">
             <thead>
                 <tr>
-                    <th>Kart</th>
-                    <th>Sipariş</th>
-                    <th>Tarih</th>
-                    <th>Durum</th>
-                    <th class="text-right">Tutar</th>
+                    <th>Card</th>
+                    <th>Order</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th class="text-right">Amount</th>
                     <th></th>
                 </tr>
             </thead>
@@ -293,7 +293,7 @@
                             <span class="ol-amount">₺ @p.Amount.ToString("N2")</span>
                         </td>
                         <td class="td-right">
-                            <a href="/Order/Detail/@p.OrderId" class="detail-btn">Siparişe Git</a>
+                            <a href="/Order/Detail/@p.OrderId" class="detail-btn">View Order</a>
                         </td>
                     </tr>
                 }

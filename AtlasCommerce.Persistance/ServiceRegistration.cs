@@ -54,8 +54,10 @@ namespace AtlasCommerce.Persistance
             services.AddScoped<IImageService, ImageService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IOrderService, OrderService>();
             services.AddScoped<IDashboardService, DashboardService>();
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IRecommendationService, RecommendationService>();
 
             #region Caching
             services.AddStackExchangeRedisCache(options =>

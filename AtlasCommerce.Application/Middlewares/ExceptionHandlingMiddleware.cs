@@ -32,8 +32,8 @@ namespace AtlasCommerce.Application.Middlewares
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Bir hata oluştu: {ex}");
-                Log.Error(ex, "Bir hata oluştu.");
+                Console.WriteLine($"An error occured: {ex}");
+                Log.Error(ex, "BAn error occured.");
                 if (!context.Response.HasStarted)
                 {
                     context.Response.Clear();

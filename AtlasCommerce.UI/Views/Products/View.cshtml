@@ -145,7 +145,7 @@
                 <p class="mt-2 text-sm text-gray-600">@Model?.ShortDescription</p>
 
                 <div class="mt-6">
-                    <h2 class="text-sm font-bold text-gray-900">Açıklama</h2>
+                    <h2 class="text-sm font-bold text-gray-900">Description</h2>
                     <p class="mt-2 text-base text-gray-600">@Model?.Description</p>
                 </div>
             </div>
@@ -181,7 +181,7 @@
                     <!-- Renk -->
                     <fieldset>
                         <label class="group relative flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-4 py-3">
-                            <span class="text-sm font-medium text-gray-900">Renk</span>
+                            <span class="text-sm font-medium text-gray-900">Color</span>
                             <input type="radio" disabled class="absolute inset-0 appearance-none focus:outline-none disabled:cursor-not-allowed" />
                             <span class="text-sm font-medium text-gray-700 group-has-checked:text-white">
                                 <div class="flex items-center gap-x-3">
@@ -219,14 +219,14 @@
                     <!-- Diğer Özellikler -->
                     @foreach (var item in new[] {
                         new {
-                            Label = "Ağırlık",
+                            Label = "Weight",
                             Value = Model.Weight < 1
                                 ? $"{(Model.Weight * 1000):N0} gr"
                                 : $"{Model.Weight:N2} kg"
                         },
-                        new { Label = "Yükseklik", Value = $"{Model.Height:N2} cm" },
-                        new { Label = "Genişlik", Value = $"{Model.Width:N2} cm" },
-                        new { Label = "Derinlik", Value = $"{Model.Lenght:N2} cm" },
+                        new { Label = "Height", Value = $"{Model.Height:N2} cm" },
+                        new { Label = "Width", Value = $"{Model.Width:N2} cm" },
+                        new { Label = "Depth", Value = $"{Model.Lenght:N2} cm" },
                         })
                     {
                         <fieldset>
@@ -244,7 +244,7 @@
                     <a href="@($"https://wa.me/{phoneNumber}?text={Uri.EscapeDataString($"Merhaba, size web sitenizden ulaşıyorum. {Model.Title} ürünü hakkında bilgi almak istiyorum.")}")"
                        target="_blank" rel="noopener"
                        class="flex w-full items-center justify-center rounded-md border border-transparent px-8 py-3 text-sm font-medium text-white focus:ring-2 focus:ring-offset-2 focus:outline-hidden bg-green-600 hover:bg-green-700">
-                        <i class="fab fa-whatsapp me-2"></i> Bilgi Al
+                        <i class="fab fa-whatsapp me-2"></i> Get Information
                     </a>
 
                     <div class="flex w-full gap-4">
@@ -260,7 +260,7 @@
                         <button id="btnAddProductToBag" type="button"
                                 class="flex-1 flex items-center justify-center rounded-md border border-transparent px-6 py-3 text-sm font-medium text-white bg-red-600 hover:bg-red-700"
                                 onclick="addToCart('@Model.Id')">
-                            <i class="fas fa-shopping-cart me-2"></i> Sepete Ekle
+                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
                         </button>
                     </div>
                 </div>
@@ -270,26 +270,6 @@
     </div>
 </div>
 
-<div class="card" style="border-top-left-radius:0">
-    <div class="card-body">
-        <!-- Modal -->
-        <div class="modal fade" id="comingSoonModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Pek Yakında! 🚀</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
-                    </div>
-                    <div class="modal-body text-center">
-                        <i class="fas fa-clock fa-3x text-warning mb-3"></i>
-                        <p>E-Ticaret modülümüz çok yakında hizmetinizde olacaktır.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</div>
 @section Scripts {
     <script>
         const swiper = new Swiper('.mySwiper', {
@@ -339,7 +319,7 @@
                 success: function (res) {
                     if (res.success) {
                         $('#cartItemCount').text(res.cartCount);
-                        toastr.success('Ürünler sepete eklendi.');
+                        toastr.success('Products added to cart.');
                     }
                 }
             });
