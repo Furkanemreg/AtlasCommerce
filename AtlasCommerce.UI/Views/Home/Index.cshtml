@@ -5,127 +5,221 @@
     ViewData["Title"] = Model?.Settings?.BrandName;
 }
 
-<!-- Kampanya Slayt Gösterisi -->
-@* <div class="container-campaign">
-    <div id="campaignCarousel" class="carousel slide" data-bs-ride="carousel">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#campaignCarousel" data-bs-slide-to="0" class="active" aria-current="true"></button>
-            <button type="button" data-bs-target="#campaignCarousel" data-bs-slide-to="1"></button>
-            <button type="button" data-bs-target="#campaignCarousel" data-bs-slide-to="2"></button>
-        </div>
+<style>
+    /* ── HERO ─────────────────────────────── */
+    .hero {
+        position: relative;
+        width: 100%;
+        height: 90vh;
+        min-height: 580px;
+        overflow: hidden;
+        background: var(--navy);
+    }
 
+    /* Slides */
+    .hero-slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 1s ease;
+    }
 
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <div class="d-flex justify-content-center align-items-center h-100">
-                <div class="carousel-card">
-                    <a asp-controller="Home" asp-action="Services">
-                        <img src="~/img/banner-1.jpeg" class="carousel-img">
+    .hero-slide.active {
+        opacity: 1;
+    }
 
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5></h5>
-                            <p></p>
-                        </div>
+    .hero-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.3;
+        transform: scale(1.04);
+        transition: transform 9s ease;
+        display: block;
+    }
 
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="d-flex justify-content-center align-items-center h-100">
-                <div class="carousel-card">
-                    <a asp-controller="Home" asp-action="Services">
-                        <img src="~/img/banner-2.jpeg" class="carousel-img">
+    .hero-slide.active img {
+        transform: scale(1);
+    }
 
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5></h5>
-                            <p></p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="d-flex justify-content-center align-items-center h-100">
-                <div class="carousel-card">
-                    <a asp-controller="Home" asp-action="Services">
-                        <img src="~/img/banner-4.jpeg" class="carousel-img">
-                        <div class="carousel-caption d-none d-md-block">
-                            <h5></h5>
-                            <p></p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient( to right, rgba(17,24,39,0.92) 0%, rgba(17,24,39,0.55) 50%, rgba(17,24,39,0.15) 100% );
+        z-index: 1;
+    }
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#campaignCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon icon-white-prev"></span>
-            <span class="visually-hidden">Önceki</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#campaignCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon icon-white-next"></span>
-            <span class="visually-hidden">Sonraki</span>
-        </button>
-    </div>
-</div>
-</div> *@
+    /* Content */
+    .hero-body {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 0 8vw;
+        max-width: 680px;
+    }
 
+    .hero-eyebrow {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.45);
+        margin-bottom: 20px;
+        animation: up 0.7s 0.1s both;
+    }
+
+    .hero-title {
+        font-family: 'DM Serif Display', serif;
+        font-size: clamp(2.8rem, 5.5vw, 5rem);
+        font-weight: 400;
+        line-height: 1.05;
+        color: rgba(255,255,255,0.55);
+        margin-bottom: 20px;
+        animation: up 0.7s 0.25s both;
+    }
+
+    .hero-title em {
+        font-style: italic;
+        color: rgba(255,255,255,0.55);
+    }
+
+    .hero-sub {
+        font-size: 15px;
+        font-weight: 300;
+        color: rgba(255,255,255,0.45);
+        line-height: 1.7;
+        max-width: 380px;
+        margin-bottom: 40px;
+        animation: up 0.7s 0.38s both;
+    }
+
+    .hero-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 30px;
+        background: var(--white);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        transition: background 0.25s var(--ease), color 0.25s var(--ease), transform 0.25s var(--ease);
+        animation: up 0.7s 0.5s both;
+        width: fit-content;
+    }
+
+    .hero-cta:hover {
+        background: var(--accent);
+        color: #3264a8;
+        transform: translateX(4px);
+    }
+
+    /* Nav */
+    .hero-nav {
+        position: absolute;
+        bottom: 36px;
+        right: 5vw;
+        z-index: 3;
+        display: flex;
+        gap: 8px;
+    }
+
+    .hero-btn {
+        width: 44px;
+        height: 44px;
+        border: 1px solid rgba(255,255,255,0.18);
+        background: transparent;
+        color: rgba(255,255,255,0.6);
+        font-size: 17px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .hero-btn:hover {
+        background: var(--white);
+        color: var(--navy);
+        border-color: var(--white);
+    }
+
+    /* Counter */
+    .hero-count {
+        position: absolute;
+        bottom: 48px;
+        left: 8vw;
+        z-index: 3;
+        font-size: 12px;
+        color: rgba(255,255,255,0.3);
+        letter-spacing: 0.1em;
+    }
+
+    .hero-count strong {
+        color: rgba(255,255,255,0.75);
+        font-size: 18px;
+        font-weight: 300;
+    }
+</style>
+
+@* ─── HERO ──────────────────────────────────── *@
 @if (Model?.Banners != null && Model.Banners.Any())
 {
-    <div class="container-campaign">
-        <div id="campaignCarousel" class="carousel slide" data-bs-ride="carousel">
-
-            <!-- Göstergeler (indikatorler) -->
-            <div class="carousel-indicators">
-                @for (int i = 0; i < Model.Banners.Count; i++)
-                {
-                    <button type="button"
-                            data-bs-target="#campaignCarousel"
-                            data-bs-slide-to="@i"
-                            class="@(i == 0 ? "active" : "")"
-                            aria-current="@(i == 0 ? "true" : "false")"></button>
-                }
+    <div class="hero" id="heroEl">
+        @{
+            int bi = 0;
+        }
+        @foreach (var banner in Model.Banners)
+        {
+            <div class="hero-slide @(bi == 0 ? "active" : "")" data-i="@bi">
+                <img src="@Url.Content(string.IsNullOrEmpty(banner.ImagePath) ? "~/img/placeholder.jpg" : banner.ImagePath)"
+                     alt="@banner.Title" />
             </div>
+            bi++;
+        }
 
-            <!-- Slaytlar -->
-            <div class="carousel-inner">
-                @{
-                    var index = 0;
-                }
-                @foreach (var banner in Model.Banners)
-                {
-                    <div class="carousel-item @(index == 0 ? "active" : "")">
-                        <div class="d-flex justify-content-center align-items-center h-100">
-                            <div class="carousel-card">
-                                <a asp-controller="Home" asp-action="Services">
-                                    <img src="@Url.Content(string.IsNullOrEmpty(banner.ImagePath) ? "~/img/placeholder.jpg" : banner.ImagePath)"
-                                         class="carousel-img"
-                                         alt="@banner.Title" />
-                                    <div class="carousel-caption">
-                                        <h5>@banner.Title</h5>
-                                        <p>@banner.Text</p>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    index++;
-                }
-            </div>
+        <div class="hero-overlay"></div>
 
-            <!-- Kontroller -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#campaignCarousel" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon icon-white-prev"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#campaignCarousel" data-bs-slide="next">
-                <span class="carousel-control-next-icon icon-white-next"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+        <div class="hero-body">
+            <div class="hero-eyebrow">Istanbul Atlas University</div>
+            <h1 class="hero-title">Atlas <em>Commerce</em></h1>
+            <p class="hero-sub">Official digital commerce platform of Istanbul Atlas University.</p>
+            <a asp-controller="Products" asp-action="All" class="hero-cta">Shop Now &rarr;</a>
+        </div>
+
+        <div class="hero-count">
+            <strong id="hCur">01</strong> / @Model.Banners.Count.ToString("D2")
+        </div>
+
+        <div class="hero-nav">
+            <button class="hero-btn" id="hPrev">&#8592;</button>
+            <button class="hero-btn" id="hNext">&#8594;</button>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var slides = document.querySelectorAll('#heroEl .hero-slide');
+            var cur = document.getElementById('hCur');
+            var n = slides.length, i = 0, t;
+            function go(x) {
+                slides[i].classList.remove('active');
+                i = (x + n) % n;
+                slides[i].classList.add('active');
+                cur.textContent = String(i + 1).padStart(2, '0');
+            }
+            function reset() { clearInterval(t); t = setInterval(function () { go(i + 1); }, 5500); }
+            document.getElementById('hNext').onclick = function () { go(i + 1); reset(); };
+            document.getElementById('hPrev').onclick = function () { go(i - 1); reset(); };
+            reset();
+        })();
+    </script>
 }
+
 @if (Model?.RecommendedProducts != null && Model.RecommendedProducts.Any())
 {
     <section class="home-products recommended-section">

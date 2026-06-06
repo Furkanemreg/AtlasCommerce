@@ -1,57 +1,305 @@
-﻿@model AtlasCommerce.Application.ViewModels.EmptyVM
+﻿<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 
+@model AtlasCommerce.Application.ViewModels.EmptyVM
 @{
     ViewData["Title"] = "Privacy Policy";
-
     var emailAddress = Model?.Settings?.EmailAddress;
     var mailto = "mailto:" + Model?.Settings?.EmailAddress;
 }
 
 <style>
-    h4 {
-        color: #dc3545;
+    :root {
+        --ink: #0e0e11;
+        --surface: #f5f4f0;
+        --card: #ffffff;
+        --accent: #337ab7;
+        --accent-dark: #1d4466;
+        --accent-light: rgba(51, 122, 183, 0.08);
+        --muted: #9a9a9a;
+        --border: #e8e7e3;
+        --radius: 20px;
+        --radius-sm: 12px;
+    }
+
+    .pp-shell {
+        min-height: 100vh;
+        background: var(--surface);
+        font-family: 'DM Sans', sans-serif;
+        padding: 64px 16px 80px;
+    }
+
+    .pp-container {
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    /* ── Hero ── */
+    .pp-hero {
+        text-align: center;
+        margin-bottom: 40px;
+        animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .pp-eyebrow {
+        font-family: 'Syne', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 10px;
+    }
+
+    .pp-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(28px, 5vw, 40px);
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 14px;
+    }
+
+    .pp-subtitle {
+        font-size: 15px;
+        color: var(--muted);
+        font-weight: 400;
+        max-width: 440px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* ── Card ── */
+    .pp-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+        overflow: hidden;
+        animation: fadeUp 0.55s 0.08s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .pp-card::before {
+        content: '';
+        display: block;
+        height: 5px;
+        background: linear-gradient(90deg, var(--ink) 0%, var(--accent) 100%);
+    }
+
+    /* ── Sections ── */
+    .pp-section {
+        padding: 28px 40px;
+        border-bottom: 1px solid var(--border);
+        display: grid;
+        grid-template-columns: 40px 1fr;
+        gap: 0 18px;
+        align-items: start;
+        transition: background 0.18s ease;
+    }
+
+    .pp-section:last-of-type { border-bottom: none; }
+
+    .pp-section:hover { background: var(--surface); }
+
+    .section-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        background: var(--accent-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Syne', sans-serif;
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--accent);
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+
+    .section-content { min-width: 0; }
+
+    .section-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+        margin-bottom: 8px;
+    }
+
+    .section-body {
+        font-size: 14px;
+        color: #4a4a55;
+        line-height: 1.75;
+    }
+
+    .section-body ul {
+        margin: 8px 0 0 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .section-body ul li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .section-body ul li::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        flex-shrink: 0;
+        margin-top: 8px;
+    }
+
+    /* Contact section */
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--accent);
+        font-weight: 600;
+        text-decoration: none;
+        border-bottom: 1.5px solid transparent;
+        transition: border-color 0.18s ease, color 0.18s ease;
+        margin-top: 6px;
+    }
+
+    .contact-link:hover {
+        color: var(--accent-dark);
+        border-color: var(--accent-dark);
+    }
+
+    /* ── Footer strip ── */
+    .pp-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 40px;
+        border-top: 1px solid var(--border);
+        background: var(--surface);
+    }
+
+    .footer-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+    }
+
+    .footer-badge i { font-size: 14px; color: var(--accent); }
+
+    .footer-date {
+        font-size: 12px;
+        color: var(--muted);
+    }
+
+    @@media (max-width: 560px) {
+        .pp-section { padding: 22px 20px; }
+        .pp-footer   { padding: 16px 20px; flex-direction: column; gap: 6px; text-align: center; }
     }
 </style>
 
-<section class="py-5 bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h1 class="fw-bold text-3xl text-uppercase">Privacy Policy</h1><br />
-            <p class="text-muted">The privacy and security of your personal data is important to us.</p>
+<div class="pp-shell">
+    <div class="pp-container">
+
+        <!-- Hero -->
+        <div class="pp-hero">
+            <p class="pp-eyebrow">Legal</p>
+            <h1 class="pp-title">Privacy Policy</h1>
+            <p class="pp-subtitle">The privacy and security of your personal data is important to us.</p>
         </div>
 
-        <div class="bg-white rounded shadow-sm p-4">
-            <h4 class="fw-bold mb-3">1. Collected Information</h4>
-            <p>When you visit our website, certain personal information (such as Name, Email, IP address) may be collected. This information is used solely to improve service quality and for communication purposes.</p>
+        <!-- Card -->
+        <div class="pp-card">
 
-            <h4 class="fw-bold mt-4 mb-3">2. Use of Information</h4>
-            <p>The information we collect may be used for the following purposes:</p>
-            <ul>
-                <li>To provide services and fulfill your requests</li>
-                <li>To offer customer support</li>
-                <li>To improve our website and user experience</li>
-                <li>To comply with legal obligations</li>
-            </ul>
+            <div class="pp-section">
+                <div class="section-number">1</div>
+                <div class="section-content">
+                    <div class="section-title">Collected Information</div>
+                    <div class="section-body">When you visit our website, certain personal information (such as Name, Email, IP address) may be collected. This information is used solely to improve service quality and for communication purposes.</div>
+                </div>
+            </div>
 
-            <h4 class="fw-bold mt-4 mb-3">3. Information Sharing</h4>
-            <p>Your personal information is never shared, sold, or rented to third parties. It is only shared with official authorities when legally required.</p>
+            <div class="pp-section">
+                <div class="section-number">2</div>
+                <div class="section-content">
+                    <div class="section-title">Use of Information</div>
+                    <div class="section-body">
+                        The information we collect may be used for the following purposes:
+                        <ul>
+                            <li>To provide services and fulfill your requests</li>
+                            <li>To offer customer support</li>
+                            <li>To improve our website and user experience</li>
+                            <li>To comply with legal obligations</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-            <h4 class="fw-bold mt-4 mb-3">4. Cookies</h4>
-            <p>Our website may use cookies to improve user experience. You can disable or delete cookies through your browser settings.</p>
+            <div class="pp-section">
+                <div class="section-number">3</div>
+                <div class="section-content">
+                    <div class="section-title">Information Sharing</div>
+                    <div class="section-body">Your personal information is never shared, sold, or rented to third parties. It is only shared with official authorities when legally required.</div>
+                </div>
+            </div>
 
-            <h4 class="fw-bold mt-4 mb-3">5. Security</h4>
-            <p>The security of your personal data is our priority. Your data is protected using modern security protocols.</p>
+            <div class="pp-section">
+                <div class="section-number">4</div>
+                <div class="section-content">
+                    <div class="section-title">Cookies</div>
+                    <div class="section-body">Our website may use cookies to improve user experience. You can disable or delete cookies through your browser settings.</div>
+                </div>
+            </div>
 
-            <h4 class="fw-bold mt-4 mb-3">6. Your Rights</h4>
-            <p>You have the right to access, correct, delete, and object to the processing of your personal data. You can contact us for your requests.</p>
+            <div class="pp-section">
+                <div class="section-number">5</div>
+                <div class="section-content">
+                    <div class="section-title">Security</div>
+                    <div class="section-body">The security of your personal data is our priority. Your data is protected using modern security protocols.</div>
+                </div>
+            </div>
 
-            <h4 class="fw-bold mt-4 mb-3">7. Contact</h4>
-            <p>
-                For questions regarding this privacy policy, you can contact us via email:
-                <a href="@mailto" style="text-decoration: none;"><strong>@emailAddress</strong></a>
-            </p><br />
+            <div class="pp-section">
+                <div class="section-number">6</div>
+                <div class="section-content">
+                    <div class="section-title">Your Rights</div>
+                    <div class="section-body">You have the right to access, correct, delete, and object to the processing of your personal data. You can contact us for your requests.</div>
+                </div>
+            </div>
 
-            <p class="text-muted mt-5"><small>Last Updated: 01.06.2025</small></p>
+            <div class="pp-section">
+                <div class="section-number">7</div>
+                <div class="section-content">
+                    <div class="section-title">Contact</div>
+                    <div class="section-body">
+                        For questions regarding this privacy policy, reach us at:
+                        <br />
+                        <a href="@mailto" class="contact-link">
+                            <i class='bx bx-envelope'></i>
+                            @emailAddress
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer strip -->
+            <div class="pp-footer">
+                <span class="footer-badge"><i class='bx bx-shield-quarter'></i> Compliant &amp; Secure</span>
+                <span class="footer-date">Last Updated: 01.06.2025</span>
+            </div>
+
         </div>
     </div>
-</section>
+</div>

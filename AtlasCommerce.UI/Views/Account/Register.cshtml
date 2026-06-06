@@ -1,102 +1,213 @@
 ﻿@model AtlasCommerce.Application.ViewModels.RegisterVM
+
 @{
     var logoPath = Model?.Settings?.LogoPath;
 
     var title = "Sign Up";
-    if (!string.IsNullOrEmpty(Model?.Settings?.BrandName)) title += $" - {Model.Settings.BrandName}";
-    ViewData["Title"] = title;
+    if (!string.IsNullOrEmpty(Model?.Settings?.BrandName))
+        title += $" - {Model.Settings.BrandName}";
 
+    ViewData["Title"] = title;
     Layout = "_RegisterLayout";
 }
 
-<div class="flex flex-col justify-center min-h-screen py-12 bg-gray-50 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="mt-6 flex justify-center">
-            <img src="@logoPath" style="width: 200px;" />
-        </div>
-    </div>
+<style>
+    :root {
+        --bg: #f3f4f6;
+        --card: #ffffff;
+        --text: #111827;
+        --muted: #6b7280;
+        --primary: #378ADD;
+        --danger: #dc2626;
+        --radius: 14px;
+    }
 
-    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="px-4 py-8 bg-white shadow sm:rounded-lg sm:px-10">
+    .register-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg);
+        font-family: system-ui, sans-serif;
+        padding: 24px;
+    }
+
+    .register-box {
+        width: 100%;
+        max-width: 480px;
+    }
+
+    .register-logo {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 24px;
+    }
+
+    .register-logo img {
+        max-width: 180px;
+        object-fit: contain;
+    }
+
+    .register-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        padding: 28px;
+        border: 1px solid rgba(0,0,0,.06);
+        box-shadow: 0 10px 25px rgba(0,0,0,.06);
+    }
+
+    .title {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 18px;
+        color: var(--text);
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .field label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    .input {
+        width: 100%;
+        padding: 11px 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,.12);
+        outline: none;
+        transition: .2s;
+        font-size: 14px;
+    }
+
+    .input:focus {
+        border-color: var(--primary);
+    }
+
+    .error {
+        font-size: 12px;
+        color: var(--danger);
+        margin-top: 4px;
+    }
+
+    .validation {
+        font-size: 13px;
+        color: var(--danger);
+        margin-top: 10px;
+        text-align: center;
+    }
+
+    .btn {
+        width: 100%;
+        margin-top: 16px;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .btn:hover {
+        opacity: .9;
+    }
+
+    .footer {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 13px;
+    }
+
+    .footer a {
+        color: var(--primary);
+        text-decoration: none;
+    }
+</style>
+
+<div class="register-wrap">
+
+    <div class="register-box">
+
+        <div class="register-logo">
+            <img src="@logoPath" />
+        </div>
+
+        <div class="register-card">
+
+            <div class="title">Create Account</div>
+
             <form asp-controller="Account" asp-action="Register" method="post">
                 @Html.AntiForgeryToken()
 
-                <div class="grid grid-cols-1 gap-6">
+                <div class="grid">
 
-                    <div>
-                        <label asp-for="FirstName" class="block text-sm font-medium theme-label">First Name *</label>
-                        <input asp-for="FirstName" placeholder="First name"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="FirstName" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="FirstName">First Name *</label>
+                        <input asp-for="FirstName" class="input" placeholder="First name" />
+                        <span asp-validation-for="FirstName" class="error"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="LastName" class="block text-sm font-medium theme-label">Last Name *</label>
-                        <input asp-for="LastName" placeholder="Last name"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="LastName" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="LastName">Last Name *</label>
+                        <input asp-for="LastName" class="input" placeholder="Last name" />
+                        <span asp-validation-for="LastName" class="error"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="UserName" class="block text-sm font-medium theme-label">Username *</label>
-                        <input asp-for="UserName" placeholder="Username"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="UserName" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="UserName">Username *</label>
+                        <input asp-for="UserName" class="input" placeholder="Username" />
+                        <span asp-validation-for="UserName" class="error"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="Email" class="block text-sm font-medium theme-label">Email Address *</label>
-                        <input asp-for="Email" type="email" placeholder="example@mail.com"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="Email">Email *</label>
+                        <input asp-for="Email" type="email" class="input" placeholder="example@mail.com" />
+                        <span asp-validation-for="Email" class="error"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="PhoneNumber" class="block text-sm font-medium theme-label">Phone *</label>
-                        <input asp-for="PhoneNumber" placeholder="Phone number"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="PhoneNumber" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="PhoneNumber">Phone *</label>
+                        <input asp-for="PhoneNumber" class="input" placeholder="Phone number" />
+                        <span asp-validation-for="PhoneNumber" class="error"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="Password" class="block text-sm font-medium theme-label">Password *</label>
-                        <input asp-for="Password" type="password" placeholder="Password"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="Password">Password *</label>
+                        <input asp-for="Password" type="password" class="input" placeholder="Password" />
+                        <span asp-validation-for="Password" class="error"></span>
                     </div>
 
-                    <div>
-                        <label asp-for="ConfirmPassword" class="block text-sm font-medium theme-label">Confirm Password *</label>
-                        <input asp-for="ConfirmPassword" type="password" placeholder="Confirm password"
-                               class="theme-input block w-full rounded-md px-3 py-1.5 text-base sm:text-sm" />
-                        <span asp-validation-for="ConfirmPassword" class="text-red-500 text-sm"></span>
+                    <div class="field">
+                        <label asp-for="ConfirmPassword">Confirm Password *</label>
+                        <input asp-for="ConfirmPassword" type="password" class="input" placeholder="Confirm password" />
+                        <span asp-validation-for="ConfirmPassword" class="error"></span>
                     </div>
 
                 </div>
 
-                <div class="text-center my-3">
-                    <div class="text-danger" asp-validation-summary="All"></div>
+                <div asp-validation-summary="All" class="validation"></div>
+
+                <button type="submit" class="btn">Sign Up</button>
+
+                <div class="footer">
+                    Already have an account?
+                    <a asp-action="Login" asp-controller="Account">Sign In</a>
                 </div>
 
-                <div class="mt-6">
-                    <span class="block w-full rounded-md shadow-sm">
-                        <button type="submit"
-                                class="primary-btn flex justify-center w-full px-4 py-2 text-sm font-medium border border-transparent rounded-md focus:outline-none transition duration-150 ease-in-out">
-                            Sign Up
-                        </button>
-                    </span>
-                </div>
-
-                <div class="flex items-center justify-center mt-6">
-                    <p class="text-sm text-gray-600">
-                        Already have an account?
-                        <a asp-action="Login" asp-controller="Account"
-                           class="font-medium text-indigo-600 hover:text-indigo-500">
-                            Sign In
-                        </a>
-                    </p>
-                </div>
             </form>
+
         </div>
+
     </div>
+
 </div>

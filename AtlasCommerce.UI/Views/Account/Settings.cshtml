@@ -3,11 +3,9 @@
 @using AtlasCommerce.Application.Interfaces
 @inject ICurrentUserService _currentUserService
 @model AtlasCommerce.Application.ViewModels.EmptyVM
-
 @{
     Layout = "_Layout";
     ViewData["Title"] = "Account Settings";
-
     var firstName = _currentUserService.FirstName();
     var lastName = _currentUserService.LastName();
     var userName = _currentUserService.UserName();
@@ -15,93 +13,460 @@
     var phoneNumber = _currentUserService.PhoneNumber();
 }
 
-<div class="flex flex-col justify-center py-12 bg-gray-50 sm:px-6 lg:px-8">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="px-6 py-8 bg-white shadow sm:rounded-lg sm:px-10">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4 text-center profile-title">
+<style>
+    :root {
+        --ink: #0e0e11;
+        --surface: #f5f4f0;
+        --card: #ffffff;
+        --accent: #337ab7;
+        --accent-dark: #1d4466;
+        --accent-light: rgba(51, 122, 183, 0.08);
+        --muted: #9a9a9a;
+        --border: #e8e7e3;
+        --danger: #e05252;
+        --radius: 20px;
+        --radius-sm: 12px;
+        --radius-xs: 8px;
+    }
+
+    .settings-shell {
+        min-height: 100vh;
+        background: var(--surface);
+        font-family: 'DM Sans', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 48px 16px;
+    }
+
+    .settings-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 12px 48px rgba(0,0,0,0.10);
+        width: 100%;
+        max-width: 440px;
+        overflow: hidden;
+        animation: fadeUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    .settings-card::before {
+        content: '';
+        display: block;
+        height: 5px;
+        background: linear-gradient(90deg, var(--ink) 0%, var(--accent) 100%);
+    }
+
+    .card-header {
+        padding: 32px 36px 24px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .header-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    .header-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -0.03em;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header-title i {
+        font-size: 20px;
+        color: var(--accent);
+    }
+
+    /* Form body */
+    .card-body {
+        padding: 28px 36px 32px;
+    }
+
+    .fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px 16px;
+    }
+
+    .field-full { grid-column: 1 / -1; }
+
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .field-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        padding-left: 2px;
+    }
+
+    .field-wrap {
+        position: relative;
+    }
+
+    .field-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: var(--muted);
+        pointer-events: none;
+        transition: color 0.18s ease;
+    }
+
+    .field-input {
+        width: 100%;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-xs);
+        padding: 10px 12px 10px 36px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--ink);
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        outline: none;
+        box-sizing: border-box;
+    }
+
+    .field-input:focus {
+        border-color: var(--accent);
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(51, 122, 183, 0.12);
+    }
+
+    .field-input:focus + .field-icon,
+    .field-wrap:focus-within .field-icon {
+        color: var(--accent);
+    }
+
+    .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 22px 0;
+        position: relative;
+    }
+
+    .divider-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--card);
+        padding: 0 10px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+        white-space: nowrap;
+    }
+
+    /* Password field with toggle */
+    .pw-toggle {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 17px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        transition: color 0.18s;
+    }
+
+    .pw-toggle:hover { color: var(--ink); }
+
+    .field-input.has-toggle { padding-right: 38px; }
+
+    /* Save button */
+    .btn-save { 
+        width: 100%;
+        background: var(--accent-dark) !important;
+        color: #fff;
+        border: none !important;
+        border-radius: var(--radius-xs);
+        padding: 13px 20px;
+        font-family: 'Syne', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+        margin-top: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-save:hover {
+        background: #1c1c22;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-save:active { transform: translateY(0); }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(14,14,17,0.55);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 50;
+        padding: 16px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .modal-box {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+        width: 100%;
+        max-width: 380px;
+        overflow: hidden;
+        transform: translateY(16px) scale(0.97);
+        transition: transform 0.28s cubic-bezier(0.22,1,0.36,1);
+    }
+
+    .modal-overlay.active .modal-box {
+        transform: translateY(0) scale(1);
+    }
+
+    .modal-box::before {
+        content: '';
+        display: block;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+    }
+
+    .modal-header {
+        padding: 24px 28px 16px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -0.02em;
+    }
+
+    .modal-subtitle {
+        font-size: 12.5px;
+        color: var(--muted);
+        margin-top: 3px;
+    }
+
+    .modal-body {
+        padding: 20px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .modal-footer {
+        padding: 16px 28px 24px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-cancel {
+        flex: 1;
+        background: var(--surface);
+        border: 1.5px solid var(--border);
+        border-radius: var(--radius-xs);
+        padding: 11px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: var(--ink);
+        cursor: pointer;
+        transition: background 0.18s;
+    }
+
+    .btn-cancel:hover { background: var(--border); }
+
+    .btn-confirm {
+        flex: 2;
+        background: var(--accent);
+        border: none;
+        border-radius: var(--radius-xs);
+        padding: 11px;
+        font-family: 'Syne', sans-serif;
+        font-size: 13.5px;
+        font-weight: 700;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.18s ease, transform 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .btn-confirm:hover {
+        background: var(--accent-dark);
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="settings-shell">
+    <div class="settings-card">
+
+        <!-- Header -->
+        <div class="card-header">
+            <p class="header-label">Configuration</p>
+            <div class="header-title">
                 <i class='bx bx-cog'></i>
                 Account Settings
-            </h2>
+            </div>
+        </div>
 
+        <!-- Form -->
+        <div class="card-body">
             <form id="settingsForm" method="post" asp-controller="Account" asp-action="UpdateUserSettings">
 
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">First Name</label>
-                    <input type="text" name="Name" value="@firstName"
-                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm"
-                           style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                <div class="fields-grid">
+                    <!-- First Name -->
+                    <div class="field-group">
+                        <label class="field-label">First Name</label>
+                        <div class="field-wrap">
+                            <input class="field-input" type="text" name="Name" value="@firstName" />
+                            <i class='bx bx-user field-icon'></i>
+                        </div>
+                    </div>
+
+                    <!-- Last Name -->
+                    <div class="field-group">
+                        <label class="field-label">Last Name</label>
+                        <div class="field-wrap">
+                            <input class="field-input" type="text" name="LastName" value="@lastName" />
+                            <i class='bx bx-user field-icon'></i>
+                        </div>
+                    </div>
+
+                    <!-- Username -->
+                    <div class="field-group field-full">
+                        <label class="field-label">Username</label>
+                        <div class="field-wrap">
+                            <input class="field-input" type="text" name="UserName" value="@userName" />
+                            <i class='bx bx-at field-icon'></i>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="field-group field-full">
+                        <label class="field-label">Email Address</label>
+                        <div class="field-wrap">
+                            <input class="field-input" type="email" name="Email" value="@emailAddress" />
+                            <i class='bx bx-envelope field-icon'></i>
+                        </div>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="field-group field-full">
+                        <label class="field-label">Phone Number</label>
+                        <div class="field-wrap">
+                            <input class="field-input" type="text" name="PhoneNumber" value="@phoneNumber" />
+                            <i class='bx bx-phone field-icon'></i>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-900 px-1 py-1">Last Name</label>
-                    <input type="text" name="LastName" value="@lastName"
-                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm"
-                           style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
+                <!-- Password divider -->
+                <div class="divider"><span class="divider-label">Change Password</span></div>
+
+                <div class="field-group">
+                    <label class="field-label">New Password</label>
+                    <div class="field-wrap">
+                        <input class="field-input has-toggle" type="password" name="Password" id="newPassword" placeholder="Leave blank to keep current" />
+                        <i class='bx bx-lock-alt field-icon'></i>
+                        <button type="button" class="pw-toggle" onclick="togglePw('newPassword', this)">
+                            <i class='bx bx-hide'></i>
+                        </button>
+                    </div>
                 </div>
 
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Username</label>
-                    <input type="text" name="UserName" value="@userName"
-                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm"
-                           style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Email Address</label>
-                    <input type="email" name="Email" value="@emailAddress"
-                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm"
-                           style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">Phone Number</label>
-                    <input type="text" name="PhoneNumber" value="@phoneNumber"
-                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm"
-                           style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-sm font-semibold text-gray-700 px-1 py-1">New Password</label>
-                    <input type="password" name="Password"
-                           class="theme-input block w-full rounded-md px-2 py-1.5 text-base sm:text-sm"
-                           style="background-color: whitesmoke; border: .5px solid #e0e0e0;" />
-                </div>
-
-                <button type="submit"
-                        class="w-full px-4 py-2 rounded-md btn-custom"
-                        id="btnSaveProfileSettings">
-                    Save
+                <button type="button" class="btn-save mt-4" id="btnSaveProfileSettings">
+                    <i class='bx bx-save'></i>
+                    Save Changes
                 </button>
+
             </form>
         </div>
     </div>
 </div>
 
-<div id="passwordConfirmModal" class="fixed inset-0 hidden bg-black bg-opacity-50 items-center justify-center z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold text-gray-700 mb-4">Password Confirmation</h3>
-
-        <div class="mb-4">
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Current Password</label>
-            <input type="password" id="currentPassword"
-                   class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
+<!-- Password Confirm Modal -->
+<div id="passwordConfirmModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <div class="modal-title">Confirm Your Identity</div>
+            <div class="modal-subtitle">Enter your current password to apply changes.</div>
         </div>
 
-        <div class="mb-4">
-            <label class="block text-sm font-semibold text-gray-700 mb-1">Confirm Password</label>
-            <input type="password" id="confirmPassword"
-                   class="w-full border rounded-md px-3 py-2 text-sm bg-gray-50" />
+        <div class="modal-body">
+            <div class="field-group">
+                <label class="field-label">Current Password</label>
+                <div class="field-wrap">
+                    <input class="field-input has-toggle" type="password" id="currentPassword" placeholder="••••••••" />
+                    <i class='bx bx-lock field-icon'></i>
+                    <button type="button" class="pw-toggle" onclick="togglePw('currentPassword', this)">
+                        <i class='bx bx-hide'></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label class="field-label">Confirm Password</label>
+                <div class="field-wrap">
+                    <input class="field-input has-toggle" type="password" id="confirmPassword" placeholder="••••••••" />
+                    <i class='bx bx-lock field-icon'></i>
+                    <button type="button" class="pw-toggle" onclick="togglePw('confirmPassword', this)">
+                        <i class='bx bx-hide'></i>
+                    </button>
+                </div>
+            </div>
         </div>
 
-        <div class="flex justify-end space-x-2">
-            <button type="button" id="cancelModal"
-                    class="px-4 py-2 rounded-md bg-gray-200">
-                Cancel
-            </button>
-
-            <button type="button" id="confirmSave"
-                    class="px-4 py-2 rounded-md bg-blue-600 text-white">
-                Confirm
+        <div class="modal-footer">
+            <button type="button" id="cancelModal" class="btn-cancel">Cancel</button>
+            <button type="button" id="confirmSave" class="btn-confirm">
+                <i class='bx bx-check'></i>
+                Confirm & Save
             </button>
         </div>
     </div>
@@ -116,13 +481,15 @@
 
     saveBtn.addEventListener("click", function (e) {
         e.preventDefault();
-        modal.classList.remove("hidden");
-        modal.classList.add("flex");
+        modal.classList.add("active");
     });
 
     cancelModal.addEventListener("click", function () {
-        modal.classList.remove("flex");
-        modal.classList.add("hidden");
+        modal.classList.remove("active");
+    });
+
+    modal.addEventListener("click", function (e) {
+        if (e.target === modal) modal.classList.remove("active");
     });
 
     confirmSave.addEventListener("click", function () {
@@ -147,4 +514,16 @@
 
         form.submit();
     });
+
+    function togglePw(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const icon = btn.querySelector('i');
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.replace('bx-hide', 'bx-show');
+        } else {
+            input.type = "password";
+            icon.classList.replace('bx-show', 'bx-hide');
+        }
+    }
 </script>

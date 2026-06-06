@@ -21,59 +21,6 @@ namespace AtlasCommerce.Persistance.Services
             this.configuration = configuration;
         }
 
-        //public DashboardVM GetDashboard()
-        //{
-        //    DashboardVM vm = new DashboardVM()
-        //    {
-        //        DashboardMessages = new List<DashboardMessageVM>()
-        //    };
-
-        //    string connectionString = configuration.GetConnectionString("DefaultConnection");
-
-        //    using SqlConnection connection = new SqlConnection(connectionString);
-        //    using SqlCommand command = new SqlCommand("dbo.DashboardView", connection);
-        //    command.CommandType = System.Data.CommandType.StoredProcedure;
-
-        //    connection.Open();
-
-        //    using SqlDataReader reader = command.ExecuteReader();
-
-        //    // METRICS
-        //    if (reader.Read())
-        //    {
-        //        vm.TotalProductCount = reader.GetInt32(reader.GetOrdinal("TotalProductCount"));
-        //        vm.TotalOrderCount = reader.GetInt32(reader.GetOrdinal("TotalOrderCount"));
-        //        vm.TotalSales = reader.GetDecimal(reader.GetOrdinal("TotalSales"));
-        //    }
-
-        //    // MESSAGES
-        //    if (reader.NextResult())
-        //    {
-        //        while (reader.Read())
-        //        {
-        //            vm.DashboardMessages.Add(new DashboardMessageVM
-        //            {
-        //                MessageId = reader.GetGuid(reader.GetOrdinal("MessageId")),
-        //                FirstName = reader.IsDBNull(reader.GetOrdinal("FirstName"))
-        //                    ? null
-        //                    : reader.GetString(reader.GetOrdinal("FirstName")),
-
-        //                LastName = reader.IsDBNull(reader.GetOrdinal("LastName"))
-        //                    ? null
-        //                    : reader.GetString(reader.GetOrdinal("LastName")),
-
-        //                Topic = reader.IsDBNull(reader.GetOrdinal("Topic"))
-        //                    ? null
-        //                    : reader.GetString(reader.GetOrdinal("Topic")),
-
-        //                IsRead = reader.GetBoolean(reader.GetOrdinal("IsRead"))
-        //            });
-        //        }
-        //    }
-
-        //    return vm;
-        //}
-
         public DashboardVM GetDashboard()
         {
             DashboardVM vm = new DashboardVM()
