@@ -18,18 +18,25 @@
 
 <style>
     .message-read {
-        background-color: #f5fff5 !important;
+        background-color: color-mix(in srgb, #22c55e 8%, var(--light)) !important;
+        color: var(--dark) !important;
     }
 
     .message-unread {
-        background-color: #fff7f7 !important;
+        background-color: color-mix(in srgb, #ef4444 8%, var(--light)) !important;
+        color: var(--dark) !important;
+    }
+
+    .message-read td,
+    .message-unread td {
+        color: var(--dark) !important;
     }
 
     .message-read:hover,
     .message-unread:hover {
-        filter: brightness(98%);
+        filter: brightness(97%);
     }
- </style>
+</style>
 <div class="dashboard-wrapper">
     <div class="dashboard-container">
         <div class="dashboard-header">
@@ -49,31 +56,31 @@
             <div class="dashboard-actions">
                 <div class="flex flex-wrap gap-2 p-2 dark rounded-2xl shadow">
                     <a class="flex items-center justify-center px-3 py-2 text-white rounded-xl transition filter-btn btn-show-readed-messages" style="border: 1px solid var(--dark);"
-                        title="All Messages (Not Deleted)" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
+                       title="All Messages (Not Deleted)" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 0 })'>
                         <i class='bx bx-list-ul' style="color: var(--dark);"></i>
                     </a>
 
                     <a class="flex items-center justify-center px-3 py-2 bg-green-300 text-white rounded-xl hover:bg-green-500 transition filter-btn btn-show-replied-messages"
-                        title="Show replied messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 4 })'>
+                       title="Show replied messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 4 })'>
                         <i class="bx bx-message-check"></i>
                     </a>
                     <a class="flex items-center justify-center px-3 py-2 bg-red-300 text-white rounded-xl hover:bg-red-500 transition filter-btn btn-show-unreplied-messages"
-                        title="Show unanswered messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 5 })'>
+                       title="Show unanswered messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 5 })'>
                         <i class="bx bx-message-x"></i>
                     </a>
 
                     <a class="flex items-center justify-center px-3 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition filter-btn btn-show-deleted-messages"
-                        title="Show deleted messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
+                       title="Show deleted messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 1 })'>
                         <i class="bx bx-trash"></i>
                     </a>
 
                     <a class="flex items-center justify-center px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition filter-btn btn-show-unreaded-messages"
-                        title="Show only unread messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
+                       title="Show only unread messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 2 })'>
                         <i class="bx bx-envelope"></i>
                     </a>
 
                     <a class="flex items-center justify-center px-3 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition filter-btn btn-show-readed-messages"
-                        title="Show only read messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
+                       title="Show only read messages" href='@Url.Action("Index", new { pageNumber = currentPage, pageSize = pageSize, searchTerm = searchTerm, messageType = 3 })'>
                         <i class="bx bx-envelope-open"></i>
                     </a>
 
@@ -172,7 +179,7 @@
         </div>
         <div class="pagination-wrapper">
             <div class="pagination-left">
-            <span>Records per page:</span>
+                <span>Records per page:</span>
                 <select class="theme-input" onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@Model.SearchTerm'">
                     @foreach (var size in new[] { 10, 25, 50, 100 })
                     {
@@ -271,7 +278,7 @@
             document.addEventListener('click', closeAll);
         });
 
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Tümünü okundu olarak işaretle
             $('.btn-mark-all-as-read').on('click', function () {
                 showConfirmationModal("Are you sure you want to mark all messages as read ?",

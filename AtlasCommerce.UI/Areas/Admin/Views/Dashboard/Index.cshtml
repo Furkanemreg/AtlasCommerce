@@ -16,11 +16,13 @@
 
     .table-data .card {
         width: 100%;
-        background: #fff;
+        background: var(--light);
+        color: var(--dark);
         border-radius: 12px;
         padding: 20px;
         display: flex;
         flex-direction: column;
+        border: 1px solid rgba(0,0,0,0.06);
     }
 
     .table-data table {
@@ -85,12 +87,49 @@
         align-items: center;
         text-align: center;
         gap: 8px;
-        color: #999;
+        color: var(--dark-grey);
     }
 
     .empty-message i {
         font-size: 34px;
         line-height: 1;
+    }
+
+    .table-data .card table th {
+        color: var(--dark);
+        border-bottom-color: var(--grey);
+    }
+
+    .table-data .card table td {
+        color: var(--dark);
+        border-bottom: 1px solid var(--grey);
+    }
+
+    .table-data .card table td p {
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .table-data .card table tbody tr:hover {
+        background: var(--grey);
+    }
+
+    .table-data .card .head h3 {
+        color: var(--dark);
+    }
+
+    .table-data .card .todo-list li p {
+        color: var(--dark);
+        margin: 0;
+    }
+
+    .table-data .card .todo-list li {
+        background: var(--grey);
+    }
+
+    .muted-time{
+        color: gray;
+        font-size: .8rem;
     }
 </style>
 
@@ -100,15 +139,15 @@
         <div class="left">
             <h1>Administration Panel</h1>
             <ul class="breadcrumb">
-				<li>
-					<a asp-controller="Home" asp-action="Index">Atlas Commerce</a>
-				</li>
+                <li>
+                    <a asp-controller="Home" asp-action="Index">Atlas Commerce</a>
+                </li>
 
                 <li><i class='bx bx-chevron-right'></i></li>
 
                 <li>
                     <a href="#">Administration Panel</a>
-				</li>
+                </li>
             </ul>
         </div>
         <a asp-area="Admin"
@@ -124,14 +163,14 @@
         <li>
             <i class='bx bxs-calendar-check'></i>
             <span class="text">
-                <h3>@Model!.TotalOrderCount!.ToString("n2")</h3>
+                <h3>@Model!.TotalOrderCount!.ToString("n0")</h3>
                 <p>Total Orders</p>
             </span>
         </li>
         <li>
             <i class='bx bx-basket'></i>
             <span class="text">
-                <h3>@Model!.TotalProductCount!.ToString("n2")</h3>
+                <h3>@Model!.TotalProductCount!.ToString("n0")</h3>
                 <p>Total Products</p>
             </span>
         </li>
@@ -143,94 +182,6 @@
             </span>
         </li>
     </ul>
-
-    @* <div class="table-data">
-        <div class="order">
-            <div class="head">
-                <h3>Recent Orders</h3>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Order Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model.RecentOrders != null && Model.RecentOrders.Count > 0)
-                    {
-                        foreach (var order in Model.RecentOrders)
-                        {
-                            <tr>
-                                <td>
-                                    <p>@order.FullName</p>
-                                </td>
-                                <td>
-                                    @order.CreatedAt.ToString("dd.MM.yyyy")
-                                </td>
-                                <td>
-                                    <span class="status @order.Status @order.StatusCssClass">
-                                        @order.Status
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="3">No recent orders</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <div class="todo">
-            <div class="head">
-                <h3>Messages</h3>
-            </div>
-            <ul class="todo-list">
-                @if (Model.DashboardMessages != null && Model.DashboardMessages.Count > 0)
-                {
-                    @foreach (var message in Model.DashboardMessages)
-                    {
-                        @if (message.IsRead != true)
-                        {
-                            <li class="not-completed">
-                                <p>@message.FirstName @message.LastName - @message.Topic</p>
-                                <a href="#" class="btnViewMessage" data-id="@message.MessageId">
-                                    <i class='bx bx-show' style="cursor: pointer;color: var(--dark);"></i>
-                                </a>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="completed">
-                                <p>@message.FirstName @message.LastName - @message.Topic</p>
-                                <a href="#" class="btnViewMessage" data-id="@message.MessageId">
-                                    <i class='bx bx-show'></i>
-                                </a>
-                            </li>
-                        }
-                    }
-                }
-                else
-                {
-                    <li class="empty-message">
-                        <div style="color: #888;">
-                            <p><i class='bx bx-message-square-x me-2'></i>No unanswered messages</p>
-                        </div>
-                    </li>
-                }
-            </ul>
-            <div class="view-all-messages" style="margin-top: 15px; text-align: center;">
-                <a asp-area="Admin" asp-controller="Message" asp-action="Index" class=" btn primary-btn">
-                    View All
-                </a>
-            </div>
-        </div>
-    </div> *@
 
     <div class="table-data">
 
@@ -260,7 +211,7 @@
                                 </td>
 
                                 <td>
-                                    @order.CreatedAt.ToString("dd.MM.yyyy")
+                                    @order.CreatedAt.ToString("dd.MM.yyyy") <span class="muted-time ms-2">@order.CreatedAt.ToString("HH:mm")</span>
                                 </td>
 
                                 <td>
@@ -383,8 +334,8 @@
                 const id = this.getAttribute("data-id");
                 currentMessageId = id;
 
-				try {
-					const response = await fetch(`/Message/ViewMessage?id=${id}`);
+                try {
+                    const response = await fetch(`/Message/ViewMessage?id=${id}`);
                     if (!response.ok) throw new Error("Message could not be loaded.");
 
                     const data = await response.json();

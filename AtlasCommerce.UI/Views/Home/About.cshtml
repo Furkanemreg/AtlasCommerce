@@ -1,58 +1,342 @@
-﻿@using AtlasCommerce.Application.Interfaces
+﻿<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+@using AtlasCommerce.Application.Interfaces
 @using AtlasCommerce.Domain.Entities
 @model AtlasCommerce.Application.ViewModels.EmptyVM
 @inject IBaseService<WebsiteFeature> _featureService
-
 @{
     ViewData["Title"] = "About";
-
     var _websiteFeatures = await _featureService.GetAllAsync();
 }
 
-<section class="py-5 about-us-section bg-light">
-    <div class="container">
-        <div class="text-center mb-5">
-            <h1 class="fw-bold text-3xl text-uppercase">About Us</h1>
-            <p class="text-muted">@Model?.Settings?.BrandName</p>
+<style>
+    :root {
+        --ink: #0e0e11;
+        --surface: #f5f4f0;
+        --card: #ffffff;
+        --accent: #337ab7;
+        --accent-dark: #1d4466;
+        --accent-light: rgba(51, 122, 183, 0.08);
+        --muted: #9a9a9a;
+        --border: #e8e7e3;
+        --radius: 20px;
+        --radius-sm: 12px;
+    }
+
+    .about-shell {
+        min-height: 100vh;
+        background: var(--surface);
+        font-family: 'DM Sans', sans-serif;
+        padding: 64px 16px 80px;
+    }
+
+    .about-container {
+        max-width: 1060px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+    }
+
+    /* ── Hero ── */
+    .about-hero {
+        text-align: center;
+        animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .about-eyebrow {
+        font-family: 'Syne', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 10px;
+    }
+
+    .about-title {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(32px, 5vw, 48px);
+        font-weight: 800;
+        color: var(--ink);
+        letter-spacing: -0.035em;
+        line-height: 1.1;
+        margin-bottom: 12px;
+    }
+
+    .about-brand {
+        font-size: 15px;
+        color: var(--muted);
+    }
+
+    /* ── Intro card ── */
+    .intro-card {
+        background: var(--card);
+        border-radius: var(--radius);
+        box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        animation: fadeUp 0.55s 0.08s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .intro-card::before {
+        content: '';
+        display: block;
+        height: 5px;
+        background: linear-gradient(90deg, var(--ink) 0%, var(--accent) 100%);
+        grid-column: 1 / -1;
+    }
+
+    .intro-image-wrap {
+        position: relative;
+        overflow: hidden;
+        min-height: 320px;
+        background: var(--surface);
+    }
+
+    .intro-image-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s ease;
+    }
+
+    .intro-image-wrap:hover img { transform: scale(1.03); }
+
+    .intro-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(29,68,102,0.18) 0%, transparent 60%);
+        pointer-events: none;
+    }
+
+    .intro-text-wrap {
+        padding: 44px 44px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 16px;
+    }
+
+    .intro-label {
+        font-family: 'Syne', sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent);
+    }
+
+    .intro-body {
+        font-size: 15px;
+        color: #4a4a55;
+        line-height: 1.8;
+    }
+
+    /* ── Features ── */
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        animation: fadeUp 0.6s 0.16s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .feature-card {
+        background: var(--card);
+        border-radius: var(--radius-sm);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        padding: 32px 28px;
+        text-align: center;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--accent-dark), var(--accent));
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.25s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 36px rgba(0,0,0,0.10);
+    }
+
+    .feature-card:hover::after { transform: scaleX(1); }
+
+    .feature-icon-wrap {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+        background: var(--accent-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        font-size: 26px;
+        color: var(--accent);
+        transition: background 0.22s ease;
+    }
+
+    .feature-card:hover .feature-icon-wrap {
+        background: var(--accent);
+        color: #fff;
+    }
+
+    .feature-title {
+        font-family: 'Syne', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--ink);
+        letter-spacing: -0.01em;
+        margin-bottom: 8px;
+    }
+
+    .feature-text {
+        font-size: 13.5px;
+        color: var(--muted);
+        line-height: 1.65;
+    }
+
+    /* ── Closing banner ── */
+    .closing-banner {
+        background: var(--ink);
+        border-radius: var(--radius);
+        padding: 48px 44px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        animation: fadeUp 0.65s 0.22s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    .closing-banner::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(51,122,183,0.25) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .closing-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -40px;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(51,122,183,0.15) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .closing-sentence1 {
+        font-family: 'Syne', sans-serif;
+        font-size: clamp(18px, 3vw, 24px);
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.02em;
+        line-height: 1.4;
+        margin-bottom: 12px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .closing-sentence2 {
+        font-size: 15px;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.7;
+        max-width: 560px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+    }
+
+    .closing-accent-line {
+        width: 40px;
+        height: 3px;
+        background: var(--accent);
+        border-radius: 2px;
+        margin: 20px auto 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    @@media (max-width: 768px) {
+        .intro-card { grid-template-columns: 1fr; }
+        .intro-image-wrap { min-height: 220px; }
+        .intro-text-wrap { padding: 28px 24px; }
+        .closing-banner { padding: 36px 24px; }
+    }
+</style>
+
+<div class="about-shell">
+    <div class="about-container">
+
+        <!-- Hero -->
+        <div class="about-hero">
+            <p class="about-eyebrow">Who We Are</p>
+            <h1 class="about-title">About Us</h1>
+            <p class="about-brand">@Model?.Settings?.BrandName</p>
         </div>
 
-        <div class="row align-items-center mb-5">
-            <div class="col-lg-6 mb-4 mb-lg-0">
-                <img src="@Model?.Settings?.LogoPath" class="rounded shadow" style="width: 90%; " />
+        <!-- Intro card -->
+        <div class="intro-card">
+            <div class="intro-image-wrap">
+                <img src="@Model?.Settings?.LogoPath" alt="@Model?.Settings?.BrandName" />
+                <div class="intro-image-overlay"></div>
             </div>
-
-            <div class="col-lg-6">
-                <p>@Html.Raw(Model?.Settings?.AboutParagraph)</p>
+            <div class="intro-text-wrap">
+                <p class="intro-label">Our Story</p>
+                <div class="intro-body">@Html.Raw(Model?.Settings?.AboutParagraph)</div>
             </div>
         </div>
 
+        <!-- Features -->
         @if (_websiteFeatures != null && _websiteFeatures.Any())
         {
-            <div class="row justify-content-center text-center mb-5">
+            <div class="features-grid">
                 @foreach (var feature in _websiteFeatures)
                 {
-                    <div class="col-md-4 mb-4">
-                        <i class="@feature.IconHtml" style="font-size: 2.5rem;"></i>
-                        <h5 class="fw-bold mt-3">@feature.Title</h5>
-                        <p class="text-muted">@feature.Text</p>
+                    <div class="feature-card">
+                        <div class="feature-icon-wrap">
+                            <i class="@feature.IconHtml"></i>
+                        </div>
+                        <div class="feature-title">@feature.Title</div>
+                        <div class="feature-text">@feature.Text</div>
                     </div>
                 }
             </div>
         }
 
-        <div class="bg-white p-4 rounded shadow text-center">
-            @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence1))
-            {
-                <p class="lead mb-2">
-                    @Html.Raw(Model?.Settings?.AboutAltSentence1)
-                </p>
-            }
-            @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence2))
-            {
-                <p class="mb-0">
-                    @Html.Raw(Model?.Settings?.AboutAltSentence2)
-                </p>
-            }
-        </div>
+        <!-- Closing banner -->
+        @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence1) || !string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence2))
+        {
+            <div class="closing-banner">
+                @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence1))
+                {
+                    <div class="closing-sentence1">@Html.Raw(Model?.Settings?.AboutAltSentence1)</div>
+                }
+                @if (!string.IsNullOrEmpty(Model?.Settings?.AboutAltSentence2))
+                {
+                    <div class="closing-sentence2">@Html.Raw(Model?.Settings?.AboutAltSentence2)</div>
+                }
+                <div class="closing-accent-line"></div>
+            </div>
+        }
+
     </div>
-</section>
+</div>
