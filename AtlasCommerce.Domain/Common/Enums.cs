@@ -45,7 +45,10 @@ public enum enmOrderStatus
     ReturnRequested = 8,
 
     [Description("Returned")]
-    Returned = 9
+    Returned = 9,
+
+    [Description("Payment Failed")]
+    PaymentFailed = 10,
 }
 
 public enum enmPaymentStatus

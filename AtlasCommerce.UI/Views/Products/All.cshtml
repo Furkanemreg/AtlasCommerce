@@ -659,7 +659,7 @@
                                href="@Url.Action("All")"
                                class="w-1/2 text-center rounded-md px-4 py-2 text-white font-medium"
                                style="background-color: #6c757d;">
-                                Reser
+                                Reset
                             </a>
                         </div>
 
@@ -754,7 +754,9 @@
 
                                 <div class="pagination-wrapper mt-3">
                                     <div class="pagination-left">
-                                        <span>Sayfa başına kayıt sayısı:</span>
+                                        <span>
+                                            Number of records per page:
+                                        </span>
                                         <select class="theme-input" onchange="changePageSize(this)">
                                             @foreach (var size in new[] { 16, 32, 48, 64, 80, 96 })
                                             {
