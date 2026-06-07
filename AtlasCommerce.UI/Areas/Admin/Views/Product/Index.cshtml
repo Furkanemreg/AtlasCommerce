@@ -128,7 +128,9 @@
         </div>
         <div class="pagination-wrapper">
             <div class="pagination-left">
-                <span>Sayfa başına kayıt sayısı:</span>
+                <span>
+                    Number of records per page:
+                </span>
                 <select class="theme-input" onchange="location.href='?pageNumber=1&pageSize='+this.value+'&searchTerm=@Model.SearchTerm'">
                     @foreach (var size in new[] { 10, 25, 50, 100 })
                     {
